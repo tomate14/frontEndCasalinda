@@ -17,7 +17,6 @@
                   <th>Estado</th>
                   <th>Descripción</th>
                   <th>Pagos</th>
-                  <th>Ver</th>
               </tr>
               </thead>
               <tbody>
@@ -27,8 +26,7 @@
                   <td>{{ pedido.total | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}</td>
                   <td>{{ pedido.estado }}</td>
                   <td>{{ pedido.descripcion }}</td>
-                  <td><button class="btn btn-info" (click)="verPagos(pedido)">Ver</button></td>
-                  <td><button class="fi fi-search" (click)="verImagen(pedido)">Ver</button></td>
+                  <td><button class="btn btn-info" (click)="verPagos(pedido)"><i class="fas fa-search"></i></button></td>
               </tr>
               </tbody>
           </table>

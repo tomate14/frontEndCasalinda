@@ -5,7 +5,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ListarPagosPorPedidosService } from '../../../services/popup/listaPagosPorPedidos.service';
 import { PedidosService } from '../../../services/pedidos.service';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { MostrarImagenService } from '../../../services/popup/mostrarimagen.service';
 
 @Component({
   selector: 'app-lista-pedidos-por-cliente',
@@ -20,7 +19,7 @@ export class ListaPedidosPorClienteComponent {
   @Input() title: string = "";
   @Input() dniCliente: number = 0;
   p: number = 1;
-  constructor(private activeModal: NgbActiveModal, private pagosPorPedidosService: ListarPagosPorPedidosService, private pedidosService: PedidosService, private imagenService:MostrarImagenService) {
+  constructor(private activeModal: NgbActiveModal, private pagosPorPedidosService: ListarPagosPorPedidosService, private pedidosService: PedidosService) {
     
   }
 
@@ -37,11 +36,6 @@ export class ListaPedidosPorClienteComponent {
       })
     });
     
-  }
-  verImagen(pedido:Pedido):void {
-    this.imagenService.crearMostrarImagenPopup(pedido).then((res)=> {
-      console.log("asd");
-    });
   }
 
   cerrar() {

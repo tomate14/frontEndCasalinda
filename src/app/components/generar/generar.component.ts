@@ -56,8 +56,7 @@ export class GenerarComponent {
         fechaPedido: new Date(),
         total: this.myForm.value.total,
         estado: estado,
-        descripcion: this.myForm.value.descripcion,
-        imagen: this.imagePath
+        descripcion: this.myForm.value.descripcion
       }
       this.pedidosService.post(pedido).subscribe(res => {
         console.log(res);

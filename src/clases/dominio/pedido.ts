@@ -7,6 +7,5 @@ export interface Pedido {
     total: number;
     estado: 'PENDIENTE' | 'COMPLETO';
     descripcion: string;
-    imagen: string;
     nombreCliente?:string; 
   }
