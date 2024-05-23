@@ -1,0 +1,68 @@
+<div class="modal-header">
+    <h4 class="modal-title">Alta cliente</h4>
+      <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+</div>
+<div class="modal-body">
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container needs-validation">
+        <div class="form-group">
+          <label for="dni">DNI</label>
+          <input type="number" class="form-control" id="dni" formControlName="dni" aria-describedby="emailHelp" placeholder="DNI" required>
+          <div *ngIf="myForm.get('dni')?.invalid && myForm.get('dni')?.touched" 
+          [ngClass]="{'d-block': myForm.get('dni')?.invalid && myForm.get('dni')?.touched, 'd-none': !(myForm.get('dni')?.invalid && myForm.get('dni')?.touched)}" 
+          class="invalid-feedback">Debe ingresar el dni</div>
+        </div>
+        <br/>
+        <div class="form-group">
+          <label for="nombre">Nombre y Apellido</label>
+          <input type="text" class="form-control" id="nombre" formControlName="nombre" aria-describedby="emailHelp" placeholder="Nombre y Apellido" required>
+          <div *ngIf="myForm.get('nombre')?.invalid && myForm.get('nombre')?.touched" 
+          [ngClass]="{'d-block': myForm.get('nombre')?.invalid && myForm.get('nombre')?.touched, 'd-none': !(myForm.get('nombre')?.invalid && myForm.get('nombre')?.touched)}" 
+          class="invalid-feedback">Debe ingresar el nombre</div>
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" formControlName="email" id="email" aria-describedby="emailHelp" placeholder="Email" required>
+            <div *ngIf="myForm.get('email')?.invalid && myForm.get('email')?.touched" 
+              [ngClass]="{'d-block': myForm.get('email')?.invalid && myForm.get('email')?.touched, 'd-none': !(myForm.get('email')?.invalid && myForm.get('email')?.touched)}" 
+              class="invalid-feedback">Debe ingresar el email</div>
+        </div>
+        <br/>
+        <div class="form-group">
+          <label for="fechaNacimiento">Fecha Nacimiento</label>
+          <input type="date" class="form-control" formControlName="fechaNacimiento" id="fechaNacimiento" placeholder="fechaNacimiento" required>
+          <div *ngIf="myForm.get('fechaNacimiento')?.invalid && myForm.get('fechaNacimiento')?.touched" 
+            [ngClass]="{'d-block': myForm.get('fechaNacimiento')?.invalid && myForm.get('fechaNacimiento')?.touched, 'd-none': !(myForm.get('fechaNacimiento')?.invalid && myForm.get('fechaNacimiento')?.touched)}" 
+            class="invalid-feedback">Debe ingresar una fecha nacimiento</div>
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="direccion">Direccion</label>
+            <input type="text" class="form-control" id="direccion" formControlName="direccion" aria-describedby="emailHelp" placeholder="Direccion" required>
+            <div *ngIf="myForm.get('direccion')?.invalid && myForm.get('direccion')?.touched" 
+            [ngClass]="{'d-block': myForm.get('direccion')?.invalid && myForm.get('direccion')?.touched, 'd-none': !(myForm.get('direccion')?.invalid && myForm.get('direccion')?.touched)}" 
+            class="invalid-feedback">Debe ingresar la direccion</div>
+          </div>
+        <br/>
+        <div class="form-group">
+            <label for="telefono">Telefono</label>
+            <input type="text" class="form-control" id="telefono" formControlName="telefono" aria-describedby="emailHelp" placeholder="Telefono" required>
+            <div *ngIf="myForm.get('telefono')?.invalid && myForm.get('telefono')?.touched" 
+            [ngClass]="{'d-block': myForm.get('telefono')?.invalid && myForm.get('telefono')?.touched, 'd-none': !(myForm.get('telefono')?.invalid && myForm.get('telefono')?.touched)}" 
+            class="invalid-feedback">Debe ingresar el telefono</div>
+          </div>
+        <br/>
+        <div class="form-group">
+            <label for="cuit">Ciut</label>
+            <input type="text" class="form-control" id="cuit" formControlName="cuit" aria-describedby="emailHelp" placeholder="Cuit" required>
+            <div *ngIf="myForm.get('cuit')?.invalid && myForm.get('cuit')?.touched" 
+            [ngClass]="{'d-block': myForm.get('cuit')?.invalid && myForm.get('cuit')?.touched, 'd-none': !(myForm.get('cuit')?.invalid && myForm.get('cuit')?.touched)}" 
+            class="invalid-feedback">Debe ingresar el Cuit</div>
+          </div>
+        <br/>
+        <button type="submit" class="btn btn-primary">Agregar</button>
+      
+    </form>
+</div>

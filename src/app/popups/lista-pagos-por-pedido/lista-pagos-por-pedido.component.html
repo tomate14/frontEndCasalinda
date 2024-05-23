@@ -1,0 +1,61 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+</div>
+<div class="modal-body">
+    <div class="row mb-3">
+        <div class="col">
+          <form [formGroup]="pagoForm" (ngSubmit)="agregarPago()">
+            <div *ngIf="subTotal < totalPedido" class="input-group">                
+                <label class="input-group-text" for="valorPago">Pagar $</label>
+                <input type="number" class="form-control" id="valorPago" formControlName="valor" placeholder="Ingrese el valor del pago">
+                <button type="submit" class="btn btn-primary ml-2">Agregar</button>                             
+            </div>
+          </form>
+        </div>
+      </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped">
+            <thead>
+                <tr>
+                <th>ID Pago</th>
+                <th>ID Pedido</th>
+                <th>Fecha Pago</th>
+                <th>Valor</th>
+                <th>Borrar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let pago of pagos">
+                <td>{{ pago._id }}</td>
+                <td>{{ pago.idPedido }}</td>
+                <td>{{ pago.fechaPago | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2' }}</td>
+                <td><button class="btn btn-danger" *ngIf="subTotal < totalPedido" (click)="eliminarPago(pago)">X</button></td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="row w-100">
+        <div class="col">
+          <span>Sub total:</span>
+        </div>
+        <div class="col text-end">
+          <span>{{ subTotal | currency: 'CAD' : 'symbol-narrow' : '4.2-2' }}</span>
+        </div>
+      </div>
+    <div class="row w-100">
+      <div class="col">
+        <span>Total:</span>
+      </div>
+      <div class="col text-end">
+        <span>{{ totalPedido | currency: 'CAD' : 'symbol-narrow' : '4.2-2' }}</span>
+      </div>
+    </div>
+  </div>

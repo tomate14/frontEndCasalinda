@@ -1,0 +1,36 @@
+input.ng-invalid.ng-touched:not(div.mat-date-range-input-wrapper input) {
+    border: 1px solid red;
+}
+
+input.ng-valid.ng-touched:not(div.mat-date-range-input-wrapper input) {
+    border: 1px solid green;
+}
+
+.filter-container {
+    margin-bottom: 20px;
+  }
+  
+  .filter-container > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  
+  .filter-container label {
+    margin-right: 10px;
+  }
+  
+  .filter-container button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .filter-container button:hover {
+    background-color: #0056b3;
+  }

@@ -1,0 +1,16 @@
+.modal-header {
+    justify-content: space-between;
+}
+
+button.close {
+    border: hidden;
+    background: white;
+}
+
+.table-wrapper {
+    overflow-y: auto;
+}
+
+.scroll-x {
+    overflow-x: auto;
+}

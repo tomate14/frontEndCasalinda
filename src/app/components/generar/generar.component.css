@@ -1,0 +1,18 @@
+input.ng-invalid.ng-touched {
+    border: 1px solid red;
+}
+
+input.ng-valid.ng-touched {
+    border: 1px solid green;
+}
+
+textarea.ng-invalid.ng-touched {
+    border: 1px solid red;
+}
+
+textarea.ng-valid.ng-touched {
+    border: 1px solid green;
+}
+.col.form-group#divBuscar {
+    align-content: end;
+}

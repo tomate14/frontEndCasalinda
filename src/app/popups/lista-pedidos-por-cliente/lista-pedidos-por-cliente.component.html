@@ -1,0 +1,40 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+</div>
+<div class="modal-body">
+    <div class="row">
+      <div class="col">
+        <div class="table-wrapper">
+          <table class="table table-striped" [ngClass]="{'scroll-x': pedidos.length > 10}">
+              <thead>
+              <tr>
+                  <th>DNI Cliente</th>
+                  <th>Fecha Pedido</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Descripción</th>
+                  <th>Pagos</th>
+                  <th>Ver</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let pedido of pedidos | paginate: { itemsPerPage: 10, currentPage: p }">
+                  <td>{{ pedido.dniCliente }}</td>
+                  <td>{{ pedido.fechaPedido | date: 'dd/MM/yyyy HH:mm' }}</td>
+                  <td>{{ pedido.total | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}</td>
+                  <td>{{ pedido.estado }}</td>
+                  <td>{{ pedido.descripcion }}</td>
+                  <td><button class="btn btn-info" (click)="verPagos(pedido)">Ver</button></td>
+                  <td><button class="fi fi-search" (click)="verImagen(pedido)">Ver</button></td>
+              </tr>
+              </tbody>
+          </table>
+        </div>
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </div>
+</div>
+  

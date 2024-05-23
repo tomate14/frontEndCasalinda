@@ -1,0 +1,68 @@
+<div class="filter-container">
+  <button (click)="isCollapsed = !isCollapsed">{{isCollapsed ? 'Mostrar filtros' : 'Ocultar filtros'}}</button>
+  <div *ngIf="!isCollapsed">
+    <form [formGroup]="filterForm" class="container">
+      <div class="row">
+        <div class="col form-group">
+          <div class="form-group">
+            <label for="dniCliente">DNI:</label>
+            <input type="text" id="dniCliente" formControlName="dniCliente" class="form-control" name="dniCliente" aria-describedby="dniClienteHelp" placeholder="DNI"/>
+          </div>
+        </div>
+        <div class="col form-group">
+          <label for="nombre">Nombre:</label>
+          <input type="text" id="nombre" formControlName="nombre" class="form-control" name="nombre" aria-describedby="nombreHelp" placeholder="nombre"/>
+        </div>
+      </div>
+      <br/>
+      <div class="row">
+        <mat-form-field class="example-form-field">
+          <mat-label>Enter a date range</mat-label>
+          <mat-date-range-input [rangePicker]="rangePicker">
+            <input matStartDate formControlName="fechaDesde">
+            <input matEndDate formControlName="fechaHasta">
+          </mat-date-range-input>
+          <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="rangePicker"></mat-datepicker-toggle>
+          <mat-date-range-picker #rangePicker>
+            <mat-date-range-picker-actions>
+              <button class="btn btn-danger">Cancel</button>
+              <button class="btn btn-primary" matDateRangePickerApply>Apply</button>
+            </mat-date-range-picker-actions>
+          </mat-date-range-picker>
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <div class="col-1">
+          <button (click)="buscar()">Buscar</button>
+        </div>
+        <div class="col-1">
+          <button (click)="limpiar()">Limpiar</button>
+        </div>
+      </div>      
+    </form>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>DNI</th>
+          <th>Fecha Pedido</th>
+          <th>Nombre</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pedido of pedidos| paginate: { itemsPerPage: 15, currentPage: p }">
+          <td>{{ pedido.dniCliente }}</td>
+          <td>{{ pedido.fechaPedido | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ pedido.nombreCliente }}</td>
+          <td>{{ pedido.estado }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+  </div>
+</div>

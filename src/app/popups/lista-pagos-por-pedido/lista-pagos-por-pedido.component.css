@@ -1,0 +1,17 @@
+/* estilos personalizados para la tabla */
+.table-responsive {
+    margin: 20px;
+  }
+  
+.table th, .table td {
+    text-align: center;
+}
+
+.modal-header {
+    justify-content: space-between;
+}
+
+button.close {
+    border: hidden;
+    background: white;
+}
