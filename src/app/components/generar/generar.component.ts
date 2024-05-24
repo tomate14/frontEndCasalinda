@@ -8,11 +8,13 @@ import { Pedido } from '../../../clases/dominio/pedido';
 import { PagosService } from '../../../services/pago.service';
 import { Pago } from '../../../clases/dominio/pago';
 import { HttpClient } from '@angular/common/http';
+import { MatSelectModule } from '@angular/material/select';
+import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
 
 @Component({
   selector: 'app-generar',
   standalone: true,
-  imports: [ NgClass, NgIf, ReactiveFormsModule, FormsModule],
+  imports: [ NgClass, NgIf, ReactiveFormsModule, FormsModule, MatSelectModule],
   templateUrl: './generar.component.html',
   styleUrl: './generar.component.css'
 })
@@ -21,15 +23,18 @@ export class GenerarComponent {
   myForm: FormGroup;
   cliente:Cliente | undefined;
   imagePath:any = "";
-  private imageRelativePath: string = "assets/";
+  formaDePago:FormaDePago[] = [];
+
   constructor(private fb: FormBuilder, private pedidosService: PedidosService, private clienteService: ClienteService, private pagosService: PagosService, private httpClient: HttpClient) {    
+    this.formaDePago = formaDePago;
     this.myForm = this.fb.group({
       nombre: [null, Validators.required],
       email: [null, [Validators.required, Validators.email]],
       descripcion: [null, Validators.required],
       seña: [0, Validators.required], // Set initial value to 0
       total: [null, Validators.required],
-      dni: [null, Validators.required]
+      dni: [null, Validators.required],
+      formaDePago: [1, Validators.required]
     }); 
   }
 
@@ -64,7 +69,9 @@ export class GenerarComponent {
         const pago: Pago = {
           idPedido:id,
           fechaPago: new Date(),
-          valor: this.myForm.value.seña
+          valor: this.myForm.value.seña,
+          formaPago: this.myForm.value.formaDePago,
+          descripcion: ""
         }
         if (pago.valor > 0) {
           this.pagosService.postPago(pago).subscribe((res)=> {            

@@ -11,8 +11,17 @@
             <div *ngIf="subTotal < totalPedido" class="input-group">                
                 <label class="input-group-text" for="valorPago">Pagar $</label>
                 <input type="number" class="form-control" id="valorPago" formControlName="valor" placeholder="Ingrese el valor del pago">
+                <mat-form-field>
+                    <!-- mat-label>Forma De Pago</mat-label-->
+                    <mat-select formControlName="formaDePago">
+                      @for (fPago of formaDePago; track fPago) {
+                        <mat-option [value]="fPago.value">{{fPago.viewValue}}</mat-option>
+                      }
+                    </mat-select>
+                </mat-form-field>
                 <button type="submit" class="btn btn-primary ml-2">Agregar</button>                             
             </div>
+            
           </form>
         </div>
       </div>
@@ -34,7 +43,7 @@
                 <td>{{ pago.idPedido }}</td>
                 <td>{{ pago.fechaPago | date: 'dd/MM/yyyy HH:mm' }}</td>
                 <td>{{ pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2' }}</td>
-                <td><button class="btn btn-danger" *ngIf="subTotal < totalPedido" (click)="eliminarPago(pago)">X</button></td>
+                <td><button class="btn btn-danger" *ngIf="subTotal < totalPedido" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                 </tr>
             </tbody>
             </table>

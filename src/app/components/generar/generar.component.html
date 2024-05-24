@@ -46,6 +46,16 @@
           </div>
         </div>
         <div class="col form-group">
+          <mat-form-field>
+            <!-- mat-label>Forma De Pago</mat-label-->
+            <mat-select formControlName="formaDePago">
+              @for (fPago of formaDePago; track fPago) {
+                <mat-option [value]="fPago.value">{{fPago.viewValue}}</mat-option>
+              }
+            </mat-select>
+        </mat-form-field>
+        </div>
+        <div class="col form-group">
           <label class="sr-only" for="inlineFormTotal">Total</label>
           <div class="input-group mb-2">
             <div class="input-group-prepend">

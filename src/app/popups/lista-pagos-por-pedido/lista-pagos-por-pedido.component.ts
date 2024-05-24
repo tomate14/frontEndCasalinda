@@ -5,11 +5,13 @@ import { PagosService } from '../../../services/pago.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PedidosService } from '../../../services/pedidos.service';
+import { MatSelectModule } from '@angular/material/select';
+import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
 
 @Component({
   selector: 'app-lista-pagos-por-pedido',
   standalone: true,
-  imports: [NgFor, NgIf, DatePipe, CurrencyPipe, ReactiveFormsModule],
+  imports: [NgFor, NgIf, DatePipe, CurrencyPipe, ReactiveFormsModule, MatSelectModule],
   templateUrl: './lista-pagos-por-pedido.component.html',
   styleUrl: './lista-pagos-por-pedido.component.css'
 })
@@ -21,10 +23,13 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   pagos: Pago[] = [];
   pagoForm: FormGroup;
   subTotal:number = 0;
+  formaDePago:FormaDePago[] = [];
 
   constructor(private pagosServices: PagosService, private activeModal: NgbActiveModal, private fb: FormBuilder, private pedidosService: PedidosService) { 
+    this.formaDePago = formaDePago;
     this.pagoForm = this.fb.group({
-      valor: ['', [Validators.required, Validators.min(1)]]
+      valor: ['', [Validators.required, Validators.min(1)]],
+      formaDePago: [1, [Validators.required, Validators.min(1), Validators.max(3)]],
     });
   }
 
@@ -67,7 +72,9 @@ export class ListaPagosPorPedidoComponent implements OnInit {
     const pago: Pago = {
       idPedido: this.idPedido,
       fechaPago: new Date(),
-      valor: this.pagoForm.value.valor
+      valor: this.pagoForm.value.valor,
+      formaPago: this.pagoForm.value.formaDePago,
+      descripcion:""
 
     }
     const preSubTotal = this.subTotal + pago.valor;
