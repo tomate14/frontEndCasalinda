@@ -1,0 +1,15 @@
+.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label {
+    height: 37px;
+}
+
+.mdc-text-field--no-label .mat-mdc-form-field-infix {
+    padding-top: 5px;
+}
+
+.red-text {
+    color: red;
+}
+  
+.green-text {
+    color: green;
+}

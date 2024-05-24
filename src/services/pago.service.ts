@@ -22,4 +22,8 @@ export class PagosService {
   public deletePagoByIdPago(idPago:string): Observable<Pago> {
     return this.httpClient.delete<Pago>(`http://127.0.0.1:5000/pago/${idPago}`);
   }
+  
+  public getCajaByDate(fechaInicio:string, fechaFin:string): Observable<Pago[]> {
+    return this.httpClient.get<Pago[]>(`http://127.0.0.1:5000/pago/caja/${fechaInicio}/${fechaFin}`);
+  }
 }
