@@ -15,24 +15,20 @@
                 <div class="col-3">
                     <label class="sr-only" for="inlineFormTotal">Total</label>
                     <div class="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">$</div>
-                    </div>
-                    <input type="number" class="form-control" formControlName="valor" id="inlineFormTotal" placeholder="Valor" required>
-                    <div *ngIf="myForm.get('valor')?.invalid && myForm.get('valor')?.touched" 
-                        [ngClass]="{'d-block': myForm.get('valor')?.invalid && myForm.get('valor')?.touched, 'd-none': !(myForm.get('valor')?.invalid && myForm.get('valor')?.touched)}" 
-                        class="invalid-feedback">Debe ingresar el valor</div>
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">$</div>
+                        </div>
+                        <input type="number" class="form-control" formControlName="valor" id="inlineFormTotal" placeholder="Valor" required>
+                        <div *ngIf="myForm.get('valor')?.invalid && myForm.get('valor')?.touched" 
+                            [ngClass]="{'d-block': myForm.get('valor')?.invalid && myForm.get('valor')?.touched, 'd-none': !(myForm.get('valor')?.invalid && myForm.get('valor')?.touched)}" 
+                            class="invalid-feedback">Debe ingresar el valor
+                        </div>
                     </div>
                 </div>
                 <div class="col-6">
-                    <mat-form-field>
-                        <!-- mat-label>Forma De Pago</mat-label-->
-                        <mat-select formControlName="formaDePago">
-                          @for (fPago of formaDePago; track fPago) {
-                            <mat-option [value]="fPago.value">{{fPago.viewValue}}</mat-option>
-                          }
-                        </mat-select>
-                    </mat-form-field>
+                    <select class="form-select" formControlName="formaDePago">
+                        <option *ngFor="let fPago of formaDePago" [value]="fPago.value">{{fPago.viewValue}}</option>
+                    </select>
                 </div>                
               </div>
             <button *ngIf="esIngreso" type="submit" class="btn btn-success">Agregar</button>          
@@ -40,43 +36,58 @@
         </form>
     </div>
     <div class="row">
-        <div class="col">
             <table class="table table-striped">
-            <thead>
-                <tr>
-                <th>Descripcion</th>
-                <th>Fecha</th>
-                <th>Contado</th>
-                <th>Tarjeta</th>
-                <th>Cuenta DNI</th>
-                <th>Borrar</th>
-                <th>Editar</th>
-                </tr>
-            </thead>
+                <thead>
+                    <tr>
+                        <th>Descripcion</th>
+                        <th>Fecha</th>
+                        <th>Contado</th>
+                        <th>Tarjeta</th>
+                        <th>Cuenta DNI</th>
+                        <th>Borrar</th>
+                        <th>Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pago of pagos">
+                        <td class="col-md-5">{{ pago.descripcion }}</td>
+                        <td class="col-md-2">{{ pago.fechaPago | date: 'dd/MM/yyyy HH:mm' }}</td>
+                        <td class="col-md-1">
+                            <span *ngIf="pago.formaPago === 1" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
+                                {{pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}
+                            </span>
+                        </td>
+                        <td class="col-md-1">
+                            <span *ngIf="pago.formaPago === 2" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
+                                {{pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}
+                            </span>
+                        </td>
+                        <td class="col-md-1">
+                            <span *ngIf="pago.formaPago === 3" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
+                                {{pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}
+                            </span>
+                        </td>
+                        <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' " class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td class="col-md-1"><button class="btn btn-info" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr/>
+            
+    </div>
+    <div class="row">
+        <table class="table table-striped">
             <tbody>
-                <tr *ngFor="let pago of pagos">
-                    <td>{{ pago.descripcion }}</td>
-                    <td>{{ pago.fechaPago | date: 'dd/MM/yyyy HH:mm' }}</td>
-                    <td>
-                        <span *ngIf="pago.formaPago === 1" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                            {{pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}
-                        </span>
-                    </td>
-                    <td>
-                        <span *ngIf="pago.formaPago === 2" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                            {{pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}
-                        </span>
-                    </td>
-                    <td>
-                        <span *ngIf="pago.formaPago === 3" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                            {{pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}
-                        </span>
-                    </td>
-                    <td><button class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                    <td><button class="btn btn-info" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
+                <tr>
+                    <td class="col-md-5"><b>Total</b></td>
+                    <td class="col-md-2"></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalContado < 0, 'green-text': totalContado > 0}"><b>{{totalContado | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}</b></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalTarjeta < 0, 'green-text': totalTarjeta > 0}"><b>{{totalTarjeta | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}</b></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalDNI < 0, 'green-text': totalDNI > 0}"><b>{{totalDNI | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}</b></td>
+                    <td class="col-md-1"></td>
+                    <td class="col-md-1"></td>
                 </tr>
             </tbody>
-            </table>
-        </div>
+        </table>
     </div>
   </div>

@@ -33,11 +33,11 @@
       </div>
       <br/>
       <div class="row">
-        <div class="col form-group">
+        <div class="col-md-4 form-group">
           <label class="sr-only" for="inlineFormSeña">Seña</label>
           <div class="input-group mb-2">
             <div class="input-group-prepend">
-              <div class="input-group-text">$</div>
+              <div class="input-group-text">Entrega $</div>
             </div>
             <input type="number" class="form-control" formControlName="seña" id="inlineFormSeña" placeholder="Seña" required>
             <div *ngIf="myForm.get('seña')?.invalid && myForm.get('seña')?.touched" 
@@ -45,17 +45,12 @@
               class="invalid-feedback">Debe ingresar la seña</div>
           </div>
         </div>
-        <div class="col form-group">
-          <mat-form-field>
-            <!-- mat-label>Forma De Pago</mat-label-->
-            <mat-select formControlName="formaDePago">
-              @for (fPago of formaDePago; track fPago) {
-                <mat-option [value]="fPago.value">{{fPago.viewValue}}</mat-option>
-              }
-            </mat-select>
-        </mat-form-field>
+        <div class="col-md-4 form-group">
+          <select class="form-select" formControlName="formaDePago">
+            <option *ngFor="let fPago of formaDePago" [value]="fPago.value">{{fPago.viewValue}}</option>
+          </select>
         </div>
-        <div class="col form-group">
+        <div class="col-md-4 form-group">
           <label class="sr-only" for="inlineFormTotal">Total</label>
           <div class="input-group mb-2">
             <div class="input-group-prepend">

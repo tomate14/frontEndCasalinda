@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Pago } from '../../../clases/dominio/pago';
@@ -13,7 +12,7 @@ import { PagosService } from '../../../services/pago.service';
   selector: 'app-tabla-caja',
   standalone: true,
   imports: [NgClass, NgFor, NgbModule, NgIf, ReactiveFormsModule, DatePipe, CurrencyPipe,
-    FormsModule, NgxPaginationModule, MatFormFieldModule, MatInputModule, MatSelectModule ],
+    FormsModule, NgxPaginationModule, MatInputModule, MatSelectModule ],
   templateUrl: './tabla-caja.component.html',
   styleUrl: './tabla-caja.component.css'
 })
@@ -24,13 +23,16 @@ export class TablaCajaComponent implements OnInit{
   formaDePago:FormaDePago[] = [];
   esIngreso:boolean = true;
   pagos:Pago[] = [];
+  totalContado:number = 0;
+  totalTarjeta:number = 0;
+  totalDNI:number = 0;
 
   constructor(private fb: FormBuilder, private pagosServices: PagosService) {
     this.formaDePago = formaDePago;
     this.myForm = this.fb.group({
       descripcion: ['', Validators.required],
-      valor: ['', [Validators.required, Validators.min(0)]],
-      formaDePago: ['', Validators.required]
+      valor: [null, [Validators.required, Validators.min(0)]],
+      formaDePago: [1, Validators.required]
     });
   }
 
@@ -38,7 +40,7 @@ export class TablaCajaComponent implements OnInit{
     const fechas = this.getHorasConsulta();
       this.pagosServices.getCajaByDate(fechas[0], fechas[1]).subscribe((res) => {
         this.pagos = res;
-        //this.actualizarSubTotal();
+        this.actualizarTotales();
       })
   }
 
@@ -57,11 +59,12 @@ export class TablaCajaComponent implements OnInit{
         descripcion: this.myForm.value.descripcion  
       }
       this.pagosServices.postPago(pago).subscribe((res) => {
-        this.myForm.reset();
+        this.myForm.reset({descripcion: '',valor: null,formaDePago: 1});
+        this.actualizarTotalesPorPago(pago);
         this.pagos.push(res);
       })
     } else {
-      alert('No se pudo agregar a la caja');
+      alert('Debe agregar los valores');
     }
   }
 
@@ -77,10 +80,14 @@ export class TablaCajaComponent implements OnInit{
         if (index > -1) {
           this.pagos.splice(index, 1);
         }
+        //Si elimino y resta, se suma. Si elimino y suma, se resta
+        pago.valor = -pago.valor;
+        this.actualizarTotalesPorPago(pago);
       }, (error) => {
         alert(`No se pudo eliminar el pago ${pagoId}, ${error}`);
       });      
   }
+
   private getHorasConsulta(): string[] {
     // Obtener la fecha actual
     let currentDate = new Date();
@@ -98,5 +105,17 @@ export class TablaCajaComponent implements OnInit{
     let fechaFin = endOfDay.toISOString();
 
     return [fechaInifico, fechaFin]
+  }
+
+  private actualizarTotalesPorPago(pago:Pago) {
+    pago.formaPago ===  1 ? this.totalContado += pago.valor : null;
+    pago.formaPago ===  2 ? this.totalTarjeta += pago.valor : null;
+    pago.formaPago ===  3 ? this.totalDNI += pago.valor : null;
+  }
+
+  private actualizarTotales() {
+    this.pagos.forEach((pago) => {
+      this.actualizarTotalesPorPago(pago);
+    })
   }
 }
