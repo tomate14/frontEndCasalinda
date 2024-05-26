@@ -5,6 +5,7 @@ import { Caja } from '../../../clases/dominio/caja';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {formatDateToDayMonth, horaPrincipioFinDia, getPreviousDays} from "../../../utils/dates";
 import { DatePipe } from '@angular/common';
+import { TablaCajaHistorialComponent } from '../tabla-caja-historial/tabla-caja-historial.component';
 const defaultFormObject = {
   fechaDesde: getPreviousDays(new Date().toUTCString(),false,7),
   fechaHasta: horaPrincipioFinDia(new Date().toUTCString(), true),
@@ -13,7 +14,7 @@ const defaultFormObject = {
 @Component({
   selector: 'app-flujo-caja',
   standalone: true,
-  imports: [NgxChartsModule, ReactiveFormsModule, FormsModule],
+  imports: [NgxChartsModule, ReactiveFormsModule, FormsModule, TablaCajaHistorialComponent],
   templateUrl: './flujo-caja.component.html',
   styleUrl: './flujo-caja.component.css'
 })

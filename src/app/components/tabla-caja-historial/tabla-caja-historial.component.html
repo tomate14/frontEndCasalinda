@@ -1,0 +1,84 @@
+<hr/>
+<h2>Historial cierre de caja</h2>
+<hr/>
+<div class="container">
+    <div class="row">
+        <button class="btn btn-dark col-1" (click)="toggleForm()">Filtros</button>
+        <div *ngIf="isFormVisible">
+            <form [formGroup]="myForm" (ngSubmit)="onSubmitForm()" class="container">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="input-group">
+                            <span class="input-group-text">Desde</span>
+                            <input type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="input-group">
+                            <span class="input-group-text">Hasta </span>
+                            <input type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <button type="submit" class="btn btn-info">Buscar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Contado</th>
+                        <th>Tarjeta</th>
+                        <th>Cuenta DNI</th>
+                        <th>Total Ingresos</th>
+                        <th>Total Gastos</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let caja of cajas">
+                        <td class="col-md-2">{{ caja.fecha| date: 'dd/MM/yyyy' }}</td>
+                        <td class="col-md-1">
+                            <span [ngClass]="{'red-text': caja.contado < 0, 'green-text': caja.contado > 0}">
+                                {{caja.contado | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
+                            </span>
+                        </td>
+                        <td class="col-md-1">
+                            <span [ngClass]="{'red-text': caja.tarjeta < 0, 'green-text': caja.tarjeta > 0}">
+                                {{caja.tarjeta | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
+                            </span>
+                        </td>
+                        <td class="col-md-1">
+                            <span [ngClass]="{'red-text': caja.cuentaDni < 0, 'green-text': caja.cuentaDni > 0}">
+                                {{caja.cuentaDni | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
+                            </span>
+                        </td>
+                        <td class="col-md-1">{{caja.ingresos | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
+                        <td class="col-md-1">{{caja.gastos | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
+                        <td class="col-md-1"><button class="btn btn-info" (click)="verMovimientos(caja)"><i class="fas fa-search"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr/>
+            
+    </div>
+    <div class="row">
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td class="col-md-2"><b>Total</b></td>
+                    <td class="col-md-1"><b>{{totales.contado | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1"><b>{{totales.tarjeta | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1"><b>{{totales.cuentaDni| currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1"><b>{{totales.ingresos| currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1"><b>{{totales.gastos| currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+  </div>
