@@ -10,8 +10,8 @@ export class CajaService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public getCajaByFecha(fecha:string): Observable<Caja> {
-      return this.httpClient.get<Caja>(`http://127.0.0.1:5000/caja/${fecha}`);
+  public getCajaByFecha(fechaInicio:string,fechaFin:string): Observable<any> {
+      return this.httpClient.get<any>(`http://127.0.0.1:5000/caja/${fechaInicio}/${fechaFin}`);
   }
 
   public postCliente(caja:Caja): Observable<Caja> {
