@@ -5,10 +5,19 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-input.ng-invalid.ng-touched, select.ng-invalid.ng-touched {
+input.ng-invalid.ng-touched:not(div.mat-date-range-input-wrapper input), select.ng-valid.ng-touched {
     border: 1px solid red;
 }
 
-input.ng-valid.ng-touched, select.ng-valid.ng-touched {
+input.ng-valid.ng-touched:not(div.mat-date-range-input-wrapper input), select.ng-valid.ng-touched {
     border: 1px solid green;
+}
+
+.modal-header {
+    justify-content: space-between;
+}
+
+button.close {
+    border: hidden;
+    background: white;
 }

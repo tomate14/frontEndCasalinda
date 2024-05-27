@@ -9,10 +9,12 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
 import { transformarAHoraArgentinaISO } from '../../../utils/dates';
+import { CrearPedidoService } from '../../../services/popup/generar-pedidos.service';
 
 const defaultFormObject = {
   dniCliente: null,
   nombre: null,
+  idPedido: null,
   fechaDesde: null,
   fechaHasta: null,
 }
@@ -30,7 +32,7 @@ export class TablaPedidoComponent implements OnInit {
   filterForm: FormGroup;
   isCollapsed: boolean = true;
   p: number = 1;
-  constructor(private fb: FormBuilder, private pedidosService: PedidosService) { 
+  constructor(private fb: FormBuilder, private pedidosService: PedidosService, private crearPedidoModal:CrearPedidoService) { 
     this.filterForm = this.fb.group({});
   }
 
@@ -48,16 +50,17 @@ export class TablaPedidoComponent implements OnInit {
     );
   }
   buscar() {
-    const { dniCliente, nombre, fechaHasta, fechaDesde } = this.filterForm.value;
+    const { idPedido, dniCliente, nombre, fechaHasta, fechaDesde } = this.filterForm.value;
     const fechaDesdeDate = fechaDesde ? transformarAHoraArgentinaISO(fechaDesde) : null;
     const fechaHastaDate = fechaHasta ? transformarAHoraArgentinaISO(fechaHasta) : null;
     this.pedidos = this.pedidos.filter((pedido: Pedido) => {
+      const matchesIdPedido = idPedido ? pedido._id === idPedido : true;
       const matchesDniCliente = dniCliente ? pedido.dniCliente === +dniCliente : true;
       const matchesNombre = nombre ? pedido.nombreCliente?.toLowerCase().includes(nombre.toLowerCase()) : true;
       const matchesFechaDesde = fechaDesdeDate ? transformarAHoraArgentinaISO(pedido.fechaPedido) >= fechaDesdeDate : true;
       const matchesFechaHasta = fechaHastaDate ? transformarAHoraArgentinaISO(pedido.fechaPedido) <= fechaHastaDate : true;
 
-      return matchesDniCliente && matchesNombre && matchesFechaDesde && matchesFechaHasta;
+      return matchesIdPedido && matchesDniCliente && matchesNombre && matchesFechaDesde && matchesFechaHasta;
     });
   }
   limpiar() {
@@ -70,5 +73,13 @@ export class TablaPedidoComponent implements OnInit {
         alert('Error al obtener los productos '+error);
       }
     );
+  }
+
+  crearPedido() {
+    this.crearPedidoModal.crearPedido().then((res)=> {
+      if(res.confirmed){
+
+      }
+    })
   }
 }

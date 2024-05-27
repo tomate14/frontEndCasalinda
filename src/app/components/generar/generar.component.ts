@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
 import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-generar',
@@ -26,7 +27,8 @@ export class GenerarComponent {
   imagePath:any = "";
   formaDePago:FormaDePago[] = [];
 
-  constructor(private fb: FormBuilder, private pedidosService: PedidosService, private clienteService: ClienteService, private pagosService: PagosService, private httpClient: HttpClient) {    
+  constructor(private fb: FormBuilder, private pedidosService: PedidosService, private clienteService: ClienteService, 
+    private pagosService: PagosService, private httpClient: HttpClient, private activeModal: NgbActiveModal) {    
     this.formaDePago = formaDePago;
     this.myForm = this.fb.group({
       nombre: [null, Validators.required],
@@ -86,6 +88,11 @@ export class GenerarComponent {
     } else {
       console.log('Form Not Valid');
     }
+  }
+
+  cerrar() {
+    this.myForm.reset();
+    this.activeModal.close(false);
   }
 
   onFileSelected(event: any) {
