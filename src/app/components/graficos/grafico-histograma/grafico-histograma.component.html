@@ -1,0 +1,53 @@
+<div class="container">
+    <h2>Resumen de ultimos dias</h2>
+    <hr/>
+    <div class="row">
+        <ngx-charts-number-card
+            [view]="[1200,150]"
+            [scheme]="colorHistograma"
+            [results]="histogramaTotales"
+            [cardColor]="cardColor">
+        </ngx-charts-number-card>
+    </div>
+    <div class="row">
+        <button class="btn btn-dark col-1" (click)="toggleForm()">Filtros</button>
+        <div *ngIf="isFormVisible">
+            <form [formGroup]="myForm" (ngSubmit)="onSubmitForm()" class="container">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="input-group">
+                            <span class="input-group-text">Desde</span>
+                            <input type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="input-group">
+                            <span class="input-group-text">Hasta </span>
+                            <input type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <button type="submit" class="btn btn-info">Buscar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <ngx-charts-line-chart
+            [view]="[1200,350]"
+            [scheme]="colorHistograma"
+            [legend]="false"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            [xAxis]="true"
+            [yAxis]="true"
+            [xAxisLabel]="xAxisLabel"
+            [yAxisLabel]="yAxisLabel"
+            [timeline]="true"
+            [results]="histograma"
+            [xAxisTickFormatting]="formatXTicks"
+            >
+        </ngx-charts-line-chart>
+    </div>
+</div>
