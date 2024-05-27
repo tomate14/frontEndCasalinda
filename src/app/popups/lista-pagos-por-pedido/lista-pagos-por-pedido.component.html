@@ -14,6 +14,9 @@
                       <div class="input-group-text">Pagar $</div>
                   </div>
                   <input type="number" class="form-control" id="valorPago" formControlName="valor" placeholder="Ingrese el valor del pago" required>
+                  <div *ngIf="pagoForm.get('valor')?.invalid && pagoForm.get('valor')?.touched" 
+                  [ngClass]="{'d-block': pagoForm.get('valor')?.invalid && pagoForm.get('valor')?.touched, 'd-none': !(pagoForm.get('valor')?.invalid && pagoForm.get('valor')?.touched)}" 
+                  class="invalid-feedback">Debe ingresar el valor</div>
               </div>
           </div>
           <div class="col-md-5">
@@ -43,7 +46,7 @@
                 <td>{{ pago._id }}</td>
                 <td>{{ pago.idPedido }}</td>
                 <td>{{ pago.fechaPago | date: 'dd/MM/yyyy HH:mm' }}</td>
-                <td>{{ pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2' }}</td>
+                <td>{{ pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
                 <td><button class="btn btn-danger" *ngIf="subTotal < totalPedido" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                 </tr>
             </tbody>
@@ -52,20 +55,29 @@
     </div>
 </div>
 <div class="modal-footer">
+    <hr/>
     <div class="row w-100">
         <div class="col">
-          <span>Sub total:</span>
+          <h3>Sub total:</h3>
         </div>
         <div class="col text-end">
-          <span>{{ subTotal | currency: 'CAD' : 'symbol-narrow' : '4.2-2' }}</span>
+          <h3>{{ subTotal | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</h3>
         </div>
       </div>
     <div class="row w-100">
       <div class="col">
-        <span>Total:</span>
+        <h2>Total:</h2>
       </div>
       <div class="col text-end">
-        <span>{{ totalPedido | currency: 'CAD' : 'symbol-narrow' : '4.2-2' }}</span>
+        <h3>{{ totalPedido | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</h3>
+      </div>
+    </div>
+    <div class="row w-100">
+      <div class="col">
+        <h3>Resta:</h3>
+      </div>
+      <div class="col text-end">
+        <h3>{{ totalPedido - subTotal | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR' }}</h3>
       </div>
     </div>
   </div>

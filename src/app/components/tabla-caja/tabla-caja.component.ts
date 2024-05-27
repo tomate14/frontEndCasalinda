@@ -1,5 +1,5 @@
 import { CurrencyPipe, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, LOCALE_ID, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -8,11 +8,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Pago } from '../../../clases/dominio/pago';
 import { PagosService } from '../../../services/pago.service';
+import { horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../utils/dates';
+import { registerLocaleData } from '@angular/common';
+import localeEsAr from '@angular/common/locales/es-AR';
+import localeEsArExtra from '@angular/common/locales/extra/es-AR';
+
+registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 @Component({
   selector: 'app-tabla-caja',
   standalone: true,
   imports: [NgClass, NgFor, NgbModule, NgIf, ReactiveFormsModule, DatePipe, CurrencyPipe,
     FormsModule, NgxPaginationModule, MatInputModule, MatSelectModule ],
+  providers: [{ provide: LOCALE_ID, useValue: 'es-AR' }],
   templateUrl: './tabla-caja.component.html',
   styleUrl: './tabla-caja.component.css'
 })
@@ -37,8 +44,10 @@ export class TablaCajaComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    const fechas = this.getHorasConsulta();
-      this.pagosServices.getCajaByDate(fechas[0], fechas[1]).subscribe((res) => {
+    const fecha = nowConLuxonATimezoneArgentina();
+    const fechaDesde = horaPrincipioFinDia(fecha, false);
+    const fechaHasta = horaPrincipioFinDia(fecha, true);
+      this.pagosServices.getCajaByDate(fechaDesde, fechaHasta).subscribe((res) => {
         this.pagos = res;
         this.actualizarTotales();
       })
@@ -53,7 +62,7 @@ export class TablaCajaComponent implements OnInit{
     if (this.myForm.valid) {
       const pago: Pago = {
         idPedido: "-1",
-        fechaPago: new Date(),
+        fechaPago: nowConLuxonATimezoneArgentina(),
         valor: this.esIngreso ? this.myForm.value.valor : -this.myForm.value.valor,
         formaPago: +this.myForm.value.formaDePago,
         descripcion: this.myForm.value.descripcion  
@@ -86,25 +95,6 @@ export class TablaCajaComponent implements OnInit{
       }, (error) => {
         alert(`No se pudo eliminar el pago ${pagoId}, ${error}`);
       });      
-  }
-
-  private getHorasConsulta(): string[] {
-    // Obtener la fecha actual
-    let currentDate = new Date();
-
-    // Crear una nueva fecha para la fecha de inicio del día
-    let startOfDay = new Date(currentDate);
-    startOfDay.setUTCHours(0, 0, 0, 0); // Establecer a las 00:00:00.000 UTC
-
-    // Crear una nueva fecha para la fecha de fin del día
-    let endOfDay = new Date(currentDate);
-    endOfDay.setUTCHours(23, 59, 59, 999); // Establecer a las 23:59:59.999 UTC
-
-    // Convertir a formato ISO string para asegurar formato correcto
-    let fechaInifico = startOfDay.toISOString();
-    let fechaFin = endOfDay.toISOString();
-
-    return [fechaInifico, fechaFin]
   }
 
   private actualizarTotalesPorPago(pago:Pago) {

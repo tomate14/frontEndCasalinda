@@ -23,7 +23,7 @@
               <tr *ngFor="let pedido of pedidos | paginate: { itemsPerPage: 10, currentPage: p }">
                   <td>{{ pedido.dniCliente }}</td>
                   <td>{{ pedido.fechaPedido | date: 'dd/MM/yyyy HH:mm' }}</td>
-                  <td>{{ pedido.total | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}</td>
+                  <td>{{ pedido.total | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
                   <td>{{ pedido.estado }}</td>
                   <td>{{ pedido.descripcion }}</td>
                   <td><button class="btn btn-info" (click)="verPagos(pedido)"><i class="fas fa-search"></i></button></td>

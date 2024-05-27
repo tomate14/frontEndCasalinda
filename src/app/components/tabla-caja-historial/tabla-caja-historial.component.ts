@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Caja } from '../../../clases/dominio/caja';
 import { CajaService } from '../../../services/caja.service';
-import { horaPrincipioFinDia, getPreviousDays} from "../../../utils/dates";
+import { horaPrincipioFinDia, getPreviousDays, nowConLuxonATimezoneArgentina} from "../../../utils/dates";
 
 import { registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
@@ -35,8 +35,8 @@ export class TablaCajaHistorialComponent implements OnInit {
   }
 
   ngOnInit() {
-    const fechaInicio = getPreviousDays(new Date().toUTCString(),false,7);
-    const fechaFin = horaPrincipioFinDia(new Date().toUTCString(), true);
+    const fechaInicio = getPreviousDays(nowConLuxonATimezoneArgentina(),false,7);
+    const fechaFin = horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true);
     this.cajaServices.getCajaByFecha(fechaInicio, fechaFin).subscribe((res) => {
       if (res) {
         this.cajas = res;

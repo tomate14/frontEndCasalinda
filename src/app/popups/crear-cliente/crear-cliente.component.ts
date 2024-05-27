@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ClienteService } from '../../../services/cliente.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Cliente } from '../../../clases/dominio/cliente';
+import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 
 @Component({
   selector: 'app-crear-cliente',
@@ -45,7 +46,7 @@ export class CrearClienteComponent {
         telefono: this.myForm.value.telefono,
         email: this.myForm.value.email,
         cuit: this.myForm.value.cuit,
-        fechaAlta: new Date()
+        fechaAlta: nowConLuxonATimezoneArgentina()
       }
       if (this.cliente) {
         const idCliente = this.cliente._id as unknown as string;

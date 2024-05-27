@@ -8,6 +8,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
+import { transformarAHoraArgentinaISO } from '../../../utils/dates';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -21,10 +22,10 @@ const defaultFormObject = {
   standalone: true,
   imports: [ MatFormFieldModule, MatDatepickerModule, NgFor, NgIf, ReactiveFormsModule, FormsModule, NgxPaginationModule, DatePipe, MatInputModule],
   providers: [provideNativeDateAdapter()],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  templateUrl: './tabla-pedidos.component.html',
+  styleUrl: './tabla-pedidos.component.css'
 })
-export class HomeComponent implements OnInit {
+export class TablaPedidoComponent implements OnInit {
   pedidos: Pedido[] = [];
   filterForm: FormGroup;
   isCollapsed: boolean = true;
@@ -48,13 +49,13 @@ export class HomeComponent implements OnInit {
   }
   buscar() {
     const { dniCliente, nombre, fechaHasta, fechaDesde } = this.filterForm.value;
-    const fechaDesdeDate = fechaDesde ? new Date(fechaDesde) : null;
-    const fechaHastaDate = fechaHasta ? new Date(fechaHasta) : null;
+    const fechaDesdeDate = fechaDesde ? transformarAHoraArgentinaISO(fechaDesde) : null;
+    const fechaHastaDate = fechaHasta ? transformarAHoraArgentinaISO(fechaHasta) : null;
     this.pedidos = this.pedidos.filter((pedido: Pedido) => {
       const matchesDniCliente = dniCliente ? pedido.dniCliente === +dniCliente : true;
       const matchesNombre = nombre ? pedido.nombreCliente?.toLowerCase().includes(nombre.toLowerCase()) : true;
-      const matchesFechaDesde = fechaDesdeDate ? new Date(pedido.fechaPedido) >= fechaDesdeDate : true;
-      const matchesFechaHasta = fechaHastaDate ? new Date(pedido.fechaPedido) <= fechaHastaDate : true;
+      const matchesFechaDesde = fechaDesdeDate ? transformarAHoraArgentinaISO(pedido.fechaPedido) >= fechaDesdeDate : true;
+      const matchesFechaHasta = fechaHastaDate ? transformarAHoraArgentinaISO(pedido.fechaPedido) <= fechaHastaDate : true;
 
       return matchesDniCliente && matchesNombre && matchesFechaDesde && matchesFechaHasta;
     });

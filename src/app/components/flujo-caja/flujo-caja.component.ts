@@ -3,13 +3,14 @@ import { Color, LegendPosition, NgxChartsModule, ScaleType } from '@swimlane/ngx
 import { CajaService } from '../../../services/caja.service';
 import { Caja } from '../../../clases/dominio/caja';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {formatDateToDayMonth, horaPrincipioFinDia, getPreviousDays} from "../../../utils/dates";
-import { TablaCajaHistorialComponent } from '../tabla-caja-historial/tabla-caja-historial.component';
+import {formatDateToDayMonth, horaPrincipioFinDia, getPreviousDays, nowConLuxonATimezoneArgentina} from "../../../utils/dates";
+
 import { GraficoHistogramaComponent } from '../graficos/grafico-histograma/grafico-histograma.component';
 import { coloresGrafico } from '../../../utils/color-graficos';
+import { TablaCajaHistorialComponent } from '../tabla-caja-historial/tabla-caja-historial.component';
 const defaultFormObject = {
-  fechaDesde: getPreviousDays(new Date().toUTCString(),false,7),
-  fechaHasta: horaPrincipioFinDia(new Date().toUTCString(), true),
+  fechaDesde: getPreviousDays(nowConLuxonATimezoneArgentina(),false,7),
+  fechaHasta: horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true),
 }
 
 @Component({
@@ -64,10 +65,11 @@ throw new Error('Method not implemented.');
   }
 
   ngOnInit() {
+    nowConLuxonATimezoneArgentina();
     this.fechasBarrasForm = this.fb.group(defaultFormObject);
     this.generarArribaIzquierdaTortas();
-    const fechaInicio = getPreviousDays(new Date().toUTCString(),false,7);
-    const fechaFin = horaPrincipioFinDia(new Date().toUTCString(), true);
+    const fechaInicio = getPreviousDays(nowConLuxonATimezoneArgentina(),false,7);
+    const fechaFin = horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true);
     this.generarArribaDerechaGrafico(fechaInicio, fechaFin);
   }
   
@@ -80,7 +82,7 @@ throw new Error('Method not implemented.');
   }
 
   private generarArribaIzquierdaTortas() {
-    const fechaPrevia = getPreviousDays(new Date().toUTCString(), false,1);
+    const fechaPrevia = getPreviousDays(nowConLuxonATimezoneArgentina(), false,1);
     const fechaDesde = horaPrincipioFinDia(fechaPrevia, false);
     const fechaHasta = horaPrincipioFinDia(fechaPrevia, true);
     this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res) => {
