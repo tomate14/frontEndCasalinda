@@ -4,8 +4,9 @@ import { CajaService } from '../../../services/caja.service';
 import { Caja } from '../../../clases/dominio/caja';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {formatDateToDayMonth, horaPrincipioFinDia, getPreviousDays} from "../../../utils/dates";
-import { DatePipe } from '@angular/common';
 import { TablaCajaHistorialComponent } from '../tabla-caja-historial/tabla-caja-historial.component';
+import { GraficoHistogramaComponent } from '../graficos/grafico-histograma/grafico-histograma.component';
+import { coloresGrafico } from '../../../utils/color-graficos';
 const defaultFormObject = {
   fechaDesde: getPreviousDays(new Date().toUTCString(),false,7),
   fechaHasta: horaPrincipioFinDia(new Date().toUTCString(), true),
@@ -14,7 +15,7 @@ const defaultFormObject = {
 @Component({
   selector: 'app-flujo-caja',
   standalone: true,
-  imports: [NgxChartsModule, ReactiveFormsModule, FormsModule, TablaCajaHistorialComponent],
+  imports: [NgxChartsModule, ReactiveFormsModule, FormsModule, TablaCajaHistorialComponent, GraficoHistogramaComponent],
   templateUrl: './flujo-caja.component.html',
   styleUrl: './flujo-caja.component.css'
 })
@@ -25,6 +26,7 @@ throw new Error('Method not implemented.');
   single: any[] = [];
   barrasAcumulado: any[] = [];
   ingresosGastos:any[] =[];
+
   // options
   gradient: boolean = false;
   showLegend: boolean = false;
@@ -38,21 +40,22 @@ throw new Error('Method not implemented.');
   showLegend2: boolean = true;
   showXAxisLabel: boolean = true;
   xAxisLabel: string = 'Fecha';
-  showYAxisLabel: boolean = true;
   yAxisLabel: string = 'Monto';
+  showYAxisLabel: boolean = true;
   animations: boolean = true;
   colorScheme: Color = {
     name: 'customScheme',
     selectable: false,
     group: ScaleType.Time,
-    domain: ['#5AA454', '#C7B42C', '#AAAAAA']
+    domain: [coloresGrafico.contado, coloresGrafico.tarjeta, coloresGrafico.cuentaDni]
   };
   colorIngresosGastos: Color = {
     name: 'customScheme',
     selectable: false,
     group: ScaleType.Time,
-    domain: ['#5AA454', '#E73B17']
+    domain: [coloresGrafico.ingresos, coloresGrafico.gastos]
   };
+
 
   fechasBarrasForm: FormGroup;
 
@@ -112,5 +115,4 @@ throw new Error('Method not implemented.');
       this.single = [{"name": "Contado","value": 0},{"name": "Tarjeta","value": 0},{"name": "Cuenta Dni","value": 0}]
     })
   }
-
 }

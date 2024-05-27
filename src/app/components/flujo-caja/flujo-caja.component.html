@@ -21,7 +21,7 @@
             </div>
         </div>
         <div class="col-6">
-            <h2>Resumen de ultimos dias</h2>
+            <h2>Resumen de caja ultimos dias</h2>
             <hr/>
             <form [formGroup]="fechasBarrasForm" (ngSubmit)="onSubmitForm()" class="container">
                 <div class="row">
@@ -63,5 +63,6 @@
             </div>
         </div>
     </div>
-    <app-tabla-caja-historial></app-tabla-caja-historial>
+    <app-grafico-histograma></app-grafico-histograma>
+    <!--app-tabla-caja-historial></app-tabla-caja-historial-->
 </div>
