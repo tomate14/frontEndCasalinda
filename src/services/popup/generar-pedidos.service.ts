@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { GenerarComponent } from '../../app/components/generar/generar.component';
+import { GenerarComponent } from '../../app/popups/generar-pedido/generar.component';
 
 @Injectable({
   providedIn: 'root'

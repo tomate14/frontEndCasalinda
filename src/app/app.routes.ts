@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { TablaPedidoComponent } from './components/tabla-pedidos/tabla-pedidos.component';
-import { GenerarComponent } from './components/generar/generar.component';
+import { GenerarComponent } from './popups/generar-pedido/generar.component';
 import { TablaClientesComponent } from './components/tabla-clientes/tabla-clientes.component';
 import { TablaCajaComponent } from './components/tabla-caja/tabla-caja.component';
 import { FlujoCajaComponent } from './components/flujo-caja/flujo-caja.component';
