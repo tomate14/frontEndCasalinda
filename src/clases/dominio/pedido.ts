@@ -3,7 +3,7 @@ export interface Pedido {
       $oid: string;
     };
     dniCliente: number;
-    fechaPedido: Date;
+    fechaPedido: string;
     total: number;
     estado: 'PENDIENTE' | 'COMPLETO';
     descripcion: string;

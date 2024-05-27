@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CajaService } from '../../../../services/caja.service';
 import { Caja } from '../../../../clases/dominio/caja';
-import { horaPrincipioFinDia, getPreviousDays, formatDateToDayMonth} from "../../../../utils/dates";
+import { horaPrincipioFinDia, getPreviousDays, formatDateToDayMonth, nowConLuxonATimezoneArgentina} from "../../../../utils/dates";
 import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 import { coloresGrafico } from '../../../../utils/color-graficos';
 @Component({
@@ -42,8 +42,8 @@ export class GraficoHistogramaComponent implements OnInit {
   }
 
   ngOnInit() {
-    const fechaFin = horaPrincipioFinDia(new Date().toUTCString(), true);
-    const fechaInicio2 = getPreviousDays(new Date().toUTCString(),false,14);
+    const fechaFin = horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true);
+    const fechaInicio2 = getPreviousDays(nowConLuxonATimezoneArgentina(),false,14);
     this.generarAbajoHistograma(fechaInicio2, fechaFin);
   }
   
@@ -68,26 +68,11 @@ export class GraficoHistogramaComponent implements OnInit {
           const gastos = dataSet.find((c)=> c.name === "Gastos"); 
           const fecha = formatDateToDayMonth(element.fecha);
           if (!contado) {
-            dataSet.push({
-              name: 'Contado',
-              series: [{"name": fecha,"value": element.contado }]
-            })
-            dataSet.push({
-              name: 'Tarjeta',
-              series: [{"name": fecha,"value": element.tarjeta }]
-            })
-            dataSet.push({
-              name: 'CuentaDni',
-              series: [{"name": fecha,"value": element.cuentaDni }]
-            })
-            dataSet.push({
-              name: 'Ingresos',
-              series: [{"name": fecha,"value": element.ingresos }]
-            })
-            dataSet.push({
-              name: 'Gastos',
-              series: [{"name": fecha,"value": -element.gastos }]
-            }) 
+            dataSet.push({ name: 'Contado', series: [{"name": fecha,"value": element.contado }]});
+            dataSet.push({ name: 'Tarjeta', series: [{"name": fecha,"value": element.tarjeta }]});
+            dataSet.push({ name: 'CuentaDni', series: [{"name": fecha,"value": element.cuentaDni }]});
+            dataSet.push({ name: 'Ingresos', series: [{"name": fecha,"value": element.ingresos }]});
+            dataSet.push({ name: 'Gastos', series: [{"name": fecha,"value": -element.gastos }]});
           } else {
             contado.series.push({"name": fecha,"value": element.contado })
             tarjeta.series.push({"name": fecha,"value": element.tarjeta })
@@ -144,6 +129,6 @@ export class GraficoHistogramaComponent implements OnInit {
 
   // Función de formateo para los ticks del eje X
   formatXTicks(val: any): number {
-    return Math.floor(val / 100000) * 100000;
+    return val;//Math.floor(val / 100000) * 100000;
   }
 }

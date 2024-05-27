@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe, NgFor, NgIf } from '@angular/common';
+import { CurrencyPipe, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, Input, OnInit, LOCALE_ID } from '@angular/core';
 import { Pago } from '../../../clases/dominio/pago';
 import { PagosService } from '../../../services/pago.service';
@@ -7,11 +7,18 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PedidosService } from '../../../services/pedidos.service';
 import { MatSelectModule } from '@angular/material/select';
 import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
+import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
+import { registerLocaleData } from '@angular/common';
+import localeEsAr from '@angular/common/locales/es-AR';
+import localeEsArExtra from '@angular/common/locales/extra/es-AR';
+
+registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 
 @Component({
   selector: 'app-lista-pagos-por-pedido',
   standalone: true,
-  imports: [NgFor, NgIf, DatePipe, CurrencyPipe, ReactiveFormsModule, MatSelectModule],
+  imports: [NgFor, NgIf, DatePipe, CurrencyPipe, ReactiveFormsModule, MatSelectModule, NgClass],
+  providers: [{ provide: LOCALE_ID, useValue: 'es-AR' }],
   templateUrl: './lista-pagos-por-pedido.component.html',
   styleUrl: './lista-pagos-por-pedido.component.css'
 })
@@ -58,29 +65,31 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   }
 
   agregarPago() {
-    const pago: Pago = {
-      idPedido: this.idPedido,
-      fechaPago: new Date(),
-      valor: this.pagoForm.value.valor,
-      formaPago: +this.pagoForm.value.formaDePago,
-      descripcion:`Pago del pedido ${this.idPedido}`
-    }
-    const preSubTotal = this.subTotal + pago.valor;
-    if (preSubTotal > this.totalPedido) {
-      alert("El valor agregado sobrepasa el valor del pedido");
-    } else {
-      this.pagosServices.postPago(pago).subscribe((res) => {
-        this.pagosServices.getPagoByIdPedido(this.idPedido).subscribe((res) => {
-          this.pagos = res;          
-          this.actualizarEstado(preSubTotal);
-          this.actualizarSubTotal();
-          this.pagoForm.reset({
-            valor: '',
-            formaDePago: 1
-          });
+    if (this.pagoForm.valid) {      
+      const pago: Pago = {
+        idPedido: this.idPedido,
+        fechaPago: nowConLuxonATimezoneArgentina(),
+        valor: this.pagoForm.value.valor,
+        formaPago: +this.pagoForm.value.formaDePago,
+        descripcion:`Pago del pedido ${this.idPedido}`
+      }
+      const preSubTotal = this.subTotal + pago.valor;
+      if (preSubTotal > this.totalPedido) {
+        alert("El valor agregado sobrepasa el valor del pedido");
+      } else {
+        this.pagosServices.postPago(pago).subscribe((res) => {
+          this.pagosServices.getPagoByIdPedido(this.idPedido).subscribe((res) => {
+            this.pagos = res;          
+            this.actualizarEstado(preSubTotal);
+            this.actualizarSubTotal();
+            this.pagoForm.reset({
+              valor: '',
+              formaDePago: 1
+            });
+          })
         })
-      })
-    }   
+      }   
+    }
   }
   actualizarSubTotal(){
     this.subTotal = this.pagos.reduce((acc, pago) => acc + pago.valor, 0);

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { PedidosService } from '../../../services/pedidos.service';
 import { ClienteService } from '../../../services/cliente.service';
 import { Cliente } from '../../../clases/dominio/cliente';
@@ -10,11 +10,12 @@ import { Pago } from '../../../clases/dominio/pago';
 import { HttpClient } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
+import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 
 @Component({
   selector: 'app-generar',
   standalone: true,
-  imports: [ NgClass, NgIf, ReactiveFormsModule, FormsModule, MatSelectModule],
+  imports: [ NgFor, NgClass, NgIf, ReactiveFormsModule, FormsModule, MatSelectModule],
   templateUrl: './generar.component.html',
   styleUrl: './generar.component.css'
 })
@@ -58,7 +59,7 @@ export class GenerarComponent {
       const estado = this.myForm.value.total === this.myForm.value.seña ? "COMPLETO" : "PENDIENTE";
       const pedido:Pedido = {
         dniCliente: this.myForm.value.dni,
-        fechaPedido: new Date(),
+        fechaPedido: nowConLuxonATimezoneArgentina(),
         total: this.myForm.value.total,
         estado: estado,
         descripcion: this.myForm.value.descripcion
@@ -68,10 +69,10 @@ export class GenerarComponent {
         const id = res._id as unknown as string;
         const pago: Pago = {
           idPedido:id,
-          fechaPago: new Date(),
+          fechaPago: nowConLuxonATimezoneArgentina(),
           valor: this.myForm.value.seña,
           formaPago: this.myForm.value.formaDePago,
-          descripcion: ""
+          descripcion:`Pago del pedido ${id}`
         }
         if (pago.valor > 0) {
           this.pagosService.postPago(pago).subscribe((res)=> {            

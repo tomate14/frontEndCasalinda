@@ -3,7 +3,7 @@ export interface Pago {
       $oid: string;
     };
     idPedido?: string;
-    fechaPago: Date;
+    fechaPago: string;
     valor: number;
     formaPago: number;
     descripcion?: string;

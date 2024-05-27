@@ -54,17 +54,17 @@
                         <td class="col-md-2">{{ pago.fechaPago | date: 'dd/MM/yyyy HH:mm' }}</td>
                         <td class="col-md-1">
                             <span *ngIf="pago.formaPago === 1" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                                {{pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}
+                                {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
                             </span>
                         </td>
                         <td class="col-md-1">
                             <span *ngIf="pago.formaPago === 2" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                                {{pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}
+                                {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
                             </span>
                         </td>
                         <td class="col-md-1">
                             <span *ngIf="pago.formaPago === 3" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                                {{pago.valor | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}
+                                {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
                             </span>
                         </td>
                         <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' " class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
@@ -81,9 +81,9 @@
                 <tr>
                     <td class="col-md-5"><b>Total</b></td>
                     <td class="col-md-2"></td>
-                    <td class="col-md-1" [ngClass]="{'red-text': totalContado < 0, 'green-text': totalContado > 0}"><b>{{totalContado | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}</b></td>
-                    <td class="col-md-1" [ngClass]="{'red-text': totalTarjeta < 0, 'green-text': totalTarjeta > 0}"><b>{{totalTarjeta | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}</b></td>
-                    <td class="col-md-1" [ngClass]="{'red-text': totalDNI < 0, 'green-text': totalDNI > 0}"><b>{{totalDNI | currency: 'CAD' : 'symbol-narrow' : '4.2-2'}}</b></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalContado < 0, 'green-text': totalContado > 0}"><b>{{totalContado | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalTarjeta < 0, 'green-text': totalTarjeta > 0}"><b>{{totalTarjeta | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalDNI < 0, 'green-text': totalDNI > 0}"><b>{{totalDNI | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
                     <td class="col-md-1"></td>
                     <td class="col-md-1"></td>
                 </tr>

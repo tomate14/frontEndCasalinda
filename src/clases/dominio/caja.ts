@@ -1,5 +1,5 @@
 export interface Caja {
-    fecha:Date,
+    fecha:string,
     contado:number,
     tarjeta:number,
     cuentaDni:number,

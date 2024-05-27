@@ -9,5 +9,5 @@ export interface Cliente {
     telefono: string;
     email: string;
     cuit: string;
-    fechaAlta: Date;
+    fechaAlta: string;
 }
