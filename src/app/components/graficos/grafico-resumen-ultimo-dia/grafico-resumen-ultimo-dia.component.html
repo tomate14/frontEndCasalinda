@@ -1,0 +1,19 @@
+<h2>Resumen del dia anterior</h2>
+<hr/>
+<div class="row">
+    <ngx-charts-advanced-pie-chart
+        [view]="[540,170]"
+        [scheme]="colorScheme"
+        [results]="single"
+        [gradient]="gradient"
+        [valueFormatting]="formatValues">
+    </ngx-charts-advanced-pie-chart>
+</div>
+<div class="row">
+    <ngx-charts-pie-grid
+        [view]="[540,170]"
+        [scheme]="colorIngresosGastos"
+        [results]="ingresosGastos">
+    </ngx-charts-pie-grid>
+</div>
+

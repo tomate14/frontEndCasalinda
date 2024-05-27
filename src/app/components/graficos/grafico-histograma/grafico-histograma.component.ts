@@ -102,23 +102,23 @@ export class GraficoHistogramaComponent implements OnInit {
 
     histo.push({
       name: 'Contado',
-      value: this.totales.contado
+      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.contado)
     });
     histo.push({
       name: 'Tarjeta',
-      value: this.totales.tarjeta
+      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.tarjeta)
     })
     histo.push({
       name: 'CuentaDni',
-      value: this.totales.cuentaDni
+      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.cuentaDni)
     })
     histo.push({
       name: 'Ingresos',
-      value: this.totales.ingresos
+      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.ingresos)
     })
     histo.push({
       name: 'Gastos',
-      value: this.totales.gastos
+      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.gastos)
     });
     this.histogramaTotales = histo;
   }
@@ -127,8 +127,8 @@ export class GraficoHistogramaComponent implements OnInit {
     this.isFormVisible = !this.isFormVisible;
   }
 
-  // Función de formateo para los ticks del eje X
-  formatXTicks(val: any): number {
-    return val;//Math.floor(val / 100000) * 100000;
+  // Formato de las etiquetas del eje Y
+  formatYTicks(value: number): string {
+    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value);
   }
 }

@@ -1,66 +1,10 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-6">
-            <h2>Resumen del dia anterior</h2>
-            <hr/>
-            <div class="row">
-                <ngx-charts-advanced-pie-chart
-                    [view]="[540,170]"
-                    [scheme]="colorScheme"
-                    [results]="single"
-                    [gradient]="gradient"
-                    >
-                </ngx-charts-advanced-pie-chart>
-            </div>
-            <div class="row">
-                <ngx-charts-pie-grid
-                    [view]="[540,170]"
-                    [scheme]="colorIngresosGastos"
-                    [results]="ingresosGastos">
-                </ngx-charts-pie-grid>
-            </div>
+            <app-grafico-resumen-ultimo-dia></app-grafico-resumen-ultimo-dia>
         </div>
         <div class="col-6">
-            <h2>Resumen de caja ultimos dias</h2>
-            <hr/>
-            <form [formGroup]="fechasBarrasForm" (ngSubmit)="onSubmitForm()" class="container">
-                <div class="row">
-                    <div class="col-5">
-                        <div class="input-group">
-                            <span class="input-group-text">Desde</span>
-                            <input type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
-                        </div>
-                    </div>
-                    <div class="col-5">
-                        <div class="input-group">
-                            <span class="input-group-text">Hasta </span>
-                            <input type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <button type="submit" class="btn btn-info">Buscar</button>
-                    </div>
-                </div>
-            </form>
-            <hr/>
-            <div class="row">
-                <div class="col-12">
-                    <ngx-charts-bar-vertical-stacked
-                        [view]="[600,340]"
-                        [scheme]="colorScheme"
-                        [results]="barrasAcumulado"
-                        [gradient]="gradient"
-                        [xAxis]="showXAxis"
-                        [yAxis]="showYAxis"
-                        [legend]="showLegend"
-                        [showXAxisLabel]="showXAxisLabel"
-                        [showYAxisLabel]="showYAxisLabel"
-                        [xAxisLabel]="xAxisLabel"
-                        [yAxisLabel]="yAxisLabel"
-                        [animations]="animations">
-                    </ngx-charts-bar-vertical-stacked>
-                </div>                
-            </div>
+            <app-grafico-resumen-barra-ultimos-dias></app-grafico-resumen-barra-ultimos-dias>
         </div>
     </div>
     <app-grafico-histograma></app-grafico-histograma>
