@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CajaService } from '../../../../services/caja.service';
 import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
-import { formatDateToDayMonth, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../../utils/dates';
+import { formatDateToDayMonth, formatearFechaDesdeUnIso, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../../utils/dates';
 import { Caja } from '../../../../clases/dominio/caja';
 import { coloresGrafico } from '../../../../utils/color-graficos';
 
 const defaultFormObject = {
-    fechaDesde: getPreviousDays(nowConLuxonATimezoneArgentina(),false,7),
-    fechaHasta: horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true),
-  }
+    fechaDesde: formatearFechaDesdeUnIso(getPreviousDays(nowConLuxonATimezoneArgentina(),false,7), 'yyyy-MM-dd'),
+    fechaHasta: formatearFechaDesdeUnIso(horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true), 'yyyy-MM-dd'),
+}
 
 @Component({
   selector: 'app-grafico-resumen-barra-ultimos-dias',

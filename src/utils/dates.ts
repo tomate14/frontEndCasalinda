@@ -60,6 +60,15 @@ export function formatDateToDayMonth(dateStr: string | number | Date): string {
     return formattedDate;
 }
 
+//Usar para labels de barras. Ej: 22 May
+export function formatearFechaDesdeUnIso(fechaISO: string, format:string): string {
+    // Parsear la fecha utilizando Luxon
+    const fechaLuxon = DateTime.fromISO(fechaISO);
+
+    // Obtener la fecha en formato deseado (YYYY-MM-DD)
+    return fechaLuxon.toFormat(format);
+}
+
 export function getPreviousDays(dateStr: string, isEnd: boolean, days: number): string {
     // Crear un objeto DateTime a partir de la cadena de fecha
     let date = DateTime.fromISO(dateStr, { zone: 'America/Argentina/Buenos_Aires' });

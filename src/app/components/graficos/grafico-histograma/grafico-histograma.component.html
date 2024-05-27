@@ -6,12 +6,15 @@
             [view]="[1200,150]"
             [scheme]="colorHistograma"
             [results]="histogramaTotales"
+            [animations]="false"
             [cardColor]="cardColor">
         </ngx-charts-number-card>
     </div>
     <div class="row">
-        <button class="btn btn-dark col-1" (click)="toggleForm()">Filtros</button>
-        <div *ngIf="isFormVisible">
+        <div class="col-2">
+            <button class="btn btn-dark" (click)="toggleForm()">Filtros</button>
+        </div>
+        <div class="col-10" *ngIf="isFormVisible">
             <form [formGroup]="myForm" (ngSubmit)="onSubmitForm()" class="container">
                 <div class="row">
                     <div class="col-5">
@@ -27,7 +30,7 @@
                         </div>
                     </div>
                     <div class="col-2">
-                        <button type="submit" class="btn btn-info">Buscar</button>
+                        <button type="submit" class="btn btn-dark">Buscar</button>
                     </div>
                 </div>
             </form>

@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CajaService } from '../../../../services/caja.service';
 import { Caja } from '../../../../clases/dominio/caja';
-import { horaPrincipioFinDia, getPreviousDays, formatDateToDayMonth, nowConLuxonATimezoneArgentina} from "../../../../utils/dates";
+import { horaPrincipioFinDia, getPreviousDays, formatDateToDayMonth, nowConLuxonATimezoneArgentina, formatearFechaDesdeUnIso} from "../../../../utils/dates";
 import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 import { coloresGrafico } from '../../../../utils/color-graficos';
 @Component({
@@ -35,9 +35,11 @@ export class GraficoHistogramaComponent implements OnInit {
   cardColor: string = '#FFFFFF';
 
   constructor(private fb: FormBuilder, private cajaServices: CajaService) {
+    const fechaFin = horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true);
+    const fechaInicio2 = getPreviousDays(nowConLuxonATimezoneArgentina(),false,14);
     this.myForm = this.fb.group({
-      fechaDesde: ['', Validators.required],
-      fechaHasta: ['', Validators.required]
+      fechaDesde: [formatearFechaDesdeUnIso(fechaInicio2, 'yyyy-MM-dd'), Validators.required],
+      fechaHasta: [formatearFechaDesdeUnIso(fechaFin, 'yyyy-MM-dd'), Validators.required]
     });
   }
 
