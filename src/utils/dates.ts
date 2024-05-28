@@ -37,7 +37,7 @@ export function horaPrincipioFinDia(date: string, isEnd: boolean): string {
     dateTime = dateTime.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     if (isEnd) {
         // Establecer a las 23:59:59.150 en la zona horaria de Argentina
-        dateTime = dateTime.set({ hour: 23, minute: 59, second: 59, millisecond: 150 });
+        dateTime = dateTime.set({ hour: 23, minute: 59, second: 59, millisecond: 995 });
     } 
 
     const isoDate = dateTime.toISO();

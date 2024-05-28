@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="col-2">
-                        <button type="submit" class="btn btn-info">Buscar</button>
+                        <button type="submit" class="btn btn-dark">Buscar</button>
                     </div>
                 </div>
             </form>
@@ -59,7 +59,7 @@
                         </td>
                         <td class="col-md-1">{{caja.ingresos | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
                         <td class="col-md-1">{{caja.gastos | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
-                        <td class="col-md-1"><button class="btn btn-info" (click)="verMovimientos(caja)"><i class="fas fa-search"></i></button></td>
+                        <td class="col-md-1"><button class="btn btn-dark" (click)="verMovimientos(caja)"><i class="fas fa-search"></i></button></td>
                     </tr>
                 </tbody>
             </table>
