@@ -18,6 +18,9 @@ export class PagosService {
   public postPago(pago:Pago): Observable<Pago> {
     return this.httpClient.post<Pago>("http://127.0.0.1:5000/pago",pago);    
   }
+  public putPago(idPago:string, pago:Pago): Observable<Pago> {
+    return this.httpClient.put<Pago>(`http://127.0.0.1:5000/pago/${idPago}`,pago);    
+  }
 
   public deletePagoByIdPago(idPago:string): Observable<Pago> {
     return this.httpClient.delete<Pago>(`http://127.0.0.1:5000/pago/${idPago}`);
