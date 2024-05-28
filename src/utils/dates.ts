@@ -55,7 +55,7 @@ export function formatDateToDayMonth(dateStr: string | number | Date): string {
     let date = DateTime.fromJSDate(new Date(dateStr), { zone: 'America/Argentina/Buenos_Aires' });
   
     // Formatear la fecha con las opciones especificadas
-    const formattedDate = date.toFormat('dd LLL');
+    const formattedDate = date.toFormat('dd LLL yy');
   
     return formattedDate;
 }

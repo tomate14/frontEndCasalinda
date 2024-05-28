@@ -50,6 +50,7 @@
             [timeline]="true"
             [results]="histograma"
             [yAxisTickFormatting]="formatYTicks"
+            (select)="onSelect($event)"
             >
         </ngx-charts-line-chart>
     </div>
