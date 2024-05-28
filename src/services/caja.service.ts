@@ -14,6 +14,10 @@ export class CajaService {
       return this.httpClient.get<any>(`http://127.0.0.1:5000/caja/${fechaInicio}/${fechaFin}`);
   }
 
+  public cierreCaja(fechaInicio:string,fechaFin:string): Observable<any> {
+    return this.httpClient.get<any>(`http://127.0.0.1:5000/caja-cierre/${fechaInicio}/${fechaFin}`);
+  }
+
   public postCliente(caja:Caja): Observable<Caja> {
     return this.httpClient.post<Caja>("http://127.0.0.1:5000/caja",caja);    
   }

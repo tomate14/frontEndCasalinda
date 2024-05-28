@@ -12,6 +12,8 @@ import { horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../uti
 import { registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
 import localeEsArExtra from '@angular/common/locales/extra/es-AR';
+import { EditarPagoService } from '../../../services/popup/editarPago';
+import { CajaService } from '../../../services/caja.service';
 
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 @Component({
@@ -37,20 +39,28 @@ export class TablaCajaComponent implements OnInit{
   pagos: Pago[] = [];
   @Input()
   readOnly:boolean = false;
-  constructor(private fb: FormBuilder, private pagosServices: PagosService) {
+  constructor(private fb: FormBuilder, private pagosServices: PagosService, private editarPagoService:EditarPagoService, private cajaService:CajaService) {
     this.formaDePago = formaDePago;
     this.myForm = this.fb.group({
       descripcion: ['', Validators.required],
       valor: [null, [Validators.required, Validators.min(0)]],
       formaDePago: [1, Validators.required]
     });
+    const fecha = nowConLuxonATimezoneArgentina();
+    const fechaDesde = horaPrincipioFinDia(fecha, false);
+    const fechaHasta = horaPrincipioFinDia(fecha, true);
+    this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res)=> {
+      if (res && res.length > 0) {
+        this.readOnly = true;
+      }
+    })
   }
 
   ngOnInit(): void {
+    const fecha = nowConLuxonATimezoneArgentina();
+    const fechaDesde = horaPrincipioFinDia(fecha, false);
+    const fechaHasta = horaPrincipioFinDia(fecha, true);
     if (this.pagos.length === 0) {
-      const fecha = nowConLuxonATimezoneArgentina();
-      const fechaDesde = horaPrincipioFinDia(fecha, false);
-      const fechaHasta = horaPrincipioFinDia(fecha, true);
       this.pagosServices.getCajaByDate(fechaDesde, fechaHasta).subscribe((res) => {
         this.pagos = res;
         this.actualizarTotales();
@@ -85,7 +95,17 @@ export class TablaCajaComponent implements OnInit{
   }
 
   editarPago(pago: Pago) {
-    
+    this.editarPagoService.editarPago(pago).then((pago:Pago) => {
+      if (pago) {
+        const index = this.pagos.findIndex(c => c._id === pago._id);
+        if (index !== -1) {
+            this.pagos[index] = pago;
+        }
+        this.actualizarTotales();
+      }
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
   eliminarPago(pago: Pago) {
@@ -111,6 +131,9 @@ export class TablaCajaComponent implements OnInit{
   }
 
   private actualizarTotales() {
+    this.totalContado = 0;
+    this.totalTarjeta = 0;
+    this.totalDNI = 0;
     this.pagos.forEach((pago) => {
       this.actualizarTotalesPorPago(pago);
     })
