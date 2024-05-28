@@ -7,6 +7,8 @@ import { Caja } from '../../../../clases/dominio/caja';
 import { horaPrincipioFinDia, getPreviousDays, formatDateToDayMonth, nowConLuxonATimezoneArgentina, formatearFechaDesdeUnIso} from "../../../../utils/dates";
 import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 import { coloresGrafico } from '../../../../utils/color-graficos';
+import { PagosService } from '../../../../services/pago.service';
+import { ListaCajaPasadaService } from '../../../../services/popup/listaCajaPasada';
 @Component({
   selector: 'app-grafico-histograma',
   standalone: true,
@@ -34,7 +36,7 @@ export class GraficoHistogramaComponent implements OnInit {
 
   cardColor: string = '#FFFFFF';
 
-  constructor(private fb: FormBuilder, private cajaServices: CajaService) {
+  constructor(private fb: FormBuilder, private cajaServices: CajaService, private pagosService:PagosService, private cajaPasadaModal: ListaCajaPasadaService) {
     const fechaFin = horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true);
     const fechaInicio2 = getPreviousDays(nowConLuxonATimezoneArgentina(),false,14);
     this.myForm = this.fb.group({
@@ -70,7 +72,7 @@ export class GraficoHistogramaComponent implements OnInit {
           const gastos = dataSet.find((c)=> c.name === "Gastos"); 
           const fecha = formatDateToDayMonth(element.fecha);
           if (!contado) {
-            dataSet.push({ name: 'Contado', series: [{"name": fecha,"value": element.contado }]});
+            dataSet.push({ name: 'Contado', series: [{"name": fecha,"value": element.contado, "extra": {date: element.fecha} }]});
             dataSet.push({ name: 'Tarjeta', series: [{"name": fecha,"value": element.tarjeta }]});
             dataSet.push({ name: 'CuentaDni', series: [{"name": fecha,"value": element.cuentaDni }]});
             dataSet.push({ name: 'Ingresos', series: [{"name": fecha,"value": element.ingresos }]});
@@ -88,6 +90,19 @@ export class GraficoHistogramaComponent implements OnInit {
       }
     }, (error) => {
       alert(error);
+    })
+
+  }
+
+  onSelect(data:any): void {
+    const fechaDesde = horaPrincipioFinDia(new Date(data.name).toISOString(),false);
+    const fechaHasta = horaPrincipioFinDia(new Date(data.name).toISOString(),true);
+    this.pagosService.getCajaByDate(fechaDesde, fechaHasta).subscribe((res)=> {
+      if (res && res.length > 0) {
+        this.cajaPasadaModal.mostrarPagosPasados(res).then((res)=>{
+          console.log(res);
+        })
+      }
     })
   }
 

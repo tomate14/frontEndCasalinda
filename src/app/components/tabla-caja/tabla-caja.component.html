@@ -1,7 +1,7 @@
 <div class="container-fluid">
-    <button class="btn btn-success" (click)="toggleForm(true)">Ingreso</button>
-    <button class="btn btn-danger" (click)="toggleForm(false)">Gasto</button>
-    <div *ngIf="isFormVisible">
+    <button *ngIf="!readOnly" class="btn btn-success" (click)="toggleForm(true)">Ingreso</button>
+    <button *ngIf="!readOnly" class="btn btn-danger" (click)="toggleForm(false)">Gasto</button>
+    <div *ngIf="isFormVisible && !readOnly">
         <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container needs-validation">
             <div class="form-group">
               <label for="descripcion">Descripcion</label>
@@ -32,7 +32,7 @@
                 </div>                
               </div>
             <button *ngIf="esIngreso" type="submit" class="btn btn-success">Agregar</button>          
-            <button *ngIf="!esIngreso" type="submit" class="btn btn-danger">Eliminar</button>
+            <button *ngIf="!esIngreso" type="submit" class="btn btn-danger">Agregar</button>
         </form>
     </div>
     <div class="row">
@@ -67,8 +67,8 @@
                                 {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
                             </span>
                         </td>
-                        <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' " class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        <td class="col-md-1"><button class="btn btn-info" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
+                        <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td class="col-md-1"><button *ngIf="!readOnly" class="btn btn-info" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
                     </tr>
                 </tbody>
             </table>

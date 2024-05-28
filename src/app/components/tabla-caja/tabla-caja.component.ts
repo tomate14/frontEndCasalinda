@@ -1,5 +1,5 @@
 import { CurrencyPipe, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, LOCALE_ID, OnInit } from '@angular/core';
+import { Component, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -29,11 +29,14 @@ export class TablaCajaComponent implements OnInit{
   isFormVisible: boolean = false;
   formaDePago:FormaDePago[] = [];
   esIngreso:boolean = true;
-  pagos:Pago[] = [];
   totalContado:number = 0;
   totalTarjeta:number = 0;
   totalDNI:number = 0;
 
+  @Input()
+  pagos: Pago[] = [];
+  @Input()
+  readOnly:boolean = false;
   constructor(private fb: FormBuilder, private pagosServices: PagosService) {
     this.formaDePago = formaDePago;
     this.myForm = this.fb.group({
@@ -44,13 +47,17 @@ export class TablaCajaComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    const fecha = nowConLuxonATimezoneArgentina();
-    const fechaDesde = horaPrincipioFinDia(fecha, false);
-    const fechaHasta = horaPrincipioFinDia(fecha, true);
+    if (this.pagos.length === 0) {
+      const fecha = nowConLuxonATimezoneArgentina();
+      const fechaDesde = horaPrincipioFinDia(fecha, false);
+      const fechaHasta = horaPrincipioFinDia(fecha, true);
       this.pagosServices.getCajaByDate(fechaDesde, fechaHasta).subscribe((res) => {
         this.pagos = res;
         this.actualizarTotales();
       })
+    } else {
+      this.actualizarTotales();
+    }
   }
 
   toggleForm(esIngreso:boolean) {
