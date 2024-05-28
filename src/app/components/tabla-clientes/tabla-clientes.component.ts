@@ -3,7 +3,7 @@ import { Cliente } from '../../../clases/dominio/cliente';
 import { ClienteService } from '../../../services/cliente.service';
 import { NgFor, NgIf } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { CrearClienteService } from '../../../services/popup/confirmar.service';
+import { CrearClienteService } from '../../../services/popup/crearCliente.service';
 import { PedidosService } from '../../../services/pedidos.service';
 import { ListarPedidosService } from '../../../services/popup/listarPedidos.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';

@@ -68,7 +68,7 @@
                             </span>
                         </td>
                         <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-info" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
+                        <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-dark" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
                     </tr>
                 </tbody>
             </table>

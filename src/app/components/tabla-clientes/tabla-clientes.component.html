@@ -2,10 +2,10 @@
 <div class="container">
     <div class="row mb-3">
       <div class="col-2">
-        <button class="btn btn-primary" (click)="crearCliente()">Crear</button>
+        <button class="btn btn-dark" (click)="crearCliente()">Crear</button>
       </div>
       <div class="col-10">
-        <button class="btn btn-primary" (click)="isCollapsed = !isCollapsed">{{isCollapsed ? 'Mostrar filtros' : 'Ocultar filtros'}}</button>
+        <button class="btn btn-dark" (click)="isCollapsed = !isCollapsed">{{isCollapsed ? 'Mostrar filtros' : 'Ocultar filtros'}}</button>
         <div *ngIf="!isCollapsed">
           <form [formGroup]="filterForm" class="container">
             <div class="row">
@@ -19,13 +19,14 @@
                 <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre" formControlName="nombre" class="form-control" name="nombre" aria-describedby="nombreHelp" placeholder="nombre"/>
               </div>
-            </div>      
-            <button class="btn btn-primary" (click)="buscar()">Buscar</button>
-            <button class="btn btn-primary" (click)="limpiar()">Limpiar</button>
+            </div>
+            <button id="buscar" class="btn btn-dark" (click)="buscar()">Buscar</button>
+            <button id="limpiar" class="btn btn-dark" (click)="limpiar()">Limpiar</button>
           </form>
         </div>
       </div>
     </div>
+    <hr/>
     <div class="row">
       <div class="col">
         <table class="table table-striped">
@@ -51,10 +52,10 @@
               <td>{{ cliente.email }}</td>
               <td>{{ cliente.cuit }}</td>
               <td>
-                <button class="btn btn-info" (click)="verPedidos(cliente)">
+                <button class="btn btn-dark" (click)="verPedidos(cliente)">
                   <i class="fas fa-search"></i>
                 </button>
-                <button class="btn btn-info" (click)="editarCliente(cliente)">
+                <button class="btn btn-dark" (click)="editarCliente(cliente)">
                   <i class="fas fa-edit"></i>
                 </button>
               </td>

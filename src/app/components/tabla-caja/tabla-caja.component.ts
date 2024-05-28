@@ -14,6 +14,7 @@ import localeEsAr from '@angular/common/locales/es-AR';
 import localeEsArExtra from '@angular/common/locales/extra/es-AR';
 import { EditarPagoService } from '../../../services/popup/editarPago';
 import { CajaService } from '../../../services/caja.service';
+import { ConfirmarService } from '../../../services/popup/confirmar';
 
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 @Component({
@@ -39,34 +40,30 @@ export class TablaCajaComponent implements OnInit{
   pagos: Pago[] = [];
   @Input()
   readOnly:boolean = false;
-  constructor(private fb: FormBuilder, private pagosServices: PagosService, private editarPagoService:EditarPagoService, private cajaService:CajaService) {
+  constructor(private fb: FormBuilder, private pagosServices: PagosService, private editarPagoService:EditarPagoService, private cajaService:CajaService,
+    private confirmarService: ConfirmarService
+  ) {
     this.formaDePago = formaDePago;
     this.myForm = this.fb.group({
       descripcion: ['', Validators.required],
       valor: [null, [Validators.required, Validators.min(0)]],
       formaDePago: [1, Validators.required]
     });
-    const fecha = nowConLuxonATimezoneArgentina();
-    const fechaDesde = horaPrincipioFinDia(fecha, false);
-    const fechaHasta = horaPrincipioFinDia(fecha, true);
-    this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res)=> {
-      if (res && res.length > 0) {
-        this.readOnly = true;
-      }
-    })
   }
 
   ngOnInit(): void {
     const fecha = nowConLuxonATimezoneArgentina();
     const fechaDesde = horaPrincipioFinDia(fecha, false);
     const fechaHasta = horaPrincipioFinDia(fecha, true);
-    if (this.pagos.length === 0) {
-      this.pagosServices.getCajaByDate(fechaDesde, fechaHasta).subscribe((res) => {
-        this.pagos = res;
-        this.actualizarTotales();
+    if (!this.readOnly) {
+      this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res)=> {
+        if (res && res.length > 0) {
+          this.readOnly = true;
+        }
+        this.cargarPagos(fechaDesde, fechaHasta);
       })
     } else {
-      this.actualizarTotales();
+      this.cargarPagos(fechaDesde, fechaHasta);
     }
   }
 
@@ -109,21 +106,40 @@ export class TablaCajaComponent implements OnInit{
   }
 
   eliminarPago(pago: Pago) {
-    const pagoId = pago._id as unknown as string;
-      this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
-        let index = this.pagos.findIndex(item => item._id === pago._id);
+    const mensaje = "Desea eliminar?";
+    const titulo = "Eliminar pago";
+    this.confirmarService.confirm(titulo, mensaje, false,"Si", "No").then((confirmar)=> {
+      if (confirmar) {
+        const pagoId = pago._id as unknown as string;
+        this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
+          let index = this.pagos.findIndex(item => item._id === pago._id);
 
-        if (index > -1) {
-          this.pagos.splice(index, 1);
-        }
-        //Si elimino y resta, se suma. Si elimino y suma, se resta
-        pago.valor = -pago.valor;
-        this.actualizarTotalesPorPago(pago);
-      }, (error) => {
-        alert(`No se pudo eliminar el pago ${pagoId}, ${error}`);
-      });      
+          if (index > -1) {
+            this.pagos.splice(index, 1);
+          }
+          //Si elimino y resta, se suma. Si elimino y suma, se resta
+          pago.valor = -pago.valor;
+          this.actualizarTotalesPorPago(pago);
+        }, (error) => {
+          this.confirmarService.confirm("Error", error.error.error, true,"Ok", "");
+        }); 
+      }
+    })
+         
   }
-
+  
+  
+  private cargarPagos(fechaDesde:string, fechaHasta:string) {
+    if (this.pagos.length === 0) {
+      this.pagosServices.getCajaByDate(fechaDesde, fechaHasta).subscribe((res) => {
+        this.pagos = res;
+        this.actualizarTotales();
+      })
+    } else {
+      this.actualizarTotales();
+    }
+  }
+  
   private actualizarTotalesPorPago(pago:Pago) {
     pago.formaPago ===  1 ? this.totalContado += pago.valor : null;
     pago.formaPago ===  2 ? this.totalTarjeta += pago.valor : null;

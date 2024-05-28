@@ -26,7 +26,7 @@
                   <td>{{ pedido.total | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
                   <td>{{ pedido.estado }}</td>
                   <td>{{ pedido.descripcion }}</td>
-                  <td><button class="btn btn-info" (click)="verPagos(pedido)"><i class="fas fa-search"></i></button></td>
+                  <td><button class="btn btn-dark" (click)="verPagos(pedido)"><i class="fas fa-search"></i></button></td>
               </tr>
               </tbody>
           </table>

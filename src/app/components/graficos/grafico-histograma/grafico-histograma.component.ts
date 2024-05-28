@@ -76,13 +76,13 @@ export class GraficoHistogramaComponent implements OnInit {
             dataSet.push({ name: 'Tarjeta', series: [{"name": fecha,"value": element.tarjeta }]});
             dataSet.push({ name: 'CuentaDni', series: [{"name": fecha,"value": element.cuentaDni }]});
             dataSet.push({ name: 'Ingresos', series: [{"name": fecha,"value": element.ingresos }]});
-            dataSet.push({ name: 'Gastos', series: [{"name": fecha,"value": -element.gastos }]});
+            dataSet.push({ name: 'Gastos', series: [{"name": fecha,"value": element.gastos }]});
           } else {
             contado.series.push({"name": fecha,"value": element.contado })
             tarjeta.series.push({"name": fecha,"value": element.tarjeta })
             cuentaDni.series.push({"name": fecha,"value": element.cuentaDni })
             ingresos.series.push({"name": fecha,"value": element.ingresos })
-            gastos.series.push({"name": fecha,"value": -element.gastos })
+            gastos.series.push({"name": fecha,"value": element.gastos })
           }
         });
         this.histograma = dataSet;
@@ -113,7 +113,7 @@ export class GraficoHistogramaComponent implements OnInit {
       this.totales.tarjeta += caja.tarjeta;
       this.totales.cuentaDni += caja.cuentaDni;
       this.totales.ingresos += caja.ingresos;
-      this.totales.gastos = this.totales.gastos - caja.gastos;
+      this.totales.gastos += caja.gastos;
     })
     const histo:any[] = [];
 
