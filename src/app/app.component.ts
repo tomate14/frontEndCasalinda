@@ -18,7 +18,13 @@ export class AppComponent {
   title = 'generarPedido';
   constructor(private router: Router, private cajaService:CajaService, private confirmarService:ConfirmarService) {}
   cambiarComponente(componente: string) {
-    this.router.navigate([`/${componente}`]);
+    if (componente === 'pedidos') {
+      this.router.navigate([`/${componente}`, 1]);
+    } else if (componente === 'cuentaCorriente') {
+      this.router.navigate([`/${componente}`, 2]);
+    } else {
+      this.router.navigate([`/${componente}`]);
+    }
   }
 
   cerrarCaja() {

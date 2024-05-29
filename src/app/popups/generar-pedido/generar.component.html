@@ -42,7 +42,7 @@
           </div>
           <br/>
           <div class="row">
-            <div class="col-md-4 form-group">
+            <div class="col-md-3 form-group">
               <label class="sr-only" for="inlineFormSeña">Seña</label>
               <div class="input-group mb-2">
                 <div class="input-group-prepend">
@@ -54,12 +54,17 @@
                   class="invalid-feedback">Debe ingresar la seña</div>
               </div>
             </div>
-            <div class="col-md-4 form-group">
+            <div class="col-md-3 form-group">
               <select class="form-select" formControlName="formaDePago">
                 <option *ngFor="let fPago of formaDePago" [value]="fPago.value">{{fPago.viewValue}}</option>
               </select>
             </div>
-            <div class="col-md-4 form-group">
+            <div class="col-md-3 form-group">
+              <select class="form-select" formControlName="tipoDePedido">
+                <option *ngFor="let fCuenta of tipoDePedido" [value]="fCuenta.value">{{fCuenta.viewValue}}</option>
+              </select>
+            </div>
+            <div class="col-md-3 form-group">
               <label class="sr-only" for="inlineFormTotal">Total</label>
               <div class="input-group mb-2">
                 <div class="input-group-prepend">

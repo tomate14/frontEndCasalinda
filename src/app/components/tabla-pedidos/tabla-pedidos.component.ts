@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { PedidosService } from '../../../services/pedidos.service';
 import { DatePipe, NgFor, NgIf, formatDate } from '@angular/common';
 import { Pedido } from '../../../clases/dominio/pedido';
@@ -10,6 +10,8 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
 import { transformarAHoraArgentinaISO } from '../../../utils/dates';
 import { CrearPedidoService } from '../../../services/popup/generar-pedidos.service';
+import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
+import { ActivatedRoute } from '@angular/router';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -17,6 +19,7 @@ const defaultFormObject = {
   idPedido: null,
   fechaDesde: null,
   fechaHasta: null,
+  tipoDePedido:null
 }
 
 @Component({
@@ -32,15 +35,22 @@ export class TablaPedidoComponent implements OnInit {
   filterForm: FormGroup;
   isCollapsed: boolean = true;
   p: number = 1;
-  constructor(private fb: FormBuilder, private pedidosService: PedidosService, private crearPedidoModal:CrearPedidoService) { 
+  tipoDePedido:TipoPedido[] = [];
+  tipoPedido:number= 1;
+
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService, private crearPedidoModal:CrearPedidoService) { 
+    this.route.params.subscribe(params => {
+      this.tipoPedido = +params['id']; // El + convierte el string a number
+    });
     this.filterForm = this.fb.group({});
+    this.tipoDePedido = tipoDePedido;
   }
 
   ngOnInit(): void {
     
     this.filterForm = this.fb.group(defaultFormObject);
 
-    this.pedidosService.get().subscribe(
+    this.pedidosService.getPedidosPorTipo(this.tipoPedido).subscribe(
       (data: Pedido[]) => {
         this.pedidos = data;
       },
@@ -50,7 +60,7 @@ export class TablaPedidoComponent implements OnInit {
     );
   }
   buscar() {
-    const { idPedido, dniCliente, nombre, fechaHasta, fechaDesde } = this.filterForm.value;
+    const { idPedido, dniCliente, nombre, fechaHasta, fechaDesde, tipoDePedido } = this.filterForm.value;
     const fechaDesdeDate = fechaDesde ? transformarAHoraArgentinaISO(fechaDesde.toISOString()) : null;
     const fechaHastaDate = fechaHasta ? transformarAHoraArgentinaISO(fechaHasta.toISOString()) : null;
     this.pedidos = this.pedidos.filter((pedido: Pedido) => {
@@ -59,8 +69,10 @@ export class TablaPedidoComponent implements OnInit {
       const matchesNombre = nombre ? pedido.nombreCliente?.toLowerCase().includes(nombre.toLowerCase()) : true;
       const matchesFechaDesde = fechaDesdeDate ? transformarAHoraArgentinaISO(pedido.fechaPedido) >= fechaDesdeDate : true;
       const matchesFechaHasta = fechaHastaDate ? transformarAHoraArgentinaISO(pedido.fechaPedido) <= fechaHastaDate : true;
+      const matchesEsPedido = +tipoDePedido === 1 ? pedido.tipoPedido === 1 : true;
+      const matchesEsCuentaCorriente = +tipoDePedido === 2 ? pedido.tipoPedido === 2 : true;
 
-      return matchesIdPedido && matchesDniCliente && matchesNombre && matchesFechaDesde && matchesFechaHasta;
+      return matchesIdPedido && matchesDniCliente && matchesNombre && matchesFechaDesde && matchesFechaHasta && matchesEsPedido && matchesEsCuentaCorriente;
     });
   }
   limpiar() {
@@ -77,8 +89,8 @@ export class TablaPedidoComponent implements OnInit {
 
   crearPedido() {
     this.crearPedidoModal.crearPedido().then((res)=> {
-      if(res.confirmed){
-
+      if(res){
+        this.pedidos.push(res);
       }
     })
   }

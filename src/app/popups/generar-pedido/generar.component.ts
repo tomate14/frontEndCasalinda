@@ -10,6 +10,8 @@ import { Pago } from '../../../clases/dominio/pago';
 import { HttpClient } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
+import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
+
 import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -26,10 +28,12 @@ export class GenerarComponent {
   cliente:Cliente | undefined;
   imagePath:any = "";
   formaDePago:FormaDePago[] = [];
+  tipoDePedido:TipoPedido[] = [];
 
   constructor(private fb: FormBuilder, private pedidosService: PedidosService, private clienteService: ClienteService, 
     private pagosService: PagosService, private httpClient: HttpClient, private activeModal: NgbActiveModal) {    
     this.formaDePago = formaDePago;
+    this.tipoDePedido = tipoDePedido;
     this.myForm = this.fb.group({
       nombre: [null, Validators.required],
       email: [null, [Validators.required, Validators.email]],
@@ -37,7 +41,8 @@ export class GenerarComponent {
       seña: [0, Validators.required], // Set initial value to 0
       total: [null, Validators.required],
       dni: [null, Validators.required],
-      formaDePago: [1, Validators.required]
+      formaDePago: [1, Validators.required],
+      tipoDePedido: [1, Validators.required]
     }); 
   }
 
@@ -64,6 +69,7 @@ export class GenerarComponent {
         fechaPedido: nowConLuxonATimezoneArgentina(),
         total: this.myForm.value.total,
         estado: estado,
+        tipoPedido: +this.myForm.value.tipoDePedido,
         descripcion: this.myForm.value.descripcion
       }
       this.pedidosService.post(pedido).subscribe(res => {
@@ -77,13 +83,14 @@ export class GenerarComponent {
           descripcion:`Pago del pedido ${id}`
         }
         if (pago.valor > 0) {
-          this.pagosService.postPago(pago).subscribe((res)=> {            
+          this.pagosService.postPago(pago).subscribe((res)=> {    
           }, (error) => {
             alert('Error al agregar pago'+error);
           })
         }       
         window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);   
         this.myForm.reset(); 
+        this.activeModal.close(res);      
       })
     } else {
       console.log('Form Not Valid');

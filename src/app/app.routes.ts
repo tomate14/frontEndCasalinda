@@ -7,8 +7,8 @@ import { FlujoCajaComponent } from './components/flujo-caja/flujo-caja.component
 
 export const routes: Routes = [
     { path: '', component: TablaClientesComponent },
-    { path: 'home', component: TablaPedidoComponent },
-    { path: 'generarPedido', component: GenerarComponent },
+    { path: 'pedidos/:id', component: TablaPedidoComponent },
+    { path: 'cuentaCorriente/:id', component: TablaPedidoComponent },
     { path: 'clientes', component: TablaClientesComponent },
     { path: 'caja', component: TablaCajaComponent },
     { path: 'estadisticas', component: FlujoCajaComponent }

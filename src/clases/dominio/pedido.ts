@@ -5,7 +5,8 @@ export interface Pedido {
     dniCliente: number;
     fechaPedido: string;
     total: number;
-    estado: 'PENDIENTE' | 'COMPLETO';
+    estado: 'PENDIENTE' | 'COMPLETO';    
+    tipoPedido: number;
     descripcion: string;
     nombreCliente?:string; 
   }

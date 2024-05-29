@@ -26,4 +26,8 @@ export class PedidosService {
   public put(idPedido:string, pedido:Pedido): Observable<Pedido> {
     return this.httpClient.put<Pedido>(`http://127.0.0.1:5000/pedido/${idPedido}`, pedido);
   }
+
+  public getPedidosPorTipo(tipoPedido:number): Observable<Pedido[]> {
+    return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/tipo-pedido/${tipoPedido}`);
+  }
 }
