@@ -8,10 +8,11 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
-import { transformarAHoraArgentinaISO } from '../../../utils/dates';
+import { getPreviousDays, nowConLuxonATimezoneArgentina, transformarAHoraArgentinaISO } from '../../../utils/dates';
 import { CrearPedidoService } from '../../../services/popup/generar-pedidos.service';
 import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
 import { ActivatedRoute } from '@angular/router';
+import { ListarPagosPorPedidosService } from '../../../services/popup/listaPagosPorPedidos.service';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -19,7 +20,8 @@ const defaultFormObject = {
   idPedido: null,
   fechaDesde: null,
   fechaHasta: null,
-  tipoDePedido:null
+  tipoDePedido:null,
+  dias:0
 }
 
 @Component({
@@ -38,7 +40,8 @@ export class TablaPedidoComponent implements OnInit {
   tipoDePedido:TipoPedido[] = [];
   tipoPedido:number= 1;
 
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService, private crearPedidoModal:CrearPedidoService) { 
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService, 
+    private crearPedidoModal:CrearPedidoService, private pagosPorPedidosService: ListarPagosPorPedidosService) { 
     this.route.params.subscribe(params => {
       this.tipoPedido = +params['id']; // El + convierte el string a number
     });
@@ -77,7 +80,7 @@ export class TablaPedidoComponent implements OnInit {
   }
   limpiar() {
     this.filterForm.reset(defaultFormObject);
-    this.pedidosService.get().subscribe(
+    this.pedidosService.getPedidosPorTipo(this.tipoPedido).subscribe(
       (data: Pedido[]) => {
         this.pedidos = data;
       },
@@ -93,5 +96,21 @@ export class TablaPedidoComponent implements OnInit {
         this.pedidos.push(res);
       }
     })
+  }
+
+  filtrarDeudores() {
+    const { dias } = this.filterForm.value;
+    const fechaDesde = getPreviousDays(nowConLuxonATimezoneArgentina(),true,dias);
+    this.pedidosService.getPedidosVencidos(fechaDesde, this.tipoPedido).subscribe((res) => {
+      this.pedidos = res;
+      this.filterForm.reset();
+      this.isCollapsed = true;
+    })
+  }
+
+  verPagos(pedido: Pedido): void {
+    const pedidoId = pedido._id as unknown as string;
+    const totalPedido = pedido.total;
+    this.pagosPorPedidosService.crearListaPagos(pedidoId, totalPedido);   
   }
 }

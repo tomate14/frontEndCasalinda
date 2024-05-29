@@ -14,3 +14,11 @@ button.close {
 .scroll-x {
     overflow-x: auto;
 }
+
+.fa-times {
+    color: red;
+}
+
+.fa-check {
+    color: green;
+}

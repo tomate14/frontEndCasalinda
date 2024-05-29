@@ -77,7 +77,7 @@ export function getPreviousDays(dateStr: string, isEnd: boolean, days: number): 
 
     if (isEnd) {
         // Setear la hora a 23:59:59.150
-        date = date.set({ hour: 23, minute: 59, second: 59, millisecond: 150 });
+        date = date.set({ hour: 23, minute: 59, second: 59, millisecond: 995 });
     } else {
         // Setear la hora a 00:00:00.000
         date = date.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });

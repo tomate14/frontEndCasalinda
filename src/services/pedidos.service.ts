@@ -30,4 +30,7 @@ export class PedidosService {
   public getPedidosPorTipo(tipoPedido:number): Observable<Pedido[]> {
     return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/tipo-pedido/${tipoPedido}`);
   }
+  public getPedidosVencidos(fechaDesde:string, tipoPedido:number): Observable<Pedido[]> {
+    return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/pedidos-vencidos/${fechaDesde}/${tipoPedido}`);
+  }
 }
