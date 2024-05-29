@@ -1,10 +1,8 @@
 <!-- src/app/person-table/person-table.component.html -->
 <div class="container">
     <div class="row mb-3">
-      <div class="col-2">
-        <button class="btn btn-dark" (click)="crearCliente()">Crear</button>
-      </div>
-      <div class="col-10">
+      
+      <div class="col-11">
         <button class="btn btn-dark" (click)="isCollapsed = !isCollapsed">{{isCollapsed ? 'Mostrar filtros' : 'Ocultar filtros'}}</button>
         <div *ngIf="!isCollapsed">
           <form [formGroup]="filterForm" class="container">
@@ -18,12 +16,27 @@
               <div class="col form-group">
                 <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre" formControlName="nombre" class="form-control" name="nombre" aria-describedby="nombreHelp" placeholder="nombre"/>
+              </div>            
+            </div>
+            <div class="row">
+              <div class="col form-group deudores">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="opciones" id="opcion1" value="1" formControlName="opciones">
+                    <label class="form-check-label" for="opcion1"> Deudor</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="opciones" id="opcion2" value="2" formControlName="opciones">
+                    <label class="form-check-label" for="opcion2">No deudor</label>
+                </div>
               </div>
             </div>
             <button id="buscar" class="btn btn-dark" (click)="buscar()">Buscar</button>
             <button id="limpiar" class="btn btn-dark" (click)="limpiar()">Limpiar</button>
           </form>
         </div>
+      </div>
+      <div class="col-1">
+        <button class="btn btn-dark" (click)="crearCliente()">Crear</button>
       </div>
     </div>
     <hr/>
@@ -34,7 +47,7 @@
             <tr>
               <th>DNI</th>
               <th>Nombre</th>
-              <th>Fecha de Nacimiento</th>
+              <th>Estado</th>
               <th>Dirección</th>
               <th>Teléfono</th>
               <th>Email</th>
@@ -46,7 +59,10 @@
             <tr *ngFor="let cliente of clientes| paginate: { itemsPerPage: 15, currentPage: p }">
               <td>{{ cliente.dni }}</td>
               <td>{{ cliente.nombre }}</td>
-              <td>{{ cliente.fechaNacimiento }}</td>
+              <td>
+                <i *ngIf="cliente.esDeudor" class="fa fa-thumbs-down" title="Tiene deuda"></i>
+                <i *ngIf="!cliente.esDeudor" class="fa fa-thumbs-up" title="No tiene deuda" ></i>
+              </td>
               <td>{{ cliente.direccion }}</td>
               <td>{{ cliente.telefono }}</td>
               <td>{{ cliente.email }}</td>

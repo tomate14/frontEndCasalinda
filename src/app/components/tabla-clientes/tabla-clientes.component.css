@@ -12,3 +12,11 @@ input.ng-valid.ng-touched {
 #buscar {
     margin-top: 5px;
 }
+
+.fa-thumbs-down {
+    color: red;
+}
+
+.fa-thumbs-up {
+    color: green;
+}
