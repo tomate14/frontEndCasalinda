@@ -51,8 +51,8 @@ export class TablaPedidoComponent implements OnInit {
   }
   buscar() {
     const { idPedido, dniCliente, nombre, fechaHasta, fechaDesde } = this.filterForm.value;
-    const fechaDesdeDate = fechaDesde ? transformarAHoraArgentinaISO(fechaDesde) : null;
-    const fechaHastaDate = fechaHasta ? transformarAHoraArgentinaISO(fechaHasta) : null;
+    const fechaDesdeDate = fechaDesde ? transformarAHoraArgentinaISO(fechaDesde.toISOString()) : null;
+    const fechaHastaDate = fechaHasta ? transformarAHoraArgentinaISO(fechaHasta.toISOString()) : null;
     this.pedidos = this.pedidos.filter((pedido: Pedido) => {
       const matchesIdPedido = idPedido ? pedido._id === idPedido : true;
       const matchesDniCliente = dniCliente ? pedido.dniCliente === +dniCliente : true;

@@ -10,4 +10,5 @@ export interface Cliente {
     email: string;
     cuit: string;
     fechaAlta: string;
+    esDeudor?:boolean;
 }

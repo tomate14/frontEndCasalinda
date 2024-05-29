@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Cliente } from '../../../clases/dominio/cliente';
 import { ClienteService } from '../../../services/cliente.service';
-import { NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CrearClienteService } from '../../../services/popup/crearCliente.service';
 import { PedidosService } from '../../../services/pedidos.service';
@@ -12,7 +12,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 @Component({
   selector: 'app-tabla-clientes',
   standalone: true,
-  imports: [NgFor, NgbModule, NgIf, ReactiveFormsModule, FormsModule, NgxPaginationModule ],
+  imports: [NgFor, NgbModule, NgIf, ReactiveFormsModule, FormsModule, NgxPaginationModule, NgClass ],
   templateUrl: './tabla-clientes.component.html',
   styleUrl: './tabla-clientes.component.css'
 })
@@ -24,7 +24,8 @@ export class TablaClientesComponent implements OnInit {
   constructor(private fb: FormBuilder, private clientesService: ClienteService, private pedidosService: PedidosService, private crearClienteService: CrearClienteService, private listaPedidosService: ListarPedidosService) {
     this.filterForm = this.fb.group({
       dniCliente: [''],
-      nombre: ['']
+      nombre: [''],
+      opciones:null
     });
   }
 
@@ -71,12 +72,14 @@ export class TablaClientesComponent implements OnInit {
   }
 
   buscar() {
-    const { dniCliente, nombre } = this.filterForm.value;
+    const { dniCliente, nombre, opciones } = this.filterForm.value;
     this.clientes = this.clientes.filter((cliente: Cliente) => {
       const matchesDniCliente = dniCliente ? cliente.dni === +dniCliente : true;
       const matchesNombre = nombre ? cliente.nombre?.toLowerCase().includes(nombre.toLowerCase()) : true;
+      const matchesDeudor = opciones === '1' ? cliente.esDeudor : true;
+      const matchesNoDeudor = opciones === '2' ? !cliente.esDeudor : true;
 
-      return matchesDniCliente && matchesNombre;
+      return matchesDniCliente && matchesNombre && matchesDeudor && matchesNoDeudor;
     });
   }
   limpiar() {
@@ -89,5 +92,8 @@ export class TablaClientesComponent implements OnInit {
         alert('Error al obtener los productos '+error);
       }
     );
+  }
+  verClientesDeudores() {
+
   }
 }
