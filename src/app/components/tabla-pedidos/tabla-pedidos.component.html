@@ -1,15 +1,15 @@
 <div class="container-fluid">
   <div class="row mb-3">
-    <div class="col-1">
-      <button class="btn btn-dark" (click)="crearPedido()">Crear</button>
-    </div>
-    <div class="col-2">
+    <div class="col-11">
       <button class="btn btn-dark" (click)="isCollapsed = !isCollapsed">{{isCollapsed ? 'Mostrar filtros' : 'Ocultar filtros'}}</button>
     </div>
+    <div class="col-1">
+      <button class="btn btn-dark" (click)="crearPedido()">Crear</button>
+    </div>    
   </div>
 
   <div *ngIf="!isCollapsed">
-    <form [formGroup]="filterForm" class="container">
+    <form [formGroup]="filterForm" class="container filter-form">
       <div class="row">
         <div class="col-4 form-group">
           <div class="form-group">
@@ -28,14 +28,13 @@
       </div>
       <br/>
       <div class="row">
-        <div class="col-3 test">
+        <div class="col-4 test">
           <mat-form-field class="example-form-field">
             <mat-label>Rango de fecha</mat-label>
             <mat-date-range-input [rangePicker]="rangePicker">
               <input matStartDate formControlName="fechaDesde">
               <input matEndDate formControlName="fechaHasta">
             </mat-date-range-input>
-            <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
             <mat-datepicker-toggle matIconSuffix [for]="rangePicker"></mat-datepicker-toggle>
             <mat-date-range-picker #rangePicker>
               <mat-date-range-picker-actions>
@@ -45,6 +44,15 @@
             </mat-date-range-picker>
           </mat-form-field>
         </div> 
+        <div class="col-4 form-group">
+          <div class="form-group">
+            <label for="dias">Dias que pasaron:</label>
+            <input type="number" id="dias" formControlName="dias" class="form-control" name="dias" aria-describedby="diaseHelp" placeholder="Dias"/>
+          </div>
+        </div>
+        <div class="col-2 form-group">
+          <button class="btn btn-danger margin-buscar" (click)="filtrarDeudores()">Buscar</button>
+        </div>
       </div>
       <br/>
       <div class="row">
@@ -69,6 +77,7 @@
           <th>Fecha Pedido</th>
           <th>Nombre</th>
           <th>Estado</th>
+          <th>Ver Pagos</th>
         </tr>
       </thead>
       <tbody>
@@ -77,7 +86,11 @@
           <td>{{ pedido.dniCliente }}</td>
           <td>{{ pedido.fechaPedido | date: 'dd/MM/yyyy HH:mm' }}</td>
           <td>{{ pedido.nombreCliente }}</td>
-          <td>{{ pedido.estado }}</td>
+          <td>
+            <i *ngIf="pedido.estado === 'COMPLETO'" class="fa fa-check" title="Completo"></i>
+            <i *ngIf="pedido.estado === 'PENDIENTE'" class="fa fa-times" title="Pendiente"></i>
+          </td>
+          <td><button class="btn btn-dark" (click)="verPagos(pedido)"><i class="fas fa-search"></i></button></td>
         </tr>
       </tbody>
     </table>
