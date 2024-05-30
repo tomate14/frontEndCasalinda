@@ -85,7 +85,7 @@ export class GenerarComponent {
         if (pago.valor > 0) {
           this.pagosService.postPago(pago).subscribe((res)=> {    
           }, (error) => {
-            alert('Error al agregar pago'+error);
+            alert('Error al agregar pago'+error.error.message);
           })
         }       
         window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);   

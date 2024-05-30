@@ -11,7 +11,10 @@ export class CajaService {
   constructor(private httpClient: HttpClient) { }
 
   public getCajaByFecha(fechaInicio:string,fechaFin:string): Observable<any> {
-      return this.httpClient.get<any>(`http://127.0.0.1:5000/caja/${fechaInicio}/${fechaFin}`);
+    return this.httpClient.get<any>(`http://127.0.0.1:5000/caja/${fechaInicio}/${fechaFin}`);
+  }
+  public getUltimasCajasCerradas() :Observable<string> {
+    return this.httpClient.get<any>(`http://127.0.0.1:5000/caja/ultima-cerrada`);
   }
 
   public cierreCaja(fechaInicio:string,fechaFin:string): Observable<any> {

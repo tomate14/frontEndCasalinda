@@ -89,7 +89,7 @@ export class TablaClientesComponent implements OnInit {
         this.clientes = data;
       },
       (error) => {
-        alert('Error al obtener los productos '+error);
+        alert('Error al obtener los productos '+error.error.message);
       }
     );
   }
