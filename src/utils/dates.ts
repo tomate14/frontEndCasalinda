@@ -92,3 +92,14 @@ export function getPreviousDays(dateStr: string, isEnd: boolean, days: number): 
 
     return isoDate;
 }
+
+export function diferenciaDias(fechaMenor:string, fechaMayor:string) {
+    // Convertir las fechas a objetos DateTime
+    const dt1 = DateTime.fromISO(fechaMenor, { zone: 'America/Argentina/Buenos_Aires' });
+    const dt2 = DateTime.fromISO(fechaMayor, { zone: 'America/Argentina/Buenos_Aires' });
+
+    // Calcular la diferencia en días
+    const diffDays = dt1.diff(dt2, 'days').days;
+
+    return Math.floor(Math.abs(diffDays)); // Devolver el valor absoluto de la diferencia en días
+}

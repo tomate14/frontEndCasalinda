@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Pago } from '../../../clases/dominio/pago';
 import { PagosService } from '../../../services/pago.service';
-import { horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../utils/dates';
+import { diferenciaDias, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
 import localeEsArExtra from '@angular/common/locales/extra/es-AR';
@@ -72,22 +72,11 @@ export class TablaCajaComponent implements OnInit{
     this.esIngreso = esIngreso;
   }
 
-  onSubmit() {
-    if (this.myForm.valid) {
-      const pago: Pago = {
-        idPedido: "-1",
-        fechaPago: nowConLuxonATimezoneArgentina(),
-        valor: this.esIngreso ? this.myForm.value.valor : -this.myForm.value.valor,
-        formaPago: +this.myForm.value.formaDePago,
-        descripcion: this.myForm.value.descripcion  
-      }
-      this.pagosServices.postPago(pago).subscribe((res) => {
-        this.myForm.reset({descripcion: '',valor: null,formaDePago: 1});
-        this.actualizarTotalesPorPago(pago);
-        this.pagos.push(res);
-      })
+  onSubmit() {    
+    if (this.pagos.length === 0) {
+      this.checkearCajasSinCerrar();
     } else {
-      alert('Debe agregar los valores');
+      this.checkearForm();
     }
   }
 
@@ -121,7 +110,7 @@ export class TablaCajaComponent implements OnInit{
           pago.valor = -pago.valor;
           this.actualizarTotalesPorPago(pago);
         }, (error) => {
-          this.confirmarService.confirm("Error", error.error.error, true,"Ok", "");
+          this.confirmarService.confirm("Error", error.error.message, true,"Ok", "");
         }); 
       }
     })
@@ -153,5 +142,59 @@ export class TablaCajaComponent implements OnInit{
     this.pagos.forEach((pago) => {
       this.actualizarTotalesPorPago(pago);
     })
+  }
+
+  private generarPromesaCierreCajaViejo(diferenciaDias:number) {
+    const fechaDesde = getPreviousDays(nowConLuxonATimezoneArgentina(),false,diferenciaDias);
+    const fechaHasta = getPreviousDays(nowConLuxonATimezoneArgentina(),true,diferenciaDias);
+    return new Promise<void>((resolve,reject)=> {
+      this.cajaService.cierreCaja(fechaDesde, fechaHasta).subscribe((res) => {
+        resolve();
+      }, (error)=> {
+        reject();
+      })
+    })
+  }
+  private checkearCajasSinCerrar(): void {
+    this.cajaService.getUltimasCajasCerradas().subscribe((res)=> {
+      if (res.length > 0) {
+        const fechaActual = nowConLuxonATimezoneArgentina();
+        const primerFechaSinCerrar = res[0];
+        const diferencia = diferenciaDias(fechaActual, primerFechaSinCerrar);
+        const promises = [];
+        if (diferencia <= 1) {
+          //No hay cajas sin cerrar, proceder
+          this.checkearForm();
+        } else {
+          for(let i=diferencia; i > 0; i--) {
+            promises.push(this.generarPromesaCierreCajaViejo(i));
+          }
+          Promise.all(promises).then((res)=> {
+            this.checkearForm();
+          })
+        }
+      }
+    })
+  
+}
+  private checkearForm() {
+    if (this.myForm.valid) {
+      const pago: Pago = {
+        idPedido: "-1",
+        fechaPago: nowConLuxonATimezoneArgentina(),
+        valor: this.esIngreso ? this.myForm.value.valor : -this.myForm.value.valor,
+        formaPago: +this.myForm.value.formaDePago,
+        descripcion: this.myForm.value.descripcion  
+      }
+      this.pagosServices.postPago(pago).subscribe((res) => {
+        this.myForm.reset({descripcion: '',valor: null,formaDePago: 1});
+        this.actualizarTotalesPorPago(pago);
+        this.pagos.push(res);
+      }, (error) => {
+        this.confirmarService.confirm("Caja error", error.error.message, true,"Ok", "No");
+      })
+    } else {
+      this.confirmarService.confirm("Caja error", "Faltan valores en el formulario", true,"Ok", "No");
+    }
   }
 }

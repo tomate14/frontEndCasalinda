@@ -52,7 +52,7 @@ export class EditarPagoComponent implements OnInit{
           pago._id = this.pago?._id;
           this.activeModal.close(pago);
         }, (error) => {
-          alert(error);
+          alert(error.error.message);
         })
       }
     } else {

@@ -60,7 +60,7 @@ export class ListaPagosPorPedidoComponent implements OnInit {
           this.actualizarSubTotal();
         });
       }, (error) => {
-        alert(`No se pudo eliminar el pago ${pagoId}, ${error}`);
+        alert(`No se pudo eliminar el pago ${pagoId}, ${error.error.message}`);
       });      
   }
 
@@ -103,7 +103,7 @@ export class ListaPagosPorPedidoComponent implements OnInit {
       this.pedidosService.put(this.idPedido, pedido).subscribe((res) => {
         
       },(error) => {
-        alert(error);
+        alert(error.error.message);
       })
     }
   }

@@ -54,14 +54,14 @@ export class CrearClienteComponent {
           this.myForm.reset(); 
           this.activeModal.close(res);
         },(error: any) => {
-          alert('Error al guardar cliente'+ error);
+          alert('Error al guardar cliente'+ error.error.message);
         });
       } else {
         this.clienteService.postCliente(cliente).subscribe((res:Cliente) => {  
           this.myForm.reset(); 
           this.activeModal.close(res);
         },(error: any) => {
-          alert('Error al guardar cliente'+ error);
+          alert('Error al guardar cliente'+ error.error.message);
         });
       }      
     }
