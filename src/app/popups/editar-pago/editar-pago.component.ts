@@ -12,8 +12,8 @@ import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
   selector: 'app-editar-pedido',
   standalone: true,
   imports: [NgIf, NgFor, NgClass, ReactiveFormsModule, FormsModule],
-  templateUrl: './editar-pedido.component.html',
-  styleUrl: './editar-pedido.component.css'
+  templateUrl: './editar-pago.component.html',
+  styleUrl: './editar-pago.component.css'
 })
 export class EditarPagoComponent implements OnInit{
 

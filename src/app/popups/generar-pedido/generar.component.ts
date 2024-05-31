@@ -71,7 +71,6 @@ export class GenerarComponent {
         descripcion: this.myForm.value.descripcion
       }
       this.pedidosService.post(pedido).subscribe(res => {
-        console.log(res);
         const id = res._id as unknown as string;
         const subject = `Casa Linda confirmacion ${this.myForm.value.dni} de pedido ${id}`
         let body = `Confirmamos su pedido con una fecha de entrega estimada de 30 dias habiles aproximadamente.`;
@@ -94,8 +93,6 @@ export class GenerarComponent {
         this.myForm.reset(); 
         this.activeModal.close(res);      
       })
-    } else {
-      this.confirmarService.confirm("Pedidos error", "Faltan datos", true,"Ok", "No");
     }
   }
 

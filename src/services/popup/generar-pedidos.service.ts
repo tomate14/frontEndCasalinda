@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { GenerarComponent } from '../../app/popups/generar-pedido/generar.component';
+import { Pedido } from '../../clases/dominio/pedido';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,6 @@ export class CrearPedidoService {
     const modalRef = this.modalService.open(GenerarComponent, modalOptions);
 
     modalRef.componentInstance.title = "Generar Pedido ";
-
     return modalRef.result;
   }
 }

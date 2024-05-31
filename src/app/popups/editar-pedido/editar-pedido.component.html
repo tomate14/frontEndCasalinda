@@ -1,0 +1,55 @@
+<div class="modal-header">
+    <h4 class="modal-title">Alta cliente</h4>
+    <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+    <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <div class="container">
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container needs-validation">
+            <div class="row">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="dni">Descripcion</label>
+                        <textarea type="text" class="form-control" id="descripcion" name="descripcion" formControlName="descripcion" aria-describedby="emailHelp" placeholder="Descripcion" required>></textarea>
+                        <div *ngIf="myForm.get('descripcion')?.invalid" 
+                            [ngClass]="{'d-block': myForm.get('descripcion')?.invalid, 'd-none': !(myForm.get('descripcion')?.invalid )}" 
+                            class="invalid-feedback">Debe ingresar la descripcion
+                        </div>
+                    </div>              
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-4 form-group">
+                    <label class="sr-only" for="inlineFormTotal">Total</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">$</div>
+                        </div>
+                        <input type="number" class="form-control" formControlName="total" id="inlineFormTotal" placeholder="Total" required>
+                        <div *ngIf="myForm.get('total')?.invalid" 
+                            [ngClass]="{'d-block': myForm.get('total')?.invalid, 'd-none': !(myForm.get('total')?.invalid)}" 
+                            class="invalid-feedback">Debe ingresar el total
+                        </div>
+                    </div>
+                </div>   
+                <div class="col-md-4 form-group">
+                    <select class="form-select" formControlName="estado">
+                        <option [value]="PENDIENTE">Pendiente</option>
+                        <option [value]="COMPLETO">Completo</option>
+                    </select>
+                </div>
+                <div class="col-md-4 form-group">
+                    <select class="form-select" formControlName="tipoPedido">
+                        <option [value]="1">Pedido</option>
+                        <option [value]="2">Cuenta Corriente</option>
+                    </select>
+                </div>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-dark">Aceptar</button>
+        </form>
+    </div>
+</div>

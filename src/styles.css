@@ -21,3 +21,7 @@ button.close {
     border: hidden;
     background: white;
 }
+
+.btnEditar {
+    margin-left: 2px;
+}

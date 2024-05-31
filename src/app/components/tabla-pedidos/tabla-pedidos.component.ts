@@ -13,6 +13,7 @@ import { CrearPedidoService } from '../../../services/popup/generar-pedidos.serv
 import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
 import { ActivatedRoute } from '@angular/router';
 import { ListarPagosPorPedidosService } from '../../../services/popup/listaPagosPorPedidos.service';
+import { EditarPedidoService } from '../../../services/popup/editarPedido.service';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -41,7 +42,8 @@ export class TablaPedidoComponent implements OnInit {
   tipoPedido:number= 1;
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService, 
-    private crearPedidoModal:CrearPedidoService, private pagosPorPedidosService: ListarPagosPorPedidosService) { 
+    private crearPedidoModal:CrearPedidoService, private pagosPorPedidosService: ListarPagosPorPedidosService,
+    private editarPedidoService:EditarPedidoService) { 
     this.route.params.subscribe(params => {
       this.tipoPedido = +params['id']; // El + convierte el string a number
     });
@@ -70,8 +72,9 @@ export class TablaPedidoComponent implements OnInit {
       const matchesIdPedido = idPedido ? pedido._id === idPedido : true;
       const matchesDniCliente = dniCliente ? pedido.dniCliente === +dniCliente : true;
       const matchesNombre = nombre ? pedido.nombreCliente?.toLowerCase().includes(nombre.toLowerCase()) : true;
-      const matchesFechaDesde = fechaDesdeDate ? transformarAHoraArgentinaISO(pedido.fechaPedido) >= fechaDesdeDate : true;
-      const matchesFechaHasta = fechaHastaDate ? transformarAHoraArgentinaISO(pedido.fechaPedido) <= fechaHastaDate : true;
+      const fechaPedido = pedido.fechaPedido ? pedido.fechaPedido : "";
+      const matchesFechaDesde = fechaDesdeDate ? transformarAHoraArgentinaISO(fechaPedido) >= fechaDesdeDate : true;
+      const matchesFechaHasta = fechaHastaDate ? transformarAHoraArgentinaISO(fechaPedido) <= fechaHastaDate : true;
       const matchesEsPedido = +tipoDePedido === 1 ? pedido.tipoPedido === 1 : true;
       const matchesEsCuentaCorriente = +tipoDePedido === 2 ? pedido.tipoPedido === 2 : true;
 
@@ -112,5 +115,19 @@ export class TablaPedidoComponent implements OnInit {
     const pedidoId = pedido._id as unknown as string;
     const totalPedido = pedido.total;
     this.pagosPorPedidosService.crearListaPagos(pedidoId, totalPedido);   
+  }
+
+  editarPedido(pedido:Pedido):void {
+    this.editarPedidoService.editarPedido(pedido).then((p:Pedido) => {
+      if (p) {
+        p.dniCliente = pedido.dniCliente;
+        p.fechaPedido = pedido.fechaPedido;
+        p.nombreCliente = pedido.nombreCliente;
+        const index = this.pedidos.findIndex(c => c._id === p._id);
+        if (index !== -1) {
+            this.pedidos[index] = p;
+        }
+      }
+    })
   }
 }

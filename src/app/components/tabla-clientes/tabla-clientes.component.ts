@@ -67,7 +67,7 @@ export class TablaClientesComponent implements OnInit {
         if (index !== -1) {
             this.clientes[index] = cliente;
         }
-    }
+      }
     });
   }
 
