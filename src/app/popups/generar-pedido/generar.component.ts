@@ -14,6 +14,7 @@ import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorri
 
 import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmarService } from '../../../services/popup/confirmar';
 
 @Component({
   selector: 'app-generar',
@@ -31,7 +32,7 @@ export class GenerarComponent {
   tipoDePedido:TipoPedido[] = [];
 
   constructor(private fb: FormBuilder, private pedidosService: PedidosService, private clienteService: ClienteService, 
-    private pagosService: PagosService, private httpClient: HttpClient, private activeModal: NgbActiveModal) {    
+    private pagosService: PagosService, private confirmarService: ConfirmarService, private activeModal: NgbActiveModal) {    
     this.formaDePago = formaDePago;
     this.tipoDePedido = tipoDePedido;
     this.myForm = this.fb.group({
@@ -58,11 +59,8 @@ export class GenerarComponent {
     
   }
   onSubmit() {
-    if (this.myForm.valid) {
-      let body = `Confirmamos su pedido con una fecha de entrega estimada de 30 dias habiles aproximadamente.`;
-      body = body + `Asi mismo, tomamos como descripcion del producto: ${this.myForm.value.descripcion}.`;
-      body = body + `Se tomo una seña de $ ${this.myForm.value.seña} y el total es de $ ${this.myForm.value.total}.`;
-      const subject = `Casa Linda confirmacion de pedido ${this.myForm.value.dni}`
+    if (this.myForm.valid) {      
+      
       const estado = this.myForm.value.total === this.myForm.value.seña ? "COMPLETO" : "PENDIENTE";
       const pedido:Pedido = {
         dniCliente: this.myForm.value.dni,
@@ -75,6 +73,10 @@ export class GenerarComponent {
       this.pedidosService.post(pedido).subscribe(res => {
         console.log(res);
         const id = res._id as unknown as string;
+        const subject = `Casa Linda confirmacion ${this.myForm.value.dni} de pedido ${id}`
+        let body = `Confirmamos su pedido con una fecha de entrega estimada de 30 dias habiles aproximadamente.`;
+        body = body + ` Asi mismo, tomamos como descripcion del producto: ${this.myForm.value.descripcion}.`;
+        body = body + ` Se tomo una seña de $ ${this.myForm.value.seña} y el total es de $ ${this.myForm.value.total}.`;
         const pago: Pago = {
           idPedido:id,
           fechaPago: nowConLuxonATimezoneArgentina(),
@@ -85,7 +87,7 @@ export class GenerarComponent {
         if (pago.valor > 0) {
           this.pagosService.postPago(pago).subscribe((res)=> {    
           }, (error) => {
-            alert('Error al agregar pago'+error.error.message);
+            this.confirmarService.confirm("Pedidos error", error.error.message, true,"Ok", "No");
           })
         }       
         window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);   
@@ -93,7 +95,7 @@ export class GenerarComponent {
         this.activeModal.close(res);      
       })
     } else {
-      console.log('Form Not Valid');
+      this.confirmarService.confirm("Pedidos error", "Faltan datos", true,"Ok", "No");
     }
   }
 

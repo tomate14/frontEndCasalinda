@@ -11,6 +11,7 @@ import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
 import localeEsArExtra from '@angular/common/locales/extra/es-AR';
+import { ConfirmarService } from '../../../services/popup/confirmar';
 
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 
@@ -32,7 +33,8 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   subTotal:number = 0;
   formaDePago:FormaDePago[] = [];
 
-  constructor(private pagosServices: PagosService, private activeModal: NgbActiveModal, private fb: FormBuilder, private pedidosService: PedidosService) { 
+  constructor(private pagosServices: PagosService, private activeModal: NgbActiveModal, private fb: FormBuilder, 
+    private pedidosService: PedidosService, private confirmarService:ConfirmarService) { 
     this.formaDePago = formaDePago;
     this.pagoForm = this.fb.group({
       valor: ['', [Validators.required, Validators.min(1)]],
@@ -87,6 +89,8 @@ export class ListaPagosPorPedidoComponent implements OnInit {
               formaDePago: 1
             });
           })
+        }, (error) => {
+          this.confirmarService.confirm("Caja error", error.error.message, true,"Ok", "No");
         })
       }   
     }
