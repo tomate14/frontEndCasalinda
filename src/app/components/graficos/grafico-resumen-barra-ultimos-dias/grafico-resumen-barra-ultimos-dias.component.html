@@ -2,19 +2,27 @@
 <hr/>
 <form [formGroup]="fechasBarrasForm" (ngSubmit)="onSubmitForm()" class="container">
     <div class="row">
+        <div class="col-2">
+            <select class="form-select" formControlName="tipoGrafico" (change)="onChange($event)">
+                <option [value]="1">Dia</option>
+                <option [value]="2">Mes</option>
+            </select>
+        </div>
         <div class="col-5">
             <div class="input-group">
                 <span class="input-group-text">Desde</span>
-                <input type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
+                <input *ngIf="tipoGraficoNgIf === 1" type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
+                <input *ngIf="tipoGraficoNgIf === 2" type="month" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
             </div>
         </div>
-        <div class="col-5">
+        <div class="col-4">
             <div class="input-group">
                 <span class="input-group-text">Hasta </span>
-                <input type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
+                <input *ngIf="tipoGraficoNgIf === 1" type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
+                <input *ngIf="tipoGraficoNgIf === 2" type="month" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
             </div>
         </div>
-        <div class="col-2">
+        <div class="col-1">
             <button type="submit" class="btn btn-dark">Buscar</button>
         </div>
     </div>
@@ -23,7 +31,7 @@
 <div class="row">
     <div class="col-12">
         <ngx-charts-bar-vertical-stacked
-            [view]="[600,340]"
+            [view]="[700,340]"
             [scheme]="colorScheme"
             [results]="barrasAcumulado"
             [gradient]="true"

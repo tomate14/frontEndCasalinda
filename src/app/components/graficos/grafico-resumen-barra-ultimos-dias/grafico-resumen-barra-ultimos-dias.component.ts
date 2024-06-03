@@ -2,13 +2,15 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CajaService } from '../../../../services/caja.service';
 import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
-import { formatDateToDayMonth, formatearFechaDesdeUnIso, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../../utils/dates';
+import { formatDateToDayMonth, formatearFechaDesdeUnIso, generarFechasFromMonthPicker, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../../utils/dates';
 import { Caja } from '../../../../clases/dominio/caja';
 import { coloresGrafico } from '../../../../utils/color-graficos';
+import { DateTime } from 'luxon';
 
 const defaultFormObject = {
     fechaDesde: formatearFechaDesdeUnIso(getPreviousDays(nowConLuxonATimezoneArgentina(),false,7), 'yyyy-MM-dd'),
     fechaHasta: formatearFechaDesdeUnIso(horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true), 'yyyy-MM-dd'),
+    tipoGrafico:1
 }
 
 @Component({
@@ -22,7 +24,8 @@ export class GraficoResumenBarraUltimosDiasComponent {
 
   fechasBarrasForm: FormGroup;
   barrasAcumulado: any[] = [];
-
+  tipoGrafico:any;
+  tipoGraficoNgIf:number = 1;
   colorScheme: Color = {
     name: 'customScheme',
     selectable: false,
@@ -52,34 +55,77 @@ export class GraficoResumenBarraUltimosDiasComponent {
 
   onSubmitForm() {
     if (this.fechasBarrasForm.valid) {
-      const fechaDesde = horaPrincipioFinDia(this.fechasBarrasForm.value.fechaDesde, false);
-      const fechaHasta = horaPrincipioFinDia(this.fechasBarrasForm.value.fechaHasta, true);
-      this.generarArribaDerechaGrafico(fechaDesde, fechaHasta);
+      if (this.fechasBarrasForm.value.tipoGrafico === "2") {
+        const fechas = generarFechasFromMonthPicker(this.fechasBarrasForm.value.fechaDesde, this.fechasBarrasForm.value.fechaHasta);
+        if (fechas && fechas.fechaDesde && fechas.fechaHasta) {
+          this.generarArribaDerechaGrafico(fechas.fechaDesde, fechas.fechaHasta);
+        }
+      } else {
+        const fechaDesde = horaPrincipioFinDia(this.fechasBarrasForm.value.fechaDesde, false);
+        const fechaHasta = horaPrincipioFinDia(this.fechasBarrasForm.value.fechaHasta, true);
+        this.generarArribaDerechaGrafico(fechaDesde, fechaHasta);      
+      }
+      
     }
   }
 
+  onChange(event:any) {
+    this.tipoGraficoNgIf = +event.target.value;
+  }
+  
   // Formato de las etiquetas del eje Y
   formatYTicks(value: number): string {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value);
   }
 
+  private procesarPorMes(cajas:Caja[], format: string) {
+    const series: any[] = [];
+    cajas.forEach((caja) => {
+      const mes = formatearFechaDesdeUnIso(caja.fecha, format);
+      const serieMes = series.find((c)=> mes === c.name);       
+      if (serieMes) {
+        serieMes.series[0].value += caja.contado;
+        serieMes.series[1].value += caja.tarjeta;
+        serieMes.series[2].value += caja.cuentaDni;
+      } else {
+        series.push({
+          "name": formatearFechaDesdeUnIso(caja.fecha, format),
+          "series": [
+            {"name": "Contado","value": caja.contado },
+            {"name": "Tarjeta","value": caja.tarjeta},
+            {"name": "Cuenta Dni","value": caja.cuentaDni}]
+        });
+      };
+    });
+    return series;    
+  }
+
+  private procesarPorDia(cajas:Caja[]) {
+    const dataSet:any[] = [];
+    cajas.forEach((element:Caja) => {           
+      dataSet.push({
+        "name": formatDateToDayMonth(element.fecha),
+        "series": [
+          {"name": "Contado","value": element.contado },
+          {"name": "Tarjeta","value": element.tarjeta},
+          {"name": "Cuenta Dni","value": element.cuentaDni}]
+      });
+    });
+
+    return dataSet;
+  }
   private generarArribaDerechaGrafico(fechaDesde:string, fechaHasta:string) {
     this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res) => {
       if(res) {
-        const dataSet:any[] = [];
-        res.forEach((element:Caja) => {           
-          dataSet.push({
-            "name": formatDateToDayMonth(element.fecha),
-            "series": [
-              {"name": "Contado","value": element.contado },
-              {"name": "Tarjeta","value": element.tarjeta},
-              {"name": "Cuenta Dni","value": element.cuentaDni}]
-          });
-        });
-        this.barrasAcumulado = dataSet;
+        if (this.fechasBarrasForm.value.tipoGrafico === "2") {
+          this.barrasAcumulado = this.procesarPorMes(res, 'LLL yy');
+        } else {
+          this.barrasAcumulado = this.procesarPorDia(res);
+        }
       }
     }, (error) => {
       alert(error);
     })
   }
+
 }

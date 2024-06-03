@@ -103,3 +103,12 @@ export function diferenciaDias(fechaMenor:string, fechaMayor:string) {
 
     return Math.floor(Math.abs(diffDays)); // Devolver el valor absoluto de la diferencia en días
 }
+
+export function generarFechasFromMonthPicker(fechaDesde: string, fechaHasta: string) {
+    const inicio = DateTime.fromFormat(fechaDesde, "yyyy-MM", { zone: 'America/Argentina/Buenos_Aires' });
+    const fin = DateTime.fromFormat(fechaHasta, "yyyy-MM", { zone: 'America/Argentina/Buenos_Aires' });
+    return { 
+        fechaDesde: inicio.startOf('month').toISO(),
+        fechaHasta: fin.endOf('month').toISO()
+    }
+  }

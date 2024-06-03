@@ -173,6 +173,8 @@ export class TablaCajaComponent implements OnInit{
             this.checkearForm();
           })
         }
+      } else {
+        this.checkearForm();
       }
     })
   
