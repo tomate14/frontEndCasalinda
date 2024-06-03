@@ -9,4 +9,5 @@ export interface Pedido {
     tipoPedido: number;
     descripcion: string;
     nombreCliente?:string; 
+    estadoEnvio:number;
   }

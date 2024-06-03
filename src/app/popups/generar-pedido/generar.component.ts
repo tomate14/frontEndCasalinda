@@ -7,7 +7,6 @@ import { Cliente } from '../../../clases/dominio/cliente';
 import { Pedido } from '../../../clases/dominio/pedido';
 import { PagosService } from '../../../services/pago.service';
 import { Pago } from '../../../clases/dominio/pago';
-import { HttpClient } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
 import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
@@ -43,7 +42,7 @@ export class GenerarComponent {
       total: [null, Validators.required],
       dni: [null, Validators.required],
       formaDePago: [1, Validators.required],
-      tipoDePedido: [1, Validators.required]
+      tipoDePedido: [1, Validators.required],
     }); 
   }
 
@@ -67,8 +66,9 @@ export class GenerarComponent {
         fechaPedido: nowConLuxonATimezoneArgentina(),
         total: this.myForm.value.total,
         estado: estado,
+        descripcion: this.myForm.value.descripcion,
         tipoPedido: +this.myForm.value.tipoDePedido,
-        descripcion: this.myForm.value.descripcion
+        estadoEnvio: +1
       }
       this.pedidosService.post(pedido).subscribe(res => {
         const id = res._id as unknown as string;

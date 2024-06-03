@@ -114,7 +114,12 @@ export class TablaPedidoComponent implements OnInit {
   verPagos(pedido: Pedido): void {
     const pedidoId = pedido._id as unknown as string;
     const totalPedido = pedido.total;
-    this.pagosPorPedidosService.crearListaPagos(pedidoId, totalPedido);   
+    this.pagosPorPedidosService.crearListaPagos(pedidoId, totalPedido).then((p:Pedido) => {
+      const index = this.pedidos.findIndex(c => c._id === p._id);
+        if (index !== -1) {
+            this.pedidos[index] = p;
+        }
+    });   
   }
 
   editarPedido(pedido:Pedido):void {

@@ -3,8 +3,9 @@ export interface EstadoEnvio {
     viewValue?: string;
 }
 
-export const estadoDePedido = [
+export const estadoDeEnvio = [
     {value: 1, viewValue: 'No enviado'},
-    {value: 2, viewValue: 'En Produccion'}
-    {value: 3, viewValue: 'Enviado'}
+    {value: 2, viewValue: 'En Produccion'},
+    {value: 3, viewValue: 'Enviado'},
+    {value: 4, viewValue: 'Terminado'}
   ];

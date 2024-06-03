@@ -25,3 +25,22 @@ button.close {
 .btnEditar {
     margin-left: 2px;
 }
+
+.fa-truck {
+    margin-left: 4px;
+}
+.no-enviado {
+    color: red;
+}
+
+.enviado {
+    color: green;
+}
+
+.en-produccion {
+    color: gold;
+}
+
+.terminado {
+    color: orange;
+}

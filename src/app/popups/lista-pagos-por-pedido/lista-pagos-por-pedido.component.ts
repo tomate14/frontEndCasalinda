@@ -52,7 +52,9 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   }
 
   cerrar() {
-    this.activeModal.close(false);
+    this.pedidosService.getByIdPedido(this.idPedido).subscribe((res)=> {
+      this.activeModal.close(res);
+    });
   }
   eliminarPago(pago: Pago) {
     const pagoId = pago._id as unknown as string;

@@ -15,9 +15,13 @@ export class PedidosService {
       return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido`);
   }
 
+  public getByIdPedido(idPedido:string): Observable<Pedido[]> {
+    return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/${idPedido}`);
+  }
+
   public getByDniCliente(dni:number): Observable<Pedido[]> {
     return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/${dni}`);
-}
+  }
 
   public post(pedido:Pedido): Observable<Pedido> {
     return this.httpClient.post<Pedido>("http://127.0.0.1:5000/pedido",pedido);
