@@ -29,6 +29,10 @@
                   <td>
                     <i *ngIf="pedido.estado === 'COMPLETO'" class="fa fa-check" title="Completo"></i>
                     <i *ngIf="pedido.estado === 'PENDIENTE'" class="fa fa-times" title="Pendiente"></i>
+                    <i *ngIf="pedido.estadoEnvio === 1" class="fa fa-truck no-enviado" aria-hidden="true" title="No enviado"> </i>
+                    <i *ngIf="pedido.estadoEnvio === 2" class="fa fa-truck en-produccion" aria-hidden="true" title="En produccion"> </i>
+                    <i *ngIf="pedido.estadoEnvio === 3" class="fa fa-truck enviado" aria-hidden="true" title="Enviado"> </i>
+                    <i *ngIf="pedido.estadoEnvio === 4" class="fa fa-truck terminado" aria-hidden="true" title="Terminado"> </i>
                   </td>
                   <td>{{ pedido.descripcion }}</td>
                   <td><button class="btn btn-dark" (click)="verPagos(pedido)"><i class="fas fa-search"></i></button></td>

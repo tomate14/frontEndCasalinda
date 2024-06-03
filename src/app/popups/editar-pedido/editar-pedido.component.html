@@ -22,7 +22,7 @@
             </div>
             <br/>
             <div class="row">
-                <div class="col-md-4 form-group">
+                <div class="col-md-3 form-group">
                     <label class="sr-only" for="inlineFormTotal">Total</label>
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
@@ -35,16 +35,21 @@
                         </div>
                     </div>
                 </div>   
-                <div class="col-md-4 form-group">
+                <div class="col-md-3 form-group">
                     <select class="form-select" formControlName="estado">
                         <option [value]="PENDIENTE">Pendiente</option>
                         <option [value]="COMPLETO">Completo</option>
                     </select>
                 </div>
-                <div class="col-md-4 form-group">
+                <div class="col-md-3 form-group">
                     <select class="form-select" formControlName="tipoPedido">
                         <option [value]="1">Pedido</option>
                         <option [value]="2">Cuenta Corriente</option>
+                    </select>
+                </div>
+                <div class="col-md-3 form-group">
+                    <select class="form-select" formControlName="estadoDeEnvio">
+                      <option *ngFor="let fEnvio of estadoDeEnvio" [value]="fEnvio.value">{{fEnvio.viewValue}}</option>
                     </select>
                 </div>
             </div>

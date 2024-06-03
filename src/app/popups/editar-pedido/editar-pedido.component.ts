@@ -5,6 +5,7 @@ import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { PedidosService } from '../../../services/pedidos.service';
+import { EstadoEnvio, estadoDeEnvio } from '../../../clases/constantes/estadoEnvio';
 
 @Component({
   selector: 'app-editar-pedido',
@@ -20,6 +21,7 @@ export class EditarPedidoComponent {
   formaDePago:FormaDePago[] = [];
   PENDIENTE: string = "PENDIENTE";
   COMPLETO: string = "COMPLETO";
+  estadoDeEnvio:EstadoEnvio[] = [];
 
   constructor(private fb: FormBuilder, private activeModal: NgbActiveModal, private pedidosService: PedidosService) {    
 
@@ -28,12 +30,14 @@ export class EditarPedidoComponent {
 
   ngOnInit(): void {
     this.formaDePago = formaDePago;
+    this.estadoDeEnvio = estadoDeEnvio;
     if (this.pedido) {
       this.myForm = this.fb.group({      
         descripcion: [this.pedido.descripcion, Validators.required],      
         total: [this.pedido.total, Validators.required],
         tipoPedido: [this.pedido.tipoPedido, Validators.required],
         estado: [this.pedido.estado, Validators.required],
+        estadoDeEnvio: [this.pedido.estadoEnvio, Validators.required],
       }); 
     }
   }
@@ -45,7 +49,8 @@ export class EditarPedidoComponent {
         total: this.myForm.value.total,
         descripcion: this.myForm.value.descripcion,
         tipoPedido: +this.myForm.value.tipoPedido,
-        estado: this.myForm.value.estado
+        estado: this.myForm.value.estado,
+        estadoEnvio: +this.myForm.value.estadoDeEnvio,
       }
       const idPedido = this.pedido?._id  as unknown as string;
       if (idPedido) {
