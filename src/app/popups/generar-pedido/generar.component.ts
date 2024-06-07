@@ -14,6 +14,7 @@ import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorri
 import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmarService } from '../../../services/popup/confirmar';
+import { CrearClienteService } from '../../../services/popup/crearCliente.service';
 
 @Component({
   selector: 'app-generar',
@@ -30,8 +31,9 @@ export class GenerarComponent {
   formaDePago:FormaDePago[] = [];
   tipoDePedido:TipoPedido[] = [];
 
-  constructor(private fb: FormBuilder, private pedidosService: PedidosService, private clienteService: ClienteService, 
-    private pagosService: PagosService, private confirmarService: ConfirmarService, private activeModal: NgbActiveModal) {    
+  constructor(private fb: FormBuilder, private pedidosService: PedidosService, private clienteService: ClienteService,
+    private crearClienteService:CrearClienteService, private pagosService: PagosService, private confirmarService: ConfirmarService,
+    private activeModal: NgbActiveModal) {    
     this.formaDePago = formaDePago;
     this.tipoDePedido = tipoDePedido;
     this.myForm = this.fb.group({
@@ -53,7 +55,15 @@ export class GenerarComponent {
     if (this.myForm.value.dni) {
       this.clienteService.getClienteByDni(this.myForm.value.dni).subscribe((res) => {
         this.cliente = res;
-      }, (error) => alert("Cliente no encontrado, debe darlo de alta"));
+      }, (error) => {
+        const cliente = undefined;
+        this.crearClienteService.crearCliente(cliente)
+        .then((cliente) => {
+            if(cliente){
+              this.cliente =cliente;
+            }
+        });
+      });
     }
     
   }
@@ -89,13 +99,29 @@ export class GenerarComponent {
             this.confirmarService.confirm("Pedidos error", error.error.message, true,"Ok", "No");
           })
         }       
-        window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);   
+        /*const phoneNumber = "+5492284466452"; // Reemplaza con el número de teléfono en formato internacional
+        var encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
+        var url = "https://wa.me/" + phoneNumber + "?text=" + encodedMessage;
+        window.open(url, "_blank");  */
+        window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);  
         this.myForm.reset(); 
         this.activeModal.close(res);      
       })
     }
   }
 
+  enviarWp() {
+    if (this.myForm.valid) {
+      let body = `Hola ${this.myForm.value.nombre}. Confirmamos su pedido con una fecha de entrega estimada de *_30 dias_* habiles aproximadamente.`;
+      body = body + ` Asi mismo, tomamos como descripcion del producto: ${this.myForm.value.descripcion}.`;
+      body = body + ` Se tomo una seña de *_$${this.myForm.value.seña}_* y el total es de *_$${this.myForm.value.total}_*.`;
+
+      const phoneNumber = this.cliente?.telefono; // Reemplaza con el número de teléfono en formato internacional
+      const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
+      const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+      window.open(url);  
+    }
+  }
   cerrar() {
     this.myForm.reset();
     this.activeModal.close(false);

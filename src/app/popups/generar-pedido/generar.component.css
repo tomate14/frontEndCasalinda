@@ -16,3 +16,7 @@ textarea.ng-valid.ng-touched {
 .col.form-group#divBuscar {
     align-content: end;
 }
+
+.fa-whatsapp {
+    color: white;
+}

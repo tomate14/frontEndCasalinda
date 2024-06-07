@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h4 class="modal-title">Alta cliente</h4>
+  <h4 class="modal-title">Crear Pedido</h4>
     <button type="button" class="close" aria-label="Close" (click)="cerrar()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -78,7 +78,17 @@
             </div>  
           </div>
           <br/>
-          <button type="submit" class="btn btn-dark">Agregar</button>
+          <div class="row">
+            <div class="col-1">
+              <button type="submit" class="btn btn-dark">Agregar</button>
+            </div>
+            <div class="col-10">
+              <span></span>
+            </div>
+            <div class="col-1">
+              <span type class="btn btn-success" (click)="enviarWp()"><i class="fab fa-whatsapp" aria-hidden="true" title="Enviar Whatsapp"></i></span>
+            </div>
+          </div>
         </div>
     </form>
   </div>
