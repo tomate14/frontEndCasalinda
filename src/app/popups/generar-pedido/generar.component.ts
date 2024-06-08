@@ -82,10 +82,6 @@ export class GenerarComponent {
       }
       this.pedidosService.post(pedido).subscribe(res => {
         const id = res._id as unknown as string;
-        const subject = `Casa Linda confirmacion ${this.myForm.value.dni} de pedido ${id}`
-        let body = `Confirmamos su pedido con una fecha de entrega estimada de 30 dias habiles aproximadamente.`;
-        body = body + ` Asi mismo, tomamos como descripcion del producto: ${this.myForm.value.descripcion}.`;
-        body = body + ` Se tomo una seña de $ ${this.myForm.value.seña} y el total es de $ ${this.myForm.value.total}.`;
         const pago: Pago = {
           idPedido:id,
           fechaPago: nowConLuxonATimezoneArgentina(),
@@ -93,28 +89,39 @@ export class GenerarComponent {
           formaPago: this.myForm.value.formaDePago,
           descripcion:`Pago del pedido ${id}`
         }
+        
         if (pago.valor > 0) {
           this.pagosService.postPago(pago).subscribe((res)=> {    
           }, (error) => {
             this.confirmarService.confirm("Pedidos error", error.error.message, true,"Ok", "No");
           })
         }       
-        /*const phoneNumber = "+5492284466452"; // Reemplaza con el número de teléfono en formato internacional
-        var encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
-        var url = "https://wa.me/" + phoneNumber + "?text=" + encodedMessage;
-        window.open(url, "_blank");  */
-        window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);  
+        this.enviarWp(id);
         this.myForm.reset(); 
         this.activeModal.close(res);      
       })
     }
   }
-
-  enviarWp() {
+  enviarEmail() {
+    const subject = `Casa Linda confirmacion ${this.myForm.value.dni} de pedido`;
+    const saldo = this.myForm.value.total - this.myForm.value.seña;
+    
+    let body = `Confirmamos su pedido con una fecha de entrega estimada de 30 dias habiles aproximadamente.`;
+    body = body + `Aclaramos que el pedido puede sufrir atrazos por cuestiones de fuerza mayor.`;
+    body = body + ` Asi mismo, tomamos como descripcion del producto: ${this.myForm.value.descripcion}.`;
+    body = body + ` Se tomo una seña de $ ${this.myForm.value.seña} y el saldo es de $ ${saldo}.`;
+    body = body + ` Recuerde que no contamos con envio propio, el flete tiene un costo adicional a consultar`;
+    window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);  
+        
+  }
+  enviarWp(id: string) {
     if (this.myForm.valid) {
-      let body = `Hola ${this.myForm.value.nombre}. Confirmamos su pedido con una fecha de entrega estimada de *_30 dias_* habiles aproximadamente.`;
+      const saldo = this.myForm.value.total - this.myForm.value.seña;
+      let body = `Hola ${this.myForm.value.nombre}. Confirmamos su pedido *_${id}_* con una fecha de entrega estimada de *_30 dias_* habiles aproximadamente.`;
+      body = body + ` Aclaramos que el pedido puede sufrir atrazos por cuestiones de fuerza mayor.`;
       body = body + ` Asi mismo, tomamos como descripcion del producto: ${this.myForm.value.descripcion}.`;
-      body = body + ` Se tomo una seña de *_$${this.myForm.value.seña}_* y el total es de *_$${this.myForm.value.total}_*.`;
+      body = body + ` Se tomo una seña de *_$${this.myForm.value.seña}_* y el saldo es de *_$${saldo}_*.`;
+      body = body + ` Recuerde que no contamos con envio propio, el flete tiene un costo adicional a consultar`;
 
       const phoneNumber = this.cliente?.telefono; // Reemplaza con el número de teléfono en formato internacional
       const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
