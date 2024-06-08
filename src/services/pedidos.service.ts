@@ -11,16 +11,20 @@ export class PedidosService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public get(): Observable<Pedido[]> {
-      return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido`);
+  public getByParams(params:string[]): Observable<Pedido[]> {
+      let url = `http://127.0.0.1:5000/pedido`;
+      if (params.length > 0) {
+        url = url + '?'+params.join("&");
+      }
+      return this.httpClient.get<Pedido[]>(url);
   }
 
   public getByIdPedido(idPedido:string): Observable<Pedido[]> {
-    return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/${idPedido}`);
+    return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido?id=${idPedido}`);
   }
 
   public getByDniCliente(dni:number): Observable<Pedido[]> {
-    return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/${dni}`);
+    return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido?dniCliente=${dni}`);
   }
 
   public post(pedido:Pedido): Observable<Pedido> {
@@ -32,7 +36,7 @@ export class PedidosService {
   }
 
   public getPedidosPorTipo(tipoPedido:number): Observable<Pedido[]> {
-    return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/tipo-pedido/${tipoPedido}`);
+    return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido?tipoPedido=${tipoPedido}`);
   }
   public getPedidosVencidos(fechaDesde:string, tipoPedido:number): Observable<Pedido[]> {
     return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/pedidos-vencidos/${fechaDesde}/${tipoPedido}`);

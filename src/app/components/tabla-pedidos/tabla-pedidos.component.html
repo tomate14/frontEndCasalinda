@@ -28,33 +28,34 @@
       </div>
       <br/>
       <div class="row">
-        <div class="col-4 test">
-          <mat-form-field class="example-form-field">
-            <mat-label>Rango de fecha</mat-label>
-            <mat-date-range-input [rangePicker]="rangePicker">
-              <input matStartDate formControlName="fechaDesde">
-              <input matEndDate formControlName="fechaHasta">
-            </mat-date-range-input>
-            <mat-datepicker-toggle matIconSuffix [for]="rangePicker"></mat-datepicker-toggle>
-            <mat-date-range-picker #rangePicker>
-              <mat-date-range-picker-actions>
-                <button class="btn btn-danger">Cancel</button>
-                <button class="btn btn-dark" matDateRangePickerApply>Apply</button>
-              </mat-date-range-picker-actions>
-            </mat-date-range-picker>
-          </mat-form-field>
-        </div> 
-        <div class="col-4 form-group">
+        <div class="col-4">
           <div class="form-group">
-            <label for="dias">Dias que pasaron:</label>
-            <input type="number" id="dias" formControlName="dias" class="form-control" name="dias" aria-describedby="diaseHelp" placeholder="Dias"/>
+            <label for="fechaHasta">Fecha Hasta</label>
+            <div class="input-group">
+                <span class="input-group-text">Desde</span>
+                <input type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
+            </div>  
           </div>
         </div>
-        <div class="col-2 form-group">
-          <button class="btn btn-danger margin-buscar" (click)="filtrarDeudores()">Buscar</button>
-        </div>
+        <div class="col-4">
+          <div class="form-group">
+            <label for="fechaHasta">Fecha Hasta</label>
+            <div class="input-group">
+                <span class="input-group-text">Hasta </span>
+                <input id="fechaHasta" type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
+            </div>
+          </div>
+        </div> 
+        <div class="col-4">
+          <div class="form-group">
+            <label for="estadoDeEnvio">Estado Envio</label>
+            <select id="estadoDeEnvio" class="form-select" formControlName="estadoDeEnvio">
+              <option *ngFor="let fEnvio of estadoDeEnvio" [value]="fEnvio.value">{{fEnvio.viewValue}}</option>
+            </select>
+          </div>
+      </div>       
       </div>
-      <br/>
+      <br>
       <div class="row">
         <div class="col-1">
           <button class="btn btn-dark" (click)="buscar()">Buscar</button>
@@ -62,7 +63,20 @@
         <div class="col-1">
           <button class="btn btn-dark" (click)="limpiar()">Limpiar</button>
         </div>
-      </div>      
+      </div>  
+      <hr/>
+      <div class="row">
+        <div class="col-4 form-group">
+          <div class="form-group">
+            <label for="dias">Dias que pasaron pendiente de pago:</label>
+            <input type="number" id="dias" formControlName="dias" class="form-control" name="dias" aria-describedby="diaseHelp" placeholder="Dias"/>
+          </div>
+        </div>
+        <div class="col-2 form-group">
+          <button class="btn btn-danger margin-buscar" (click)="filtrarDeudores()">Buscar</button>
+        </div>
+      </div>
+          
     </form>
   </div>
 </div>

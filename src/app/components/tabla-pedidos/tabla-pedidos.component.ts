@@ -8,12 +8,13 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
-import { getPreviousDays, nowConLuxonATimezoneArgentina, transformarAHoraArgentinaISO } from '../../../utils/dates';
+import { getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina, transformarAHoraArgentinaISO } from '../../../utils/dates';
 import { CrearPedidoService } from '../../../services/popup/generar-pedidos.service';
 import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
 import { ActivatedRoute } from '@angular/router';
 import { ListarPagosPorPedidosService } from '../../../services/popup/listaPagosPorPedidos.service';
 import { EditarPedidoService } from '../../../services/popup/editarPedido.service';
+import { EstadoEnvio, estadoDeEnvio } from '../../../clases/constantes/estadoEnvio';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -22,7 +23,8 @@ const defaultFormObject = {
   fechaDesde: null,
   fechaHasta: null,
   tipoDePedido:null,
-  dias:0
+  dias:0,
+  estadoDeEnvio:null
 }
 
 @Component({
@@ -40,6 +42,7 @@ export class TablaPedidoComponent implements OnInit {
   p: number = 1;
   tipoDePedido:TipoPedido[] = [];
   tipoPedido:number= 1;
+  estadoDeEnvio:EstadoEnvio[] = [];
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService, 
     private crearPedidoModal:CrearPedidoService, private pagosPorPedidosService: ListarPagosPorPedidosService,
@@ -54,7 +57,7 @@ export class TablaPedidoComponent implements OnInit {
   ngOnInit(): void {
     
     this.filterForm = this.fb.group(defaultFormObject);
-
+    this.estadoDeEnvio = estadoDeEnvio;
     this.pedidosService.getPedidosPorTipo(this.tipoPedido).subscribe(
       (data: Pedido[]) => {
         this.pedidos = data;
@@ -65,22 +68,41 @@ export class TablaPedidoComponent implements OnInit {
     );
   }
   buscar() {
-    const { idPedido, dniCliente, nombre, fechaHasta, fechaDesde, tipoDePedido } = this.filterForm.value;
-    const fechaDesdeDate = fechaDesde ? transformarAHoraArgentinaISO(fechaDesde.toISOString()) : null;
-    const fechaHastaDate = fechaHasta ? transformarAHoraArgentinaISO(fechaHasta.toISOString()) : null;
-    this.pedidos = this.pedidos.filter((pedido: Pedido) => {
-      const matchesIdPedido = idPedido ? pedido._id === idPedido : true;
-      const matchesDniCliente = dniCliente ? pedido.dniCliente === +dniCliente : true;
-      const matchesNombre = nombre ? pedido.nombreCliente?.toLowerCase().includes(nombre.toLowerCase()) : true;
-      const fechaPedido = pedido.fechaPedido ? pedido.fechaPedido : "";
-      const matchesFechaDesde = fechaDesdeDate ? transformarAHoraArgentinaISO(fechaPedido) >= fechaDesdeDate : true;
-      const matchesFechaHasta = fechaHastaDate ? transformarAHoraArgentinaISO(fechaPedido) <= fechaHastaDate : true;
-      const matchesEsPedido = +tipoDePedido === 1 ? pedido.tipoPedido === 1 : true;
-      const matchesEsCuentaCorriente = +tipoDePedido === 2 ? pedido.tipoPedido === 2 : true;
+    const { idPedido, dniCliente, nombre, fechaHasta, fechaDesde, estadoDeEnvio } = this.filterForm.value;
+    const fechaDesdeLuxon = fechaDesde ? horaPrincipioFinDia(fechaDesde,false) : null;
+    const fechaHastaLuxon = fechaHasta ? horaPrincipioFinDia(fechaHasta,true) : null;
+    let params = [];
+    params.push("tipoPedido="+this.tipoPedido); 
+    if (idPedido) {
+      params.push("id="+idPedido);
+    }    
+    if (dniCliente) {
+      params.push("dniCliente="+dniCliente);
+    }
+    if (nombre) {
+      params.push("nombreCliente="+nombre);
+    }
+    
+    if (fechaDesdeLuxon) {
+      params.push("fechaDesde="+fechaDesdeLuxon);
+    }
+    if (fechaHastaLuxon) {
+      params.push("fechaHasta="+fechaHastaLuxon);
+    }
+    if (nombre) {
+      params.push("nombreCliente="+nombre);
+    }
+    if (estadoDeEnvio) {
+      params.push("estadoEnvio="+estadoDeEnvio);
+    }
 
-      return matchesIdPedido && matchesDniCliente && matchesNombre && matchesFechaDesde && matchesFechaHasta && matchesEsPedido && matchesEsCuentaCorriente;
+    this.pedidosService.getByParams(params).subscribe((res) => {
+      this.pedidos = res;
+    }, (error) => {
+      this.pedidos = []
     });
   }
+
   limpiar() {
     this.filterForm.reset(defaultFormObject);
     this.pedidosService.getPedidosPorTipo(this.tipoPedido).subscribe(
@@ -96,7 +118,7 @@ export class TablaPedidoComponent implements OnInit {
   crearPedido() {
     this.crearPedidoModal.crearPedido().then((res)=> {
       if(res){
-        this.pedidos.push(res);
+        this.pedidos.unshift(res);
       }
     })
   }
