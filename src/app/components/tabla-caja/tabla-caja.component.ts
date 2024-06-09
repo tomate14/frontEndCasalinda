@@ -35,6 +35,7 @@ export class TablaCajaComponent implements OnInit{
   totalContado:number = 0;
   totalTarjeta:number = 0;
   totalDNI:number = 0;
+  totalTransferencia:number = 0;
 
   @Input()
   pagos: Pago[] = [];
@@ -133,6 +134,7 @@ export class TablaCajaComponent implements OnInit{
     pago.formaPago ===  1 ? this.totalContado += pago.valor : null;
     pago.formaPago ===  2 ? this.totalTarjeta += pago.valor : null;
     pago.formaPago ===  3 ? this.totalDNI += pago.valor : null;
+    pago.formaPago ===  4 ? this.totalTransferencia += pago.valor : null;
   }
 
   private actualizarTotales() {

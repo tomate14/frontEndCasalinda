@@ -20,7 +20,7 @@ export class GraficoResumenUltimoDiaComponent {
     name: 'customScheme',
     selectable: false,
     group: ScaleType.Time,
-    domain: [coloresGrafico.contado, coloresGrafico.tarjeta, coloresGrafico.cuentaDni]
+    domain: [coloresGrafico.contado, coloresGrafico.cuentaDni, coloresGrafico.tarjeta, coloresGrafico.transferencia]
   };
   colorIngresosGastos: Color = {
     name: 'customScheme',
@@ -47,11 +47,12 @@ export class GraficoResumenUltimoDiaComponent {
       if (res) {
         const respuesta = res[0];
         this.ingresosGastos = [{name: "Ingresos", value: respuesta.ingresos}, {name: "Gastos", value: respuesta.gastos}]
-        this.single = [{"name": "Contado","value": respuesta.contado},{"name": "Tarjeta","value": respuesta.tarjeta},{"name": "Cuenta Dni","value": respuesta.cuentaDni}];
+        this.single = [{"name": "Contado","value": respuesta.contado},{"name": "Cuenta Dni","value": respuesta.cuentaDni},
+          {"name": "Tarjeta","value": respuesta.tarjeta},{"name": "Transferencia","value": respuesta.transferencia}];
       }
     }, (error) => {
       alert(error);
-      this.single = [{"name": "Contado","value": 0},{"name": "Tarjeta","value": 0},{"name": "Cuenta Dni","value": 0}]
+      this.single = [{"name": "Contado","value": 0},{"name": "Cuenta Dni","value": 0},{"name": "Tarjeta","value": 0},{"name": "Transferencia","value": 0}]
     });
   }
 

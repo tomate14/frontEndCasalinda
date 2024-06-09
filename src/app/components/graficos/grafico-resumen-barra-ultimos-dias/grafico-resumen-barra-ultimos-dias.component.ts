@@ -30,7 +30,7 @@ export class GraficoResumenBarraUltimosDiasComponent {
     name: 'customScheme',
     selectable: false,
     group: ScaleType.Time,
-    domain: [coloresGrafico.contado, coloresGrafico.tarjeta, coloresGrafico.cuentaDni]
+    domain: [coloresGrafico.contado, coloresGrafico.tarjeta, coloresGrafico.cuentaDni, coloresGrafico.transferencia]
   };
 
   // options
@@ -85,15 +85,18 @@ export class GraficoResumenBarraUltimosDiasComponent {
       const serieMes = series.find((c)=> mes === c.name);       
       if (serieMes) {
         serieMes.series[0].value += caja.contado;
-        serieMes.series[1].value += caja.tarjeta;
-        serieMes.series[2].value += caja.cuentaDni;
+        serieMes.series[1].value += caja.cuentaDni;
+        serieMes.series[2].value += caja.tarjeta;
+        serieMes.series[3].value += caja.transferencia;
       } else {
         series.push({
           "name": formatearFechaDesdeUnIso(caja.fecha, format),
           "series": [
             {"name": "Contado","value": caja.contado },
+            {"name": "Cuenta Dni","value": caja.cuentaDni},
             {"name": "Tarjeta","value": caja.tarjeta},
-            {"name": "Cuenta Dni","value": caja.cuentaDni}]
+            {"name": "Transferencia","value": caja.transferencia}
+            ]
         });
       };
     });
@@ -107,8 +110,10 @@ export class GraficoResumenBarraUltimosDiasComponent {
         "name": formatDateToDayMonth(element.fecha),
         "series": [
           {"name": "Contado","value": element.contado },
+          {"name": "Cuenta Dni","value": element.cuentaDni},
           {"name": "Tarjeta","value": element.tarjeta},
-          {"name": "Cuenta Dni","value": element.cuentaDni}]
+          {"name": "Transferencia","value": element.transferencia},
+        ]
       });
     });
 

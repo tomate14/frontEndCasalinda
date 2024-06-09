@@ -19,7 +19,7 @@ import { ListaCajaPasadaService } from '../../../../services/popup/listaCajaPasa
 export class GraficoHistogramaComponent implements OnInit {
   histograma:any[] = [];
   histogramaTotales:any[] = [];
-  totales = { contado: 0, tarjeta:0, cuentaDni:0, ingresos:0, gastos:0 }
+  totales = { contado: 0, cuentaDni:0, tarjeta:0, transferencia:0, ingresos:0, gastos:0 }
   myForm: FormGroup;
   isFormVisible: boolean = false;
 
@@ -30,7 +30,7 @@ export class GraficoHistogramaComponent implements OnInit {
     name: 'customScheme',
     selectable: false,
     group: ScaleType.Time,
-    domain: [coloresGrafico.contado, coloresGrafico.tarjeta, coloresGrafico.cuentaDni, coloresGrafico.ingresos, coloresGrafico.gastos]
+    domain: [coloresGrafico.contado, coloresGrafico.cuentaDni, coloresGrafico.tarjeta, coloresGrafico.transferencia, coloresGrafico.ingresos, coloresGrafico.gastos]
   };
 
 
@@ -66,21 +66,24 @@ export class GraficoHistogramaComponent implements OnInit {
         const dataSet:any[] = [];
         res.forEach((element:Caja) => {
           const contado = dataSet.find((c)=> c.name === "Contado");
-          const tarjeta = dataSet.find((c)=> c.name === "Tarjeta");
           const cuentaDni = dataSet.find((c)=> c.name === "CuentaDni");
+          const tarjeta = dataSet.find((c)=> c.name === "Tarjeta");
+          const transferencia = dataSet.find((c)=> c.name === "Transferencia");
           const ingresos = dataSet.find((c)=> c.name === "Ingresos");
           const gastos = dataSet.find((c)=> c.name === "Gastos"); 
           const fecha = formatDateToDayMonth(element.fecha);
           if (!contado) {
             dataSet.push({ name: 'Contado', series: [{"name": fecha,"value": element.contado, "extra": {date: element.fecha} }]});
-            dataSet.push({ name: 'Tarjeta', series: [{"name": fecha,"value": element.tarjeta }]});
             dataSet.push({ name: 'CuentaDni', series: [{"name": fecha,"value": element.cuentaDni }]});
+            dataSet.push({ name: 'Tarjeta', series: [{"name": fecha,"value": element.tarjeta }]});
+            dataSet.push({ name: 'Transferencia', series: [{"name": fecha,"value": element.transferencia }]});
             dataSet.push({ name: 'Ingresos', series: [{"name": fecha,"value": element.ingresos }]});
             dataSet.push({ name: 'Gastos', series: [{"name": fecha,"value": element.gastos }]});
           } else {
             contado.series.push({"name": fecha,"value": element.contado })
-            tarjeta.series.push({"name": fecha,"value": element.tarjeta })
             cuentaDni.series.push({"name": fecha,"value": element.cuentaDni })
+            tarjeta.series.push({"name": fecha,"value": element.tarjeta })
+            transferencia.series.push({"name": fecha,"value": element.transferencia })
             ingresos.series.push({"name": fecha,"value": element.ingresos })
             gastos.series.push({"name": fecha,"value": element.gastos })
           }
@@ -107,11 +110,12 @@ export class GraficoHistogramaComponent implements OnInit {
   }
 
   private generarTotales(cajas:Caja[]) {
-    this.totales = { contado: 0, tarjeta:0, cuentaDni:0, ingresos:0, gastos:0 }
+    this.totales = { contado: 0, cuentaDni:0, tarjeta:0, transferencia:0, ingresos:0, gastos:0 }
     cajas.forEach((caja:Caja)=>{
       this.totales.contado += caja.contado;
-      this.totales.tarjeta += caja.tarjeta;
       this.totales.cuentaDni += caja.cuentaDni;
+      this.totales.tarjeta += caja.tarjeta;
+      this.totales.transferencia += caja.transferencia;
       this.totales.ingresos += caja.ingresos;
       this.totales.gastos += caja.gastos;
     })
@@ -122,12 +126,16 @@ export class GraficoHistogramaComponent implements OnInit {
       value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.contado)
     });
     histo.push({
+      name: 'CuentaDni',
+      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.cuentaDni)
+    })
+    histo.push({
       name: 'Tarjeta',
       value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.tarjeta)
     })
     histo.push({
-      name: 'CuentaDni',
-      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.cuentaDni)
+      name: 'Transferencia',
+      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.transferencia)
     })
     histo.push({
       name: 'Ingresos',

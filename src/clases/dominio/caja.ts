@@ -3,6 +3,7 @@ export interface Caja {
     contado:number,
     tarjeta:number,
     cuentaDni:number,
+    transferencia:number,
     ingresos:number,
     gastos:number
 }

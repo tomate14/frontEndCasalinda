@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Pedido } from '../../../clases/dominio/pedido';
-import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { PedidosService } from '../../../services/pedidos.service';
@@ -18,7 +17,6 @@ export class EditarPedidoComponent {
 
   myForm: FormGroup;
   @Input() pedido:Pedido | undefined;
-  formaDePago:FormaDePago[] = [];
   PENDIENTE: string = "PENDIENTE";
   COMPLETO: string = "COMPLETO";
   estadoDeEnvio:EstadoEnvio[] = [];
@@ -29,7 +27,6 @@ export class EditarPedidoComponent {
   }
 
   ngOnInit(): void {
-    this.formaDePago = formaDePago;
     this.estadoDeEnvio = estadoDeEnvio;
     if (this.pedido) {
       this.myForm = this.fb.group({      
