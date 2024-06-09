@@ -86,7 +86,7 @@ export class GenerarComponent {
           idPedido:id,
           fechaPago: nowConLuxonATimezoneArgentina(),
           valor: this.myForm.value.seña,
-          formaPago: this.myForm.value.formaDePago,
+          formaPago: +this.myForm.value.formaDePago,
           descripcion:`Pago del pedido ${id}`
         }
         

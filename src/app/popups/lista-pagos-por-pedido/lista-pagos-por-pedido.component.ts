@@ -53,7 +53,9 @@ export class ListaPagosPorPedidoComponent implements OnInit {
 
   cerrar() {
     this.pedidosService.getByIdPedido(this.idPedido).subscribe((res)=> {
-      this.activeModal.close(res);
+      if (res) {
+        this.activeModal.close(res[0]);
+      }      
     });
   }
   eliminarPago(pago: Pago) {

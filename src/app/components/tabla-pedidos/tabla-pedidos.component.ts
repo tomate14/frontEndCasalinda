@@ -63,7 +63,8 @@ export class TablaPedidoComponent implements OnInit {
         this.pedidos = data;
       },
       (error) => {
-        alert('Error al obtener los productos '+error);
+        this.pedidos = [];
+        console.error('Error al obtener los productos '+error);
       }
     );
   }
