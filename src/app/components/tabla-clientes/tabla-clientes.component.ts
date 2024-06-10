@@ -8,6 +8,7 @@ import { PedidosService } from '../../../services/pedidos.service';
 import { ListarPedidosService } from '../../../services/popup/listarPedidos.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { ConfirmarService } from '../../../services/popup/confirmar';
 
 @Component({
   selector: 'app-tabla-clientes',
@@ -21,7 +22,8 @@ export class TablaClientesComponent implements OnInit {
   filterForm: FormGroup;
   isCollapsed: boolean = true;
   p: number = 1;
-  constructor(private fb: FormBuilder, private clientesService: ClienteService, private pedidosService: PedidosService, private crearClienteService: CrearClienteService, private listaPedidosService: ListarPedidosService) {
+  constructor(private fb: FormBuilder, private clientesService: ClienteService, private pedidosService: PedidosService, 
+    private crearClienteService: CrearClienteService, private listaPedidosService: ListarPedidosService, private confirmarService:ConfirmarService) {
     this.filterForm = this.fb.group({
       dniCliente: [''],
       nombre: [''],
@@ -52,8 +54,10 @@ export class TablaClientesComponent implements OnInit {
     this.pedidosService.getByDniCliente(cliente.dni).subscribe((res) => {
       this.listaPedidosService.crearLista(cliente.dni, res).then((confirmed) => {
         if(confirmed){
-          alert("Listado")
+          console.log("Listado")
         }
+      }, (error) => {
+        this.confirmarService.confirm("Cliente sin pedidos", error.error.message, true,"Ok", "No");
       });
       // Lógica para ver detalles del cliente
       console.log('Pedidos por cliente:', res);

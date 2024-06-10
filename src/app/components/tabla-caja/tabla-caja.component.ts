@@ -140,6 +140,7 @@ export class TablaCajaComponent implements OnInit{
   private actualizarTotales() {
     this.totalContado = 0;
     this.totalTarjeta = 0;
+    this.totalTransferencia = 0;
     this.totalDNI = 0;
     this.pagos.forEach((pago) => {
       this.actualizarTotalesPorPago(pago);
@@ -193,7 +194,7 @@ export class TablaCajaComponent implements OnInit{
       this.pagosServices.postPago(pago).subscribe((res) => {
         this.myForm.reset({descripcion: '',valor: null,formaDePago: 1});
         this.actualizarTotalesPorPago(pago);
-        this.pagos.push(res);
+        this.pagos.unshift(res);
       }, (error) => {
         this.confirmarService.confirm("Caja error", error.error.message, true,"Ok", "No");
       })
