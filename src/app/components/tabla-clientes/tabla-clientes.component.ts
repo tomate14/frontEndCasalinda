@@ -56,11 +56,11 @@ export class TablaClientesComponent implements OnInit {
         if(confirmed){
           console.log("Listado")
         }
-      }, (error) => {
-        this.confirmarService.confirm("Cliente sin pedidos", error.error.message, true,"Ok", "No");
       });
       // Lógica para ver detalles del cliente
       console.log('Pedidos por cliente:', res);
+    }, (error) => {
+      this.confirmarService.confirm("Cliente sin pedidos", error.error.message, true,"Ok", "No");
     })    
   }
   editarCliente(cliente:Cliente) {

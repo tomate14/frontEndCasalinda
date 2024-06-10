@@ -148,12 +148,19 @@ export class TablaPedidoComponent implements OnInit {
   editarPedido(pedido:Pedido):void {
     this.editarPedidoService.editarPedido(pedido).then((p:Pedido) => {
       if (p) {
-        p.dniCliente = pedido.dniCliente;
-        p.fechaPedido = pedido.fechaPedido;
-        p.nombreCliente = pedido.nombreCliente;
-        const index = this.pedidos.findIndex(c => c._id === p._id);
-        if (index !== -1) {
-            this.pedidos[index] = p;
+        if (p.tipoPedido !== this.tipoPedido) {
+          const index = this.pedidos.findIndex(c => c._id === p._id);
+          if (index !== -1) {
+              this.pedidos.splice(index, 1);
+          }
+        } else {
+          p.dniCliente = pedido.dniCliente;
+          p.fechaPedido = pedido.fechaPedido;
+          p.nombreCliente = pedido.nombreCliente;
+          const index = this.pedidos.findIndex(c => c._id === p._id);
+          if (index !== -1) {
+              this.pedidos[index] = p;
+          }
         }
       }
     })
