@@ -13,6 +13,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class ListaCajaPasadaComponent {
   
   @Input() pagos: Pago[] = [];
+  @Input() ingresosRetiros: Pago[] = [];
   @Input() title: string = "Resumen de caja";
   constructor(private activeModal: NgbActiveModal) {
 

@@ -36,7 +36,8 @@ export class AppComponent {
         const fechaInicio = horaPrincipioFinDia(fecha, false);
         const fechaFin = horaPrincipioFinDia(fecha, true);
         this.cajaService.cierreCaja(fechaInicio, fechaFin).subscribe((res) => {
-          this.confirmarService.confirm("Cierre de caja", res.message, true,"Ok", "");
+          const saldoCaja = res.contado + res.diferencia_caja;
+          this.confirmarService.confirm("Cierre de caja", `El saldo de caja es ${saldoCaja}`, true,"Ok", "");
         }, (error)=> {
           this.confirmarService.confirm("Error", error.error.message, true,"Ok", "");
         })

@@ -4,6 +4,6 @@ export interface Caja {
     tarjeta:number,
     cuentaDni:number,
     transferencia:number,
-    ingresos:number,
+    ganancia:number,
     gastos:number
 }

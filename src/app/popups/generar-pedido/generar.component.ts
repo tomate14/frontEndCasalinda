@@ -106,7 +106,7 @@ export class GenerarComponent {
     const subject = `Casa Linda confirmacion ${this.myForm.value.dni} de pedido`;
     const saldo = this.myForm.value.total - this.myForm.value.seña;
     
-    let body = `Confirmamos su pedido con una fecha de entrega estimada de 30 dias habiles aproximadamente.`;
+    let body = `Confirmamos su pedido con una fecha de entrega estimada de 30 dias habiles aproximadamente. `;
     body = body + `Aclaramos que el pedido puede sufrir atrazos por cuestiones de fuerza mayor.`;
     body = body + ` Asi mismo, tomamos como descripcion del producto: ${this.myForm.value.descripcion}.`;
     body = body + ` Se tomo una seña de $ ${this.myForm.value.seña} y el saldo es de $ ${saldo}.`;
@@ -123,7 +123,7 @@ export class GenerarComponent {
       body = body + ` Se tomo una seña de *_$${this.myForm.value.seña}_* y el saldo es de *_$${saldo}_*.`;
       body = body + ` Recuerde que no contamos con envio propio, el flete tiene un costo adicional a consultar`;
 
-      const phoneNumber = this.cliente?.telefono; // Reemplaza con el número de teléfono en formato internacional
+      const phoneNumber = this.cliente?.telefono;
       const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
       const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
       window.open(url);  

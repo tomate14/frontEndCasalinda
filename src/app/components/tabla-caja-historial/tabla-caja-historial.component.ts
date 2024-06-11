@@ -25,7 +25,7 @@ export class TablaCajaHistorialComponent implements OnInit {
   isFormVisible: boolean = false;
   cajas: Caja[] = [];
   totales = {
-    contado: 0, tarjeta:0, cuentaDni:0, ingresos:0, gastos:0
+    contado: 0, tarjeta:0, cuentaDni:0, ganancias:0, gastos:0
   }
   constructor(private fb: FormBuilder, private cajaServices: CajaService) {
     this.myForm = this.fb.group({
@@ -54,14 +54,14 @@ export class TablaCajaHistorialComponent implements OnInit {
       this.totales.contado += caja.contado;
       this.totales.tarjeta += caja.tarjeta;
       this.totales.cuentaDni += caja.cuentaDni;
-      this.totales.ingresos += caja.ingresos;
+      this.totales.ganancias += caja.ganancia;
       this.totales.gastos = this.totales.gastos - caja.gastos;
     })
   }
 
   onSubmitForm() {
     if (this.myForm.valid) {
-      this.totales = {contado: 0, tarjeta:0, cuentaDni:0, ingresos:0, gastos:0};
+      this.totales = {contado: 0, tarjeta:0, cuentaDni:0, ganancias:0, gastos:0};
       const fechaInicio = horaPrincipioFinDia(this.myForm.value.fechaDesde, false);
       const fechaFin = horaPrincipioFinDia(this.myForm.value.fechaHasta, true);
       this.cajaServices.getCajaByFecha(fechaInicio, fechaFin).subscribe((res) => {

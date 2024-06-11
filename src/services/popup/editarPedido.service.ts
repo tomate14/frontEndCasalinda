@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { EditarPagoComponent } from '../../app/popups/editar-pago/editar-pago.component';
 import { Pedido } from '../../clases/dominio/pedido';
 import { EditarPedidoComponent } from '../../app/popups/editar-pedido/editar-pedido.component';
 

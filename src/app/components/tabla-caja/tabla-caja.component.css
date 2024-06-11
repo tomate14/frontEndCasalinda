@@ -20,3 +20,7 @@ hr {
     background: #333;
     background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
+
+.margen-boton {
+    margin-left: 3px;
+}
