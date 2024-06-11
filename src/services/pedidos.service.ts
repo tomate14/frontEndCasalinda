@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Pedido } from '../clases/dominio/pedido';
+import { DeudaPedido } from '../clases/dto/deudaPedido';
 //import { saveAs } from 'file-saver';
 
 @Injectable({
@@ -40,5 +41,9 @@ export class PedidosService {
   }
   public getPedidosVencidos(fechaDesde:string, tipoPedido:number): Observable<Pedido[]> {
     return this.httpClient.get<Pedido[]>(`http://127.0.0.1:5000/pedido/pedidos-vencidos/${fechaDesde}/${tipoPedido}`);
+  }
+
+  public getInformeDeudaPedido(idPedido: string): Observable<DeudaPedido> {
+    return this.httpClient.get<DeudaPedido>(`http://127.0.0.1:5000/pedido/informe-deuda?id=${idPedido}`);
   }
 }
