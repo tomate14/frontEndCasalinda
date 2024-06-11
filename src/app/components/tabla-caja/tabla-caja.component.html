@@ -1,8 +1,10 @@
 <div class="container-fluid">
-    <button *ngIf="!readOnly" class="btn btn-success" (click)="toggleForm(true)">Ingreso</button>
-    <button *ngIf="!readOnly" class="btn btn-danger" (click)="toggleForm(false)">Gasto</button>
+    <button *ngIf="!readOnly" class="btn btn-success" (click)="toggleForm(0)">Cobros</button>
+    <button *ngIf="!readOnly" class="btn btn-danger margen-boton" (click)="toggleForm(1)">Pagos</button>
+    <button *ngIf="!readOnly" class="btn btn-dark margen-boton" (click)="toggleForm(2)">Ingreso</button>
+    <button *ngIf="!readOnly" class="btn btn-primary margen-boton" (click)="toggleForm(3)">Retiros</button>
     <div *ngIf="isFormVisible && !readOnly">
-        <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container needs-validation">
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container-fluid needs-validation">
             <div class="form-group">
               <label for="descripcion">Descripcion</label>
               <input type="text" class="form-control" id="descripcion" formControlName="descripcion" aria-describedby="emailHelp" placeholder="descripcion" required>
@@ -26,67 +28,117 @@
                     </div>
                 </div>
                 <div class="col-6">
-                    <select class="form-select" formControlName="formaDePago">
+                    <select *ngIf="tipoBoton !== 2 && tipoBoton !== 3" class="form-select" formControlName="formaDePago">
                         <option *ngFor="let fPago of formaDePago" [value]="fPago.value">{{fPago.viewValue}}</option>
                     </select>
                 </div>                
-              </div>
-            <button *ngIf="esIngreso" type="submit" class="btn btn-success">Agregar</button>          
-            <button *ngIf="!esIngreso" type="submit" class="btn btn-danger">Agregar</button>
+            </div>
+            <button *ngIf="tipoBoton === 0" type="submit" class="btn btn-success">Cobrar</button>          
+            <button *ngIf="tipoBoton === 1" type="submit" class="btn btn-danger">Pagar</button>
+            <button *ngIf="tipoBoton === 2" type="submit" class="btn btn-dark">Ingresar</button>          
+            <button *ngIf="tipoBoton === 3" type="submit" class="btn btn-primary">Retirar</button>
         </form>
+        <hr>
     </div>
     <div class="row">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Descripcion</th>
-                        <th>Fecha</th>
-                        <th>Contado</th>
-                        <th>Cuenta DNI</th>
-                        <th>Tarjeta</th>
-                        <th>Transferencia</th>
-                        <th>Borrar</th>
-                        <th>Editar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let pago of pagos">
-                        <td class="col-md-5">{{ pago.descripcion }}</td>
-                        <td class="col-md-1">{{ pago.fechaPago | date: 'HH:mm' }}</td> <!-- dd/MM/yyyy  -->
-                        <td class="col-md-1">
-                            <span *ngIf="pago.formaPago === 1" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                                {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
-                            </span>
-                        </td>
-                        <td class="col-md-1">
-                            <span *ngIf="pago.formaPago === 3" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                                {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
-                            </span>
-                        </td>
-                        <td class="col-md-1">
-                            <span *ngIf="pago.formaPago === 2" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                                {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
-                            </span>
-                        </td>
-                        <td class="col-md-1">
-                            <span *ngIf="pago.formaPago === 4" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
-                                {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
-                            </span>
-                        </td>
-                        <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-dark" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-5"><b>Total</b></td>
-                        <td class="col-md-1"></td>
-                        <td class="col-md-1" [ngClass]="{'red-text': totalContado < 0, 'green-text': totalContado > 0}"><b>{{totalContado | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
-                        <td class="col-md-1" [ngClass]="{'red-text': totalTarjeta < 0, 'green-text': totalTarjeta > 0}"><b>{{totalTarjeta | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
-                        <td class="col-md-1" [ngClass]="{'red-text': totalDNI < 0, 'green-text': totalDNI > 0}"><b>{{totalDNI | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
-                        <td class="col-md-1" [ngClass]="{'red-text': totalTransferencia < 0, 'green-text': totalTransferencia > 0}"><b>{{totalTransferencia | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
-                        <td class="col-md-1"></td>
-                        <td class="col-md-1"></td>
-                    </tr>
-                </tbody>
-            </table>
+        <h2>Cobros y pagos</h2>
+    </div>
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Descripcion</th>
+                    <th>Fecha</th>
+                    <th>Contado</th>
+                    <th>Cuenta DNI</th>
+                    <th>Tarjeta</th>
+                    <th>Transferencia</th>
+                    <th>Borrar</th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let pago of pagos">
+                    <td class="col-md-5">{{ pago.descripcion }}</td>
+                    <td class="col-md-1">{{ pago.fechaPago | date: 'HH:mm' }}</td> <!-- dd/MM/yyyy  -->
+                    <td class="col-md-1">
+                        <span *ngIf="pago.formaPago === 1" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
+                            {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
+                        </span>
+                    </td>
+                    <td class="col-md-1">
+                        <span *ngIf="pago.formaPago === 3" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
+                            {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
+                        </span>
+                    </td>
+                    <td class="col-md-1">
+                        <span *ngIf="pago.formaPago === 2" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
+                            {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
+                        </span>
+                    </td>
+                    <td class="col-md-1">
+                        <span *ngIf="pago.formaPago === 4" [ngClass]="{'red-text': pago.valor < 0, 'green-text': pago.valor > 0}">
+                            {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
+                        </span>
+                    </td>
+                    <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                    <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-dark" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                    <td class="col-md-5"><b>Total</b></td>
+                    <td class="col-md-1"></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalContado < 0, 'green-text': totalContado > 0}"><b>{{totalContado | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalDNI < 0, 'green-text': totalDNI > 0}"><b>{{totalDNI | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalTarjeta < 0, 'green-text': totalTarjeta > 0}"><b>{{totalTarjeta | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1" [ngClass]="{'red-text': totalTransferencia < 0, 'green-text': totalTransferencia > 0}"><b>{{totalTransferencia | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1"></td>
+                    <td class="col-md-1"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <hr>
+    <div class="row">
+        <h2>Movimientos de caja</h2>
+    </div>
+    <div class="row">
+        <table class="table table-striped"> 
+            <thead>
+                <tr>
+                    <th>Descripcion</th>
+                    <th>Fecha</th>
+                    <th>Ingreso Caja</th>
+                    <th>Retiro Caja</th>
+                    <th>Borrar</th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let movimiento of ingresosRetiros">
+                    <td class="col-md-5">{{ movimiento.descripcion }}</td>
+                    <td class="col-md-1">{{ movimiento.fechaPago | date: 'HH:mm' }}</td> <!-- dd/MM/yyyy  -->
+                    <td class="col-md-1">
+                        <span *ngIf="movimiento.idPedido === '-2'" class="green-text">
+                            {{movimiento.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
+                        </span>
+                    </td>
+                    <td class="col-md-1">
+                        <span *ngIf="movimiento.idPedido === '-3'" class="red-text">
+                            {{movimiento.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
+                        </span>
+                    </td>
+                    <td class="col-md-1"><button *ngIf="!readOnly" class="btn btn-danger" (click)="eliminarPago(movimiento)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                    <td class="col-md-1"><button *ngIf="!readOnly" class="btn btn-dark" (click)="editarPago(movimiento)"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                    <td class="col-md-5"><b>Total</b></td>
+                    <td class="col-md-1"></td>
+                    <td class="col-md-1" class="green-text"><b>{{totalIngresosCaja | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1" class="red-text"><b>{{totalRetirosCaja | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1"></td>
+                    <td class="col-md-1"></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
   </div>

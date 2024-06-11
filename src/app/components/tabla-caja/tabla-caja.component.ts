@@ -15,6 +15,7 @@ import localeEsArExtra from '@angular/common/locales/extra/es-AR';
 import { EditarPagoService } from '../../../services/popup/editarPago';
 import { CajaService } from '../../../services/caja.service';
 import { ConfirmarService } from '../../../services/popup/confirmar';
+import { tipoDePago } from '../../../clases/constantes/tipoPago';
 
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 @Component({
@@ -31,20 +32,26 @@ export class TablaCajaComponent implements OnInit{
   myForm: FormGroup;
   isFormVisible: boolean = false;
   formaDePago:FormaDePago[] = [];
-  esIngreso:boolean = true;
+  tipoBoton:number = 0;
   totalContado:number = 0;
   totalTarjeta:number = 0;
   totalDNI:number = 0;
   totalTransferencia:number = 0;
+  totalIngresosCaja:number = 0;
+  totalRetirosCaja:number = 0;
 
   @Input()
   pagos: Pago[] = [];
+  @Input()
+  ingresosRetiros: Pago[] = [];
+
   @Input()
   readOnly:boolean = false;
   constructor(private fb: FormBuilder, private pagosServices: PagosService, private editarPagoService:EditarPagoService, private cajaService:CajaService,
     private confirmarService: ConfirmarService
   ) {
     this.formaDePago = formaDePago;
+
     this.myForm = this.fb.group({
       descripcion: ['', Validators.required],
       valor: [null, [Validators.required, Validators.min(0)]],
@@ -68,9 +75,9 @@ export class TablaCajaComponent implements OnInit{
     }
   }
 
-  toggleForm(esIngreso:boolean) {
+  toggleForm(tipoBoton:number) {
     this.isFormVisible = !this.isFormVisible;
-    this.esIngreso = esIngreso;
+    this.tipoBoton = tipoBoton;
   }
 
   onSubmit() {    
@@ -84,10 +91,19 @@ export class TablaCajaComponent implements OnInit{
   editarPago(pago: Pago) {
     this.editarPagoService.editarPago(pago).then((pago:Pago) => {
       if (pago) {
-        const index = this.pagos.findIndex(c => c._id === pago._id);
-        if (index !== -1) {
-            this.pagos[index] = pago;
+        if (pago.idPedido !== '-2' && pago.idPedido !== '-3') {
+          const index = this.pagos.findIndex(c => c._id === pago._id);
+          if (index !== -1) {
+              this.pagos[index] = pago;
+          }
+  
+        } else {
+          const index = this.ingresosRetiros.findIndex(c => c._id === pago._id);
+          if (index !== -1) {
+              this.ingresosRetiros[index] = pago;
+          }
         }
+        
         this.actualizarTotales();
       }
     }).catch((error) => {
@@ -102,10 +118,19 @@ export class TablaCajaComponent implements OnInit{
       if (confirmar) {
         const pagoId = pago._id as unknown as string;
         this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
-          let index = this.pagos.findIndex(item => item._id === pago._id);
 
-          if (index > -1) {
-            this.pagos.splice(index, 1);
+          if (pago.idPedido !== '-2' && pago.idPedido !== '-3') {
+            let index = this.pagos.findIndex(item => item._id === pago._id);
+  
+            if (index > -1) {
+              this.pagos.splice(index, 1);
+            }
+          } else {
+            let index = this.ingresosRetiros.findIndex(item => item._id === pago._id);
+  
+            if (index > -1) {
+              this.ingresosRetiros.splice(index, 1);
+            }
           }
           //Si elimino y resta, se suma. Si elimino y suma, se resta
           pago.valor = -pago.valor;
@@ -122,7 +147,9 @@ export class TablaCajaComponent implements OnInit{
   private cargarPagos(fechaDesde:string, fechaHasta:string) {
     if (this.pagos.length === 0) {
       this.pagosServices.getCajaByDate(fechaDesde, fechaHasta).subscribe((res) => {
-        this.pagos = res;
+        //Separar pagos de retiros
+        this.pagos = res.filter((pago) => pago.idPedido !== '-2' && pago.idPedido !== '-3');
+        this.ingresosRetiros = res.filter((pago) => pago.idPedido === '-2' || pago.idPedido === '-3');
         this.actualizarTotales();
       })
     } else {
@@ -131,10 +158,15 @@ export class TablaCajaComponent implements OnInit{
   }
   
   private actualizarTotalesPorPago(pago:Pago) {
-    pago.formaPago ===  1 ? this.totalContado += pago.valor : null;
-    pago.formaPago ===  2 ? this.totalTarjeta += pago.valor : null;
-    pago.formaPago ===  3 ? this.totalDNI += pago.valor : null;
-    pago.formaPago ===  4 ? this.totalTransferencia += pago.valor : null;
+    if (pago.idPedido && (pago.idPedido !== '-2' && pago.idPedido !== '-3')) {
+      pago.formaPago ===  1 ? this.totalContado += pago.valor : null;
+      pago.formaPago ===  2 ? this.totalTarjeta += pago.valor : null;
+      pago.formaPago ===  3 ? this.totalDNI += pago.valor : null;
+      pago.formaPago ===  4 ? this.totalTransferencia += pago.valor : null;
+    } else {
+      pago.idPedido ===  '-2' ? this.totalIngresosCaja += pago.valor : null;
+      pago.idPedido ===  '-3' ? this.totalRetirosCaja += pago.valor : null;
+    }
   }
 
   private actualizarTotales() {
@@ -142,7 +174,12 @@ export class TablaCajaComponent implements OnInit{
     this.totalTarjeta = 0;
     this.totalTransferencia = 0;
     this.totalDNI = 0;
+    this.totalIngresosCaja = 0;
+    this.totalRetirosCaja = 0;
     this.pagos.forEach((pago) => {
+      this.actualizarTotalesPorPago(pago);
+    })
+    this.ingresosRetiros.forEach((pago) => {
       this.actualizarTotalesPorPago(pago);
     })
   }
@@ -184,17 +221,23 @@ export class TablaCajaComponent implements OnInit{
 }
   private checkearForm() {
     if (this.myForm.valid) {
+      const idPedido: string = tipoDePago[this.tipoBoton];
       const pago: Pago = {
-        idPedido: "-1",
+        idPedido: idPedido,
         fechaPago: nowConLuxonATimezoneArgentina(),
-        valor: this.esIngreso ? this.myForm.value.valor : -this.myForm.value.valor,
+        valor: this.tipoBoton === 1 || this.tipoBoton === 3 ? -this.myForm.value.valor : this.myForm.value.valor,
         formaPago: +this.myForm.value.formaDePago,
         descripcion: this.myForm.value.descripcion  
       }
       this.pagosServices.postPago(pago).subscribe((res) => {
         this.myForm.reset({descripcion: '',valor: null,formaDePago: 1});
         this.actualizarTotalesPorPago(pago);
-        this.pagos.unshift(res);
+        if (idPedido === '-1') {
+          this.pagos.unshift(res);
+        } else {
+          this.ingresosRetiros.unshift(res);
+        }
+        this.isFormVisible = false;
       }, (error) => {
         this.confirmarService.confirm("Caja error", error.error.message, true,"Ok", "No");
       })

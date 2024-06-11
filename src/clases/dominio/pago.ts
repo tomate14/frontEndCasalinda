@@ -5,6 +5,6 @@ export interface Pago {
     idPedido?: string;
     fechaPago: string;
     valor: number;
-    formaPago: number;
+    formaPago?: number;
     descripcion?: string;
   }

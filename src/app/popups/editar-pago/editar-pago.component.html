@@ -34,9 +34,9 @@
                         class="invalid-feedback">Debe ingresar el total</div>
                     </div>
                 </div>  
-                <div class="col-md-6 form-group">
-                    <select class="form-select" formControlName="formaDePago">
-                    <option *ngFor="let fPago of formaDePago" [value]="fPago.value">{{fPago.viewValue}}</option>
+                <div *ngIf="esIngresoEgresoCaja(pago)" class="col-md-6 form-group">
+                    <select  class="form-select" formControlName="formaDePago">
+                        <option *ngFor="let fPago of formaDePago" [value]="fPago.value">{{fPago.viewValue}}</option>
                     </select>
                 </div>
             </div>

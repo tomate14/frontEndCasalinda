@@ -7,6 +7,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
+import { esIngresoEgresoCaja } from '../../../utils/funciones';
 
 @Component({
   selector: 'app-editar-pedido',
@@ -38,12 +39,12 @@ export class EditarPagoComponent implements OnInit{
   }
   onSubmit() {
     if (this.myForm.valid) {
-      
+      const fechaPago = this.pago?.fechaPago  as unknown as string;
       const pago:Pago = {
-        fechaPago: nowConLuxonATimezoneArgentina(),
+        fechaPago: fechaPago,
         valor: this.myForm.value.total,
         descripcion: this.myForm.value.descripcion,
-        idPedido: "-1",
+        idPedido: this.pago?.idPedido,
         formaPago: +this.myForm.value.formaDePago
       }
       const idPago = this.pago?._id  as unknown as string;
@@ -58,6 +59,13 @@ export class EditarPagoComponent implements OnInit{
     } else {
       console.log('Form Not Valid');
     }
+  }
+
+  esIngresoEgresoCaja(pago: Pago | undefined): any {
+    if (pago) {
+      return esIngresoEgresoCaja(pago);
+    }
+    return false;
   }
 
   cerrar() {

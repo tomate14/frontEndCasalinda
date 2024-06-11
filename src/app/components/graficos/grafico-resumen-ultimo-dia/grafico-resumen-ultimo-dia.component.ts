@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { coloresGrafico } from '../../../../utils/color-graficos';
 import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
-import { getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../../utils/dates';
+import { horaPrincipioFinDia } from '../../../../utils/dates';
 import { CajaService } from '../../../../services/caja.service';
 import { formatearNumeros } from '../../../../utils/formato-numeros';
 
@@ -26,7 +26,7 @@ export class GraficoResumenUltimoDiaComponent {
     name: 'customScheme',
     selectable: false,
     group: ScaleType.Time,
-    domain: [coloresGrafico.ingresos, coloresGrafico.gastos]
+    domain: [coloresGrafico.ganancia, coloresGrafico.gastos]
   };
   // options
   gradient: boolean = false;
@@ -40,20 +40,24 @@ export class GraficoResumenUltimoDiaComponent {
   }
 
   private generarArribaIzquierdaTortas() {
-    const fechaPrevia = getPreviousDays(nowConLuxonATimezoneArgentina(), false,1);
-    const fechaDesde = horaPrincipioFinDia(fechaPrevia, false);
-    const fechaHasta = horaPrincipioFinDia(fechaPrevia, true);
-    this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res) => {
-      if (res) {
-        const respuesta = res[0];
-        this.ingresosGastos = [{name: "Ingresos", value: respuesta.ingresos}, {name: "Gastos", value: respuesta.gastos}]
-        this.single = [{"name": "Contado","value": respuesta.contado},{"name": "Cuenta Dni","value": respuesta.cuentaDni},
-          {"name": "Tarjeta","value": respuesta.tarjeta},{"name": "Transferencia","value": respuesta.transferencia}];
+    this.cajaService.getUltimasCajasCerradas().subscribe((res)=> {
+      if (res.length > 0) {
+        const fechaDesde = horaPrincipioFinDia(res[0], false);
+        const fechaHasta = horaPrincipioFinDia(res[0], true);
+
+        this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res) => {
+          if (res) {
+            const respuesta = res[0];
+            this.ingresosGastos = [{name: "Ganancia", value: respuesta.ganancia}, {name: "Gastos", value: respuesta.gastos}]
+            this.single = [{"name": "Contado","value": respuesta.contado},{"name": "Cuenta Dni","value": respuesta.cuentaDni},
+              {"name": "Tarjeta","value": respuesta.tarjeta},{"name": "Transferencia","value": respuesta.transferencia}];
+          }
+        }, (error) => {
+          alert(error);
+          this.single = [{"name": "Contado","value": 0},{"name": "Cuenta Dni","value": 0},{"name": "Tarjeta","value": 0},{"name": "Transferencia","value": 0}]
+        });
       }
-    }, (error) => {
-      alert(error);
-      this.single = [{"name": "Contado","value": 0},{"name": "Cuenta Dni","value": 0},{"name": "Tarjeta","value": 0},{"name": "Transferencia","value": 0}]
-    });
+    })
   }
 
   formatValues(value: number): string {

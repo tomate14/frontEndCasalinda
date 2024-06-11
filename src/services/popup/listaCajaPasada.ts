@@ -13,14 +13,15 @@ export class ListaCajaPasadaService {
   constructor(private modalService: NgbModal) { }
 
   //Popup de confirmacion
-  public mostrarPagosPasados(pagos:Pago[] | undefined ): Promise<any> {    
+  public mostrarPagosPasados(pagos:Pago[] | undefined, ingresosRetiros:Pago[] | undefined ): Promise<any> {    
     const modalOptions: NgbModalOptions = {
         size: 'xl' // Establecer el tamaño del modal como grande (100% de la pantalla vertical)
     };
     const modalRef = this.modalService.open(ListaCajaPasadaComponent, modalOptions);
 
-    if (pagos) {
+    if (pagos && ingresosRetiros) {
         modalRef.componentInstance.pagos = pagos;
+        modalRef.componentInstance.ingresosRetiros = ingresosRetiros;
     }
 
     return modalRef.result;

@@ -57,7 +57,7 @@
                                 {{caja.cuentaDni | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
                             </span>
                         </td>
-                        <td class="col-md-1">{{caja.ingresos | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
+                        <td class="col-md-1">{{caja.ganancia | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
                         <td class="col-md-1">{{caja.gastos | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
                         <td class="col-md-1"><button class="btn btn-dark" (click)="verMovimientos(caja)"><i class="fas fa-search"></i></button></td>
                     </tr>
@@ -74,7 +74,7 @@
                     <td class="col-md-1"><b>{{totales.contado | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
                     <td class="col-md-1"><b>{{totales.tarjeta | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
                     <td class="col-md-1"><b>{{totales.cuentaDni| currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
-                    <td class="col-md-1"><b>{{totales.ingresos| currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
+                    <td class="col-md-1"><b>{{totales.ganancias| currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
                     <td class="col-md-1"><b>{{totales.gastos| currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</b></td>
                     <td class="col-md-1"></td>
                 </tr>
