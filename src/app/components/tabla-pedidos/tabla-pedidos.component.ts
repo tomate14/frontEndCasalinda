@@ -8,13 +8,15 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
-import { getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina, transformarAHoraArgentinaISO } from '../../../utils/dates';
+import { formatearFechaDesdeUnIso, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina, transformarAHoraArgentinaISO } from '../../../utils/dates';
 import { CrearPedidoService } from '../../../services/popup/generar-pedidos.service';
 import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
 import { ActivatedRoute } from '@angular/router';
 import { ListarPagosPorPedidosService } from '../../../services/popup/listaPagosPorPedidos.service';
 import { EditarPedidoService } from '../../../services/popup/editarPedido.service';
 import { EstadoEnvio, estadoDeEnvio } from '../../../clases/constantes/estadoEnvio';
+import { PagosService } from '../../../services/pago.service';
+import { DeudaPedido } from '../../../clases/dto/deudaPedido';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -36,6 +38,7 @@ const defaultFormObject = {
   styleUrl: './tabla-pedidos.component.css'
 })
 export class TablaPedidoComponent implements OnInit {
+
   pedidos: Pedido[] = [];
   filterForm: FormGroup;
   isCollapsed: boolean = true;
@@ -45,6 +48,7 @@ export class TablaPedidoComponent implements OnInit {
   estadoDeEnvio:EstadoEnvio[] = [];
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService, 
+    private pagosService: PagosService,
     private crearPedidoModal:CrearPedidoService, private pagosPorPedidosService: ListarPagosPorPedidosService,
     private editarPedidoService:EditarPedidoService) { 
     this.route.params.subscribe(params => {
@@ -164,5 +168,30 @@ export class TablaPedidoComponent implements OnInit {
         }
       }
     })
+  }
+
+  notificarDeuda(pedido: Pedido) {
+    const pedidoId = pedido._id as unknown as string;
+    this.pedidosService.getInformeDeudaPedido(pedidoId).subscribe((res:DeudaPedido) => {
+      if (res) {
+        this.enviarWP(res);
+      }
+    })
+  }
+
+  private enviarWP(res:DeudaPedido) {
+      let body = `Hola ${res.nombreCliente}. Notificamos que el pedido *_${res.idPedido}_* adeuda pagos.`;
+      if (res.fechaUltimoPago) {
+        body = body + ` El ultimo pago registrado fue el *_${formatearFechaDesdeUnIso(res.fechaUltimoPago, 'dd/MM/yyyy HH:mm')}_* por un monto de *_$${res.montoUltimoPago}_*.`;
+      }
+      body = body + ` El saldo restante a abonar es *_$${res.saldoRestante}_*.`;
+      body = body + ` Necesitamos que pase a abonarlo a la brevedad.`;
+      body = body + ` Muchas gracias. \n`;
+      body = body + `Casa Linda`;
+
+      const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
+      const url = `https://wa.me/${res.telefonoCliente}?text=${encodedMessage}`;
+      window.open(url);  
+
   }
 }
