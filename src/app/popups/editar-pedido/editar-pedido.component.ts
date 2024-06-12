@@ -58,8 +58,6 @@ export class EditarPedidoComponent {
           alert(error.error.message);
         })
       }
-    } else {
-      console.log('Form Not Valid');
     }
   }
 
