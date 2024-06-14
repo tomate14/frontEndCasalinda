@@ -7,11 +7,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PedidosService } from '../../../services/pedidos.service';
 import { MatSelectModule } from '@angular/material/select';
 import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
-import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
+import { formatearFechaDesdeUnIso, nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
 import localeEsArExtra from '@angular/common/locales/extra/es-AR';
 import { ConfirmarService } from '../../../services/popup/confirmar';
+import { PagosPorPedido } from '../../../clases/dto/pagosPorPedido';
 
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 
@@ -32,6 +33,11 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   pagoForm: FormGroup;
   subTotal:number = 0;
   formaDePago:FormaDePago[] = [];
+  respuesta: PagosPorPedido = {
+    nombreCliente: '',
+    telefonoCliente: '',
+    emailCliente: ''
+  };
 
   constructor(private pagosServices: PagosService, private activeModal: NgbActiveModal, private fb: FormBuilder, 
     private pedidosService: PedidosService, private confirmarService:ConfirmarService) { 
@@ -45,7 +51,10 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   ngOnInit(): void {
     if (this.idPedido) {
       this.pagosServices.getPagoByIdPedido(this.idPedido).subscribe((res) => {
-        this.pagos = res;
+        this.respuesta = res;
+        if (res.pagos) {
+          this.pagos = res.pagos;
+        }
         this.actualizarSubTotal();
       })
     }    
@@ -62,8 +71,11 @@ export class ListaPagosPorPedidoComponent implements OnInit {
     const pagoId = pago._id as unknown as string;
       this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
         this.pagosServices.getPagoByIdPedido(this.idPedido).subscribe((res) => {
-          this.pagos = res;
-          this.actualizarSubTotal();
+          this.respuesta = res;
+          if (res && res.pagos) { 
+            this.pagos = res.pagos;
+            this.actualizarSubTotal();
+          }
         });
       }, (error) => {
         alert(`No se pudo eliminar el pago ${pagoId}, ${error.error.message}`);
@@ -85,13 +97,18 @@ export class ListaPagosPorPedidoComponent implements OnInit {
       } else {
         this.pagosServices.postPago(pago).subscribe((res) => {
           this.pagosServices.getPagoByIdPedido(this.idPedido).subscribe((res) => {
-            this.pagos = res;          
-            this.actualizarEstado(preSubTotal);
-            this.actualizarSubTotal();
-            this.pagoForm.reset({
-              valor: '',
-              formaDePago: 1
-            });
+            this.respuesta = res;
+            if (res && res.pagos) {
+              this.pagos = res.pagos;                        
+              this.actualizarEstado(preSubTotal);
+              this.actualizarSubTotal();
+              this.pagoForm.reset({
+                valor: '',
+                formaDePago: 1
+              });
+              res.pagos = [pago];
+              this.enviarWP(res);
+            }
           })
         }, (error) => {
           this.confirmarService.confirm("Caja error", error.error.message, true,"Ok", "No");
@@ -101,6 +118,26 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   }
   actualizarSubTotal(){
     this.subTotal = this.pagos.reduce((acc, pago) => acc + pago.valor, 0);
+  }
+
+  enviarWP(res: PagosPorPedido) {
+    const pago = res && res.pagos ? res.pagos[0] : null;
+    const resto = this.totalPedido - this.subTotal;
+    if (pago) {
+      let body = `Hola ${res.nombreCliente}. Notificamos que el pedido *_${this.idPedido}_* registro un pago`;
+    
+      body = body + ` con fecha *_${formatearFechaDesdeUnIso(pago.fechaPago, 'dd/MM/yyyy HH:mm')}_* por un monto de *_$${pago.valor}_*.`;      
+      body = body + ` El saldo restante a abonar es *_$${resto}_*.`;
+  
+      const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
+      const url = `https://wa.me/${res.telefonoCliente}?text=${encodedMessage}`;
+      window.open(url);  
+    }
+  }
+  
+  enviarPago(pago:Pago) {
+    this.respuesta.pagos = [pago];
+    this.enviarWP(this.respuesta);
   }
 
   private actualizarEstado(preSubTotal:number) {

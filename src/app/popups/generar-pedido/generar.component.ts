@@ -15,6 +15,7 @@ import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmarService } from '../../../services/popup/confirmar';
 import { CrearClienteService } from '../../../services/popup/crearCliente.service';
+import { enviarMensajeAltaPedido } from '../../../utils/mensajesWhatsapp';
 
 @Component({
   selector: 'app-generar',
@@ -78,7 +79,8 @@ export class GenerarComponent {
         estado: estado,
         descripcion: this.myForm.value.descripcion,
         tipoPedido: +this.myForm.value.tipoDePedido,
-        estadoEnvio: +1
+        estadoEnvio: +1,
+        conSena: this.myForm.value.seña > 0
       }
       this.pedidosService.post(pedido).subscribe(res => {
         const id = res._id as unknown as string;
@@ -117,16 +119,7 @@ export class GenerarComponent {
   enviarWp(id: string) {
     if (this.myForm.valid) {
       const saldo = this.myForm.value.total - this.myForm.value.seña;
-      let body = `Hola ${this.myForm.value.nombre}. Confirmamos su pedido *_${id}_* con una fecha de entrega estimada de *_30 dias_* habiles aproximadamente.`;
-      body = body + ` Aclaramos que el pedido puede sufrir atrazos por cuestiones de fuerza mayor.`;
-      body = body + ` Asi mismo, tomamos como descripcion del producto: ${this.myForm.value.descripcion}.`;
-      body = body + ` Se tomo una seña de *_$${this.myForm.value.seña}_* y el saldo es de *_$${saldo}_*.`;
-      body = body + ` Recuerde que no contamos con envio propio, el flete tiene un costo adicional a consultar`;
-
-      const phoneNumber = this.cliente?.telefono;
-      const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
-      const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-      window.open(url);  
+      enviarMensajeAltaPedido(this.myForm.value.nombre, id, this.myForm.value.descripcion, this.myForm.value.seña, saldo, this.cliente?.telefono);
     }
   }
   cerrar() {

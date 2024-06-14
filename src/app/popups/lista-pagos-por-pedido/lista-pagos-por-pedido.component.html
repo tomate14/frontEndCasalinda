@@ -47,7 +47,10 @@
                 <td>{{ pago.idPedido }}</td>
                 <td>{{ pago.fechaPago | date: 'dd/MM/yyyy HH:mm' }}</td>
                 <td>{{ pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
-                <td><button class="btn btn-danger" *ngIf="subTotal < totalPedido" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                <td>
+                  <button class="btn btn-danger" *ngIf="subTotal < totalPedido" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                  <button class="btn btn-dark" *ngIf="subTotal < totalPedido" (click)="enviarPago(pago)"><i class="fa fa-commenting" title="Notificar Deuda"></i></button>
+                </td>
                 </tr>
             </tbody>
             </table>

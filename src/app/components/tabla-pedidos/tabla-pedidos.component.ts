@@ -17,6 +17,7 @@ import { EditarPedidoService } from '../../../services/popup/editarPedido.servic
 import { EstadoEnvio, estadoDeEnvio } from '../../../clases/constantes/estadoEnvio';
 import { PagosService } from '../../../services/pago.service';
 import { DeudaPedido } from '../../../clases/dto/deudaPedido';
+import { enviarMensajeAltaPedido, notificarDeudaPedido } from '../../../utils/mensajesWhatsapp';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -179,19 +180,17 @@ export class TablaPedidoComponent implements OnInit {
     })
   }
 
+  enviarConfirmacion(pedido:Pedido) {
+    const pedidoId = pedido._id as unknown as string;
+    this.pagosService.getPagoByIdPedido(pedidoId).subscribe((res)=> {
+      let sena = res.pagos && pedido.conSena ? res.pagos[res.pagos.length - 1].valor : 0;
+      let saldo = pedido.total - sena;
+      const nombre = pedido.nombreCliente || "";
+      enviarMensajeAltaPedido(nombre, pedidoId, pedido.descripcion, sena, saldo, pedido.telefonoCliente);
+    })    
+  }
+
   private enviarWP(res:DeudaPedido) {
-      let body = `Hola ${res.nombreCliente}. Notificamos que el pedido *_${res.idPedido}_* adeuda pagos.`;
-      if (res.fechaUltimoPago) {
-        body = body + ` El ultimo pago registrado fue el *_${formatearFechaDesdeUnIso(res.fechaUltimoPago, 'dd/MM/yyyy HH:mm')}_* por un monto de *_$${res.montoUltimoPago}_*.`;
-      }
-      body = body + ` El saldo restante a abonar es *_$${res.saldoRestante}_*.`;
-      body = body + ` Necesitamos que pase a abonarlo a la brevedad.`;
-      body = body + ` Muchas gracias. \n`;
-      body = body + `Casa Linda`;
-
-      const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
-      const url = `https://wa.me/${res.telefonoCliente}?text=${encodedMessage}`;
-      window.open(url);  
-
+    notificarDeudaPedido(res);  
   }
 }

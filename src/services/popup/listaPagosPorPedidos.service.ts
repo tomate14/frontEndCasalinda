@@ -13,7 +13,7 @@ export class ListarPagosPorPedidosService {
   //Popup de confirmacion
   public crearListaPagos( idPedido: string, totalPedido:number): Promise<Pedido> {    
     const modalOptions: NgbModalOptions = {
-      size: 'lg' // Establecer el tamaño del modal como grande (100% de la pantalla vertical)
+      size: 'xl' // Establecer el tamaño del modal como grande (100% de la pantalla vertical)
     };
 
     const modalRef = this.modalService.open(ListaPagosPorPedidoComponent, modalOptions);

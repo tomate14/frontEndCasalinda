@@ -111,7 +111,8 @@
           <td>
             <button class="btn btn-dark" (click)="verPagos(pedido)"><i class="fas fa-search" title="Ver pagos"></i></button>
             <button class="btn btn-dark btnEditar" (click)="editarPedido(pedido)"><i class="fas fa-edit" title="Editar"></i></button>
-            <button *ngIf="pedido.estado === 'PENDIENTE'" class="btn btn-dark btnEditar" (click)="notificarDeuda(pedido)"><i class="fa fa-commenting" title="Notificar Deuda"></i></button>
+            <button *ngIf="pedido.estado === 'PENDIENTE'" class="btn btn-danger btnEditar" (click)="notificarDeuda(pedido)"><i class="fa fa-exclamation-triangle" title="Notificar Deuda"></i></button>
+            <button class="btn btn-warning btnEditar" (click)="enviarConfirmacion(pedido)"><i class="fa fa-paper-plane" title="Enviar Confirmacion"></i></button>
             
           </td>
         </tr>
