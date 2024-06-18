@@ -83,6 +83,7 @@ export class GenerarComponent {
         conSena: this.myForm.value.seña > 0
       }
       this.pedidosService.post(pedido).subscribe(res => {
+        const numeroPedido = res.numeroComprobante as unknown as string;;
         const id = res._id as unknown as string;
         const pago: Pago = {
           idPedido:id,
@@ -98,7 +99,7 @@ export class GenerarComponent {
             this.confirmarService.confirm("Pedidos error", error.error.message, true,"Ok", "No");
           })
         }       
-        this.enviarWp(id);
+        this.enviarWp(id, numeroPedido);
         this.myForm.reset(); 
         this.activeModal.close(res);      
       })
@@ -116,10 +117,10 @@ export class GenerarComponent {
     window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);  
         
   }
-  enviarWp(id: string) {
+  enviarWp(id: string, numeroComprobante:string) {
     if (this.myForm.valid) {
       const saldo = this.myForm.value.total - this.myForm.value.seña;
-      enviarMensajeAltaPedido(this.myForm.value.nombre, id, this.myForm.value.descripcion, this.myForm.value.seña, saldo, this.cliente?.telefono);
+      enviarMensajeAltaPedido(this.myForm.value.nombre, id, this.myForm.value.descripcion, this.myForm.value.seña, saldo, this.cliente?.telefono, numeroComprobante);
     }
   }
   cerrar() {

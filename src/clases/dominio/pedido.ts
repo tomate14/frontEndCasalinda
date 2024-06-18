@@ -3,6 +3,7 @@ export interface Pedido {
     _id?: {
       $oid: string;
     };
+    numeroComprobante?:string
     fechaPedido?: string;
     total: number;
     estado: 'PENDIENTE' | 'COMPLETO';    

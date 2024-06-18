@@ -182,11 +182,12 @@ export class TablaPedidoComponent implements OnInit {
 
   enviarConfirmacion(pedido:Pedido) {
     const pedidoId = pedido._id as unknown as string;
+    const numeroComprobante = pedido.numeroComprobante as unknown as string;
     this.pagosService.getPagoByIdPedido(pedidoId).subscribe((res)=> {
       let sena = res.pagos && pedido.conSena ? res.pagos[res.pagos.length - 1].valor : 0;
       let saldo = pedido.total - sena;
       const nombre = pedido.nombreCliente || "";
-      enviarMensajeAltaPedido(nombre, pedidoId, pedido.descripcion, sena, saldo, pedido.telefonoCliente);
+      enviarMensajeAltaPedido(nombre, pedidoId, pedido.descripcion, sena, saldo, pedido.telefonoCliente, numeroComprobante);
     })    
   }
 
