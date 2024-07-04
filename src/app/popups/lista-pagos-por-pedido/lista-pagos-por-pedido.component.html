@@ -44,7 +44,7 @@
             <tbody>
                 <tr *ngFor="let pago of pagos">
                 <td>{{ pago._id }}</td>
-                <td>{{ pago.idPedido }}</td>
+                <td>{{ pedido?.numeroComprobante }}</td>
                 <td>{{ pago.fechaPago | date: 'dd/MM/yyyy HH:mm' }}</td>
                 <td>{{ pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
                 <td>

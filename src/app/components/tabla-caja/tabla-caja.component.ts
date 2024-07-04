@@ -80,8 +80,9 @@ export class TablaCajaComponent implements OnInit{
     this.tipoBoton = tipoBoton;
   }
 
-  onSubmit() {    
-    if (this.pagos.length === 0) {
+  onSubmit() {  
+    const pagosSinPedidos = this.pagos.filter((p)=> p._id?.$oid === '-1' || p._id?.$oid === '-2' || p._id?.$oid === '-3')  
+    if (pagosSinPedidos && pagosSinPedidos.length === 0) {
       this.checkearCajasSinCerrar();
     } else {
       this.checkearForm();

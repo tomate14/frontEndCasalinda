@@ -34,9 +34,8 @@ export class ListaPedidosPorClienteComponent {
   }
 
   verPagos(pedido: Pedido): void {
-    const pedidoId = pedido._id as unknown as string;
     const totalPedido = pedido.total;
-    this.pagosPorPedidosService.crearListaPagos(pedidoId, totalPedido).then((res)=> {
+    this.pagosPorPedidosService.crearListaPagos(pedido, totalPedido).then((res)=> {
       this.pedidosService.getByDniCliente(this.dniCliente).subscribe((res)=>{
         this.pedidos = res;
       })

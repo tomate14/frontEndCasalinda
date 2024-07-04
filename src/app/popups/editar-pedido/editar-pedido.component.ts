@@ -52,8 +52,15 @@ export class EditarPedidoComponent {
       const idPedido = this.pedido?._id  as unknown as string;
       if (idPedido) {
         this.pedidosService.put(idPedido, pedido).subscribe(res => {
-          pedido._id = this.pedido?._id;
-          this.activeModal.close(pedido);
+          if (this.pedido) {
+            this.pedido.descripcion = pedido.descripcion;
+            this.pedido.total = pedido.total;
+            this.pedido.tipoPedido = pedido.tipoPedido;
+            this.pedido.estado = pedido.estado;
+            this.pedido.estadoEnvio = pedido.estadoEnvio;
+          }
+
+          this.activeModal.close(this.pedido);
         }, (error) => {
           alert(error.error.message);
         })

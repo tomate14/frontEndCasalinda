@@ -28,16 +28,16 @@
       </div>
       <br/>
       <div class="row">
-        <div class="col-4">
+        <div class="col-3">
           <div class="form-group">
-            <label for="fechaHasta">Fecha Hasta</label>
+            <label for="fechaHasta">Fecha Desde</label>
             <div class="input-group">
                 <span class="input-group-text">Desde</span>
                 <input type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
             </div>  
           </div>
         </div>
-        <div class="col-4">
+        <div class="col-3">
           <div class="form-group">
             <label for="fechaHasta">Fecha Hasta</label>
             <div class="input-group">
@@ -46,14 +46,23 @@
             </div>
           </div>
         </div> 
-        <div class="col-4">
+        <div class="col-3">
           <div class="form-group">
             <label for="estadoDeEnvio">Estado Envio</label>
             <select id="estadoDeEnvio" class="form-select" formControlName="estadoDeEnvio">
               <option *ngFor="let fEnvio of estadoDeEnvio" [value]="fEnvio.value">{{fEnvio.viewValue}}</option>
             </select>
           </div>
-      </div>       
+        </div> 
+        <div class="col-3">
+          <div class="form-group">
+            <label for="ordenFecha">Orden</label>
+            <select id="ordenFecha" class="form-select" formControlName="ordenFecha">
+              <option [value]="1">Ascendente</option>
+              <option [value]="2">Descendente</option>
+            </select>
+          </div>
+        </div>      
       </div>
       <br>
       <div class="row">
@@ -96,7 +105,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let pedido of pedidos| paginate: { itemsPerPage: 15, currentPage: p }">
-          <td>{{ pedido._id }}</td>
+          <td>{{ pedido.numeroComprobante }}</td>
           <td>{{ pedido.dniCliente }}</td>
           <td>{{ pedido.fechaPedido | date: 'dd/MM/yyyy HH:mm' }}</td>
           <td>{{ pedido.nombreCliente }}</td>

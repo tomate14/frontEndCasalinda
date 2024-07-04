@@ -13,6 +13,7 @@ import localeEsAr from '@angular/common/locales/es-AR';
 import localeEsArExtra from '@angular/common/locales/extra/es-AR';
 import { ConfirmarService } from '../../../services/popup/confirmar';
 import { PagosPorPedido } from '../../../clases/dto/pagosPorPedido';
+import { Pedido } from '../../../clases/dominio/pedido';
 
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 
@@ -26,7 +27,7 @@ registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 })
 export class ListaPagosPorPedidoComponent implements OnInit {
 
-  @Input() idPedido: string = "";
+  @Input() pedido: Pedido | undefined;
   @Input() totalPedido: number = 0;
   @Input() title: string = "";
   pagos: Pago[] = [];
@@ -49,8 +50,9 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.idPedido) {
-      this.pagosServices.getPagoByIdPedido(this.idPedido).subscribe((res) => {
+    if (this.pedido) {
+      const id = this.pedido._id as unknown as string;
+      this.pagosServices.getPagoByIdPedido(id).subscribe((res) => {
         this.respuesta = res;
         if (res.pagos) {
           this.pagos = res.pagos;
@@ -61,16 +63,21 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   }
 
   cerrar() {
-    this.pedidosService.getByIdPedido(this.idPedido).subscribe((res)=> {
-      if (res) {
-        this.activeModal.close(res[0]);
-      }      
-    });
+    if (this.pedido) {
+      const id = this.pedido._id as unknown as string;
+      this.pedidosService.getByIdPedido(id).subscribe((res)=> {
+        if (res) {
+          this.activeModal.close(res[0]);
+        }      
+      });
+    }
   }
   eliminarPago(pago: Pago) {
-    const pagoId = pago._id as unknown as string;
+    if (this.pedido) { 
+      const id = this.pedido._id as unknown as string;
+      const pagoId = pago._id as unknown as string;
       this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
-        this.pagosServices.getPagoByIdPedido(this.idPedido).subscribe((res) => {
+        this.pagosServices.getPagoByIdPedido(id).subscribe((res) => {
           this.respuesta = res;
           if (res && res.pagos) { 
             this.pagos = res.pagos;
@@ -80,23 +87,25 @@ export class ListaPagosPorPedidoComponent implements OnInit {
       }, (error) => {
         alert(`No se pudo eliminar el pago ${pagoId}, ${error.error.message}`);
       });      
+    }
   }
 
   agregarPago() {
-    if (this.pagoForm.valid) {      
+    if (this.pagoForm.valid && this.pedido) { 
+      const id = this.pedido._id as unknown as string;     
       const pago: Pago = {
-        idPedido: this.idPedido,
+        idPedido: id,
         fechaPago: nowConLuxonATimezoneArgentina(),
         valor: this.pagoForm.value.valor,
         formaPago: +this.pagoForm.value.formaDePago,
-        descripcion:`Pago del pedido ${this.idPedido}`
+        descripcion:`Pago del pedido ${this.pedido.numeroComprobante}`
       }
       const preSubTotal = this.subTotal + pago.valor;
       if (preSubTotal > this.totalPedido) {
         alert("El valor agregado sobrepasa el valor del pedido");
       } else {
         this.pagosServices.postPago(pago).subscribe((res) => {
-          this.pagosServices.getPagoByIdPedido(this.idPedido).subscribe((res) => {
+          this.pagosServices.getPagoByIdPedido(id).subscribe((res) => {
             this.respuesta = res;
             if (res && res.pagos) {
               this.pagos = res.pagos;                        
@@ -124,7 +133,7 @@ export class ListaPagosPorPedidoComponent implements OnInit {
     const pago = res && res.pagos ? res.pagos[0] : null;
     const resto = this.totalPedido - this.subTotal;
     if (pago) {
-      let body = `Hola ${res.nombreCliente}. Notificamos que el pedido *_${this.idPedido}_* registro un pago`;
+      let body = `Hola ${res.nombreCliente}. Notificamos que el pedido *_${this.pedido?.numeroComprobante}_* registro un pago`;
     
       body = body + ` con fecha *_${formatearFechaDesdeUnIso(pago.fechaPago, 'dd/MM/yyyy HH:mm')}_* por un monto de *_$${pago.valor}_*.`;      
       body = body + ` El saldo restante a abonar es *_$${resto}_*.`;
@@ -141,15 +150,18 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   }
 
   private actualizarEstado(preSubTotal:number) {
-    if (preSubTotal === this.totalPedido) {
-      const pedido: any = {
-        estado: "COMPLETO",
+    if (this.pedido) {
+      const id = this.pedido._id as unknown as string;   
+      if (preSubTotal === this.totalPedido) {
+        const pedido: any = {
+          estado: "COMPLETO",
+        }
+        this.pedidosService.put(id, pedido).subscribe((res) => {
+          
+        },(error) => {
+          alert(error.error.message);
+        })
       }
-      this.pedidosService.put(this.idPedido, pedido).subscribe((res) => {
-        
-      },(error) => {
-        alert(error.error.message);
-      })
     }
   }
 }

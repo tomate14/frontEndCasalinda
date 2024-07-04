@@ -27,7 +27,8 @@ const defaultFormObject = {
   fechaHasta: null,
   tipoDePedido:null,
   dias:0,
-  estadoDeEnvio:null
+  estadoDeEnvio:null,
+  ordenFecha:1
 }
 
 @Component({
@@ -74,13 +75,13 @@ export class TablaPedidoComponent implements OnInit {
     );
   }
   buscar() {
-    const { idPedido, dniCliente, nombre, fechaHasta, fechaDesde, estadoDeEnvio } = this.filterForm.value;
+    const { idPedido, dniCliente, nombre, fechaHasta, fechaDesde, estadoDeEnvio, ordenFecha } = this.filterForm.value;
     const fechaDesdeLuxon = fechaDesde ? horaPrincipioFinDia(fechaDesde,false) : null;
     const fechaHastaLuxon = fechaHasta ? horaPrincipioFinDia(fechaHasta,true) : null;
     let params = [];
     params.push("tipoPedido="+this.tipoPedido); 
     if (idPedido) {
-      params.push("id="+idPedido);
+      params.push("numeroComprobante="+idPedido);
     }    
     if (dniCliente) {
       params.push("dniCliente="+dniCliente);
@@ -101,7 +102,9 @@ export class TablaPedidoComponent implements OnInit {
     if (estadoDeEnvio) {
       params.push("estadoEnvio="+estadoDeEnvio);
     }
-
+    if (ordenFecha) {
+      params.push("ordenFecha="+ordenFecha);
+    }
     this.pedidosService.getByParams(params).subscribe((res) => {
       this.pedidos = res;
     }, (error) => {
@@ -140,9 +143,8 @@ export class TablaPedidoComponent implements OnInit {
   }
 
   verPagos(pedido: Pedido): void {
-    const pedidoId = pedido._id as unknown as string;
     const totalPedido = pedido.total;
-    this.pagosPorPedidosService.crearListaPagos(pedidoId, totalPedido).then((p:Pedido) => {
+    this.pagosPorPedidosService.crearListaPagos(pedido, totalPedido).then((p:Pedido) => {
       const index = this.pedidos.findIndex(c => c._id === p._id);
         if (index !== -1) {
             this.pedidos[index] = p;

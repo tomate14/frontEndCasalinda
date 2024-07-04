@@ -48,7 +48,9 @@ export class GraficoResumenUltimoDiaComponent {
         this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res) => {
           if (res) {
             const respuesta = res[0];
-            this.ingresosGastos = [{name: "Ganancia", value: respuesta.ganancia}, {name: "Gastos", value: respuesta.gastos}]
+            const ganancia = respuesta.ganancia > 0 ? respuesta.ganancia : 0;
+            const gastos = respuesta.gastos > 0 ? respuesta.gastos : 0;
+            this.ingresosGastos = [{name: "Ganancia", value: ganancia}, {name: "Gastos", value: gastos}]
             this.single = [{"name": "Contado","value": respuesta.contado},{"name": "Cuenta Dni","value": respuesta.cuentaDni},
               {"name": "Tarjeta","value": respuesta.tarjeta},{"name": "Transferencia","value": respuesta.transferencia}];
           }
