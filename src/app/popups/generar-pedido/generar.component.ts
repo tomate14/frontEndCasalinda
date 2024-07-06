@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgClass, NgFor, NgIf } from '@angular/common';
+import {NgxSpinnerModule, NgxSpinnerService} from 'ngx-spinner';
 import { PedidosService } from '../../../services/pedidos.service';
 import { ClienteService } from '../../../services/cliente.service';
 import { Cliente } from '../../../clases/dominio/cliente';
@@ -20,7 +21,7 @@ import { enviarMensajeAltaPedido } from '../../../utils/mensajesWhatsapp';
 @Component({
   selector: 'app-generar',
   standalone: true,
-  imports: [ NgFor, NgClass, NgIf, ReactiveFormsModule, FormsModule, MatSelectModule],
+  imports: [ NgFor, NgClass, NgIf, ReactiveFormsModule, FormsModule, MatSelectModule, NgxSpinnerModule],
   templateUrl: './generar.component.html',
   styleUrl: './generar.component.css'
 })
@@ -34,7 +35,7 @@ export class GenerarComponent {
 
   constructor(private fb: FormBuilder, private pedidosService: PedidosService, private clienteService: ClienteService,
     private crearClienteService:CrearClienteService, private pagosService: PagosService, private confirmarService: ConfirmarService,
-    private activeModal: NgbActiveModal) {    
+    private activeModal: NgbActiveModal, private spinner: NgxSpinnerService) {
     this.formaDePago = formaDePago;
     this.tipoDePedido = tipoDePedido;
     this.myForm = this.fb.group({
@@ -46,11 +47,11 @@ export class GenerarComponent {
       dni: [null, Validators.required],
       formaDePago: [1, Validators.required],
       tipoDePedido: [1, Validators.required],
-    }); 
+    });
   }
 
-  ngOnInit() { 
-    
+  ngOnInit() {
+
   }
   buscarCliente() {
     if (this.myForm.value.dni) {
@@ -66,11 +67,11 @@ export class GenerarComponent {
         });
       });
     }
-    
+
   }
   onSubmit() {
-    if (this.myForm.valid) {      
-      
+    if (this.myForm.valid) {
+      this.spinner.show();
       const estado = this.myForm.value.total === this.myForm.value.seña ? "COMPLETO" : "PENDIENTE";
       const pedido:Pedido = {
         dniCliente: this.myForm.value.dni,
@@ -92,30 +93,35 @@ export class GenerarComponent {
           formaPago: +this.myForm.value.formaDePago,
           descripcion:`Pago del pedido ${id}`
         }
-        
+
         if (pago.valor > 0) {
-          this.pagosService.postPago(pago).subscribe((res)=> {    
+          this.pagosService.postPago(pago).subscribe((res)=> {
           }, (error) => {
+            this.spinner.hide();
             this.confirmarService.confirm("Pedidos error", error.error.message, true,"Ok", "No");
           })
-        }       
+        }
         this.enviarWp(id, numeroPedido);
-        this.myForm.reset(); 
-        this.activeModal.close(res);      
+        this.myForm.reset();
+        this.spinner.hide();
+        this.activeModal.close(res);
+      }, (error) => {
+        this.spinner.hide();
+        this.confirmarService.confirm("Pedidos error", error.error.message, true,"Ok", "No");
       })
     }
   }
   enviarEmail() {
     const subject = `Casa Linda confirmacion ${this.myForm.value.dni} de pedido`;
     const saldo = this.myForm.value.total - this.myForm.value.seña;
-    
+
     let body = `Confirmamos su pedido con una fecha de entrega estimada de 30 dias habiles aproximadamente. `;
     body = body + `Aclaramos que el pedido puede sufrir atrazos por cuestiones de fuerza mayor.`;
     body = body + ` Asi mismo, tomamos como descripcion del producto: ${this.myForm.value.descripcion}.`;
     body = body + ` Se tomo una seña de $ ${this.myForm.value.seña} y el saldo es de $ ${saldo}.`;
     body = body + ` Recuerde que no contamos con envio propio, el flete tiene un costo adicional a consultar`;
-    window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);  
-        
+    window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);
+
   }
   enviarWp(id: string, numeroComprobante:string) {
     if (this.myForm.valid) {

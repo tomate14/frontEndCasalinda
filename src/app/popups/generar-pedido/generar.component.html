@@ -13,8 +13,8 @@
             <div class="form-group">
               <label for="dni">DNI</label>
               <input type="number" class="form-control" id="dni" name="dni" formControlName="dni" aria-describedby="emailHelp" placeholder="DNI" required>
-              <div *ngIf="myForm.get('dni')?.invalid && myForm.get('dni')?.touched" 
-              [ngClass]="{'d-block': myForm.get('dni')?.invalid && myForm.get('dni')?.touched, 'd-none': !(myForm.get('dni')?.invalid && myForm.get('dni')?.touched)}" 
+              <div *ngIf="myForm.get('dni')?.invalid && myForm.get('dni')?.touched"
+              [ngClass]="{'d-block': myForm.get('dni')?.invalid && myForm.get('dni')?.touched, 'd-none': !(myForm.get('dni')?.invalid && myForm.get('dni')?.touched)}"
               class="invalid-feedback">Debe ingresar el dni</div>
             </div>
           </div>
@@ -36,8 +36,8 @@
           <div class="form-group">
               <label for="descripcion">Descripcion</label>
               <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3" required></textarea>
-              <div *ngIf="myForm.get('descripcion')?.invalid && myForm.get('descripcion')?.touched" 
-                [ngClass]="{'d-block': myForm.get('descripcion')?.invalid && myForm.get('descripcion')?.touched, 'd-none': !(myForm.get('descripcion')?.invalid && myForm.get('descripcion')?.touched)}" 
+              <div *ngIf="myForm.get('descripcion')?.invalid && myForm.get('descripcion')?.touched"
+                [ngClass]="{'d-block': myForm.get('descripcion')?.invalid && myForm.get('descripcion')?.touched, 'd-none': !(myForm.get('descripcion')?.invalid && myForm.get('descripcion')?.touched)}"
                 class="invalid-feedback">Debe ingresar la descripcion</div>
           </div>
           <br/>
@@ -49,8 +49,8 @@
                   <div class="input-group-text">Entrega $</div>
                 </div>
                 <input type="number" class="form-control" formControlName="seña" id="inlineFormSeña" placeholder="Seña" required>
-                <div *ngIf="myForm.get('seña')?.invalid && myForm.get('seña')?.touched" 
-                  [ngClass]="{'d-block': myForm.get('seña')?.invalid && myForm.get('seña')?.touched, 'd-none': !(myForm.get('seña')?.invalid && myForm.get('seña')?.touched)}" 
+                <div *ngIf="myForm.get('seña')?.invalid && myForm.get('seña')?.touched"
+                  [ngClass]="{'d-block': myForm.get('seña')?.invalid && myForm.get('seña')?.touched, 'd-none': !(myForm.get('seña')?.invalid && myForm.get('seña')?.touched)}"
                   class="invalid-feedback">Debe ingresar la seña</div>
               </div>
             </div>
@@ -71,11 +71,11 @@
                   <div class="input-group-text">$</div>
                 </div>
                 <input type="number" class="form-control" formControlName="total" id="inlineFormTotal" placeholder="Total" required>
-                <div *ngIf="myForm.get('total')?.invalid && myForm.get('total')?.touched" 
-                  [ngClass]="{'d-block': myForm.get('total')?.invalid && myForm.get('total')?.touched, 'd-none': !(myForm.get('total')?.invalid && myForm.get('total')?.touched)}" 
+                <div *ngIf="myForm.get('total')?.invalid && myForm.get('total')?.touched"
+                  [ngClass]="{'d-block': myForm.get('total')?.invalid && myForm.get('total')?.touched, 'd-none': !(myForm.get('total')?.invalid && myForm.get('total')?.touched)}"
                   class="invalid-feedback">Debe ingresar el total</div>
               </div>
-            </div>  
+            </div>
           </div>
           <br/>
           <div class="row">
@@ -92,4 +92,7 @@
         </div>
     </form>
   </div>
+  <ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="large" color="#fff" type="ball-scale-multiple" [fullScreen]="true">
+    <p style="color: white">Cargando...</p>
+  </ngx-spinner>
 </div>

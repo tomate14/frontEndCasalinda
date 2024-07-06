@@ -8,7 +8,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
-import { formatearFechaDesdeUnIso, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina, transformarAHoraArgentinaISO } from '../../../utils/dates';
+import {  getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { CrearPedidoService } from '../../../services/popup/generar-pedidos.service';
 import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
 import { ActivatedRoute } from '@angular/router';
@@ -49,10 +49,10 @@ export class TablaPedidoComponent implements OnInit {
   tipoPedido:number= 1;
   estadoDeEnvio:EstadoEnvio[] = [];
 
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService, 
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService,
     private pagosService: PagosService,
     private crearPedidoModal:CrearPedidoService, private pagosPorPedidosService: ListarPagosPorPedidosService,
-    private editarPedidoService:EditarPedidoService) { 
+    private editarPedidoService:EditarPedidoService) {
     this.route.params.subscribe(params => {
       this.tipoPedido = +params['id']; // El + convierte el string a number
     });
@@ -61,7 +61,7 @@ export class TablaPedidoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+
     this.filterForm = this.fb.group(defaultFormObject);
     this.estadoDeEnvio = estadoDeEnvio;
     this.pedidosService.getPedidosPorTipo(this.tipoPedido).subscribe(
@@ -79,17 +79,21 @@ export class TablaPedidoComponent implements OnInit {
     const fechaDesdeLuxon = fechaDesde ? horaPrincipioFinDia(fechaDesde,false) : null;
     const fechaHastaLuxon = fechaHasta ? horaPrincipioFinDia(fechaHasta,true) : null;
     let params = [];
-    params.push("tipoPedido="+this.tipoPedido); 
+    params.push("tipoPedido="+this.tipoPedido);
     if (idPedido) {
-      params.push("numeroComprobante="+idPedido);
-    }    
+      if (idPedido.length >= 8) {
+        params.push("id="+idPedido);
+      } else {
+        params.push("numeroComprobante="+idPedido);
+      }
+    }
     if (dniCliente) {
       params.push("dniCliente="+dniCliente);
     }
     if (nombre) {
       params.push("nombreCliente="+nombre);
     }
-    
+
     if (fechaDesdeLuxon) {
       params.push("fechaDesde="+fechaDesdeLuxon);
     }
@@ -149,7 +153,7 @@ export class TablaPedidoComponent implements OnInit {
         if (index !== -1) {
             this.pedidos[index] = p;
         }
-    });   
+    });
   }
 
   editarPedido(pedido:Pedido):void {
@@ -190,10 +194,10 @@ export class TablaPedidoComponent implements OnInit {
       let saldo = pedido.total - sena;
       const nombre = pedido.nombreCliente || "";
       enviarMensajeAltaPedido(nombre, pedidoId, pedido.descripcion, sena, saldo, pedido.telefonoCliente, numeroComprobante);
-    })    
+    })
   }
 
   private enviarWP(res:DeudaPedido) {
-    notificarDeudaPedido(res);  
+    notificarDeudaPedido(res);
   }
 }
