@@ -46,12 +46,15 @@
               <label class="sr-only" for="inlineFormSeña">Seña</label>
               <div class="input-group mb-2">
                 <div class="input-group-prepend">
-                  <div class="input-group-text">Entrega $</div>
+                  <div class="input-group-text">Seña $</div>
                 </div>
                 <input type="number" class="form-control" formControlName="seña" id="inlineFormSeña" placeholder="Seña" required>
                 <div *ngIf="myForm.get('seña')?.invalid && myForm.get('seña')?.touched"
                   [ngClass]="{'d-block': myForm.get('seña')?.invalid && myForm.get('seña')?.touched, 'd-none': !(myForm.get('seña')?.invalid && myForm.get('seña')?.touched)}"
                   class="invalid-feedback">Debe ingresar la seña</div>
+                <div *ngIf="myForm.errors?.['senaMayorQueTotal'] && myForm.get('seña')?.touched" class="text-danger">
+                  La seña no puede ser mayor que el total.
+                </div>
               </div>
             </div>
             <div class="col-md-3 form-group">

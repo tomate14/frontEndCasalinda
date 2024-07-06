@@ -17,6 +17,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmarService } from '../../../services/popup/confirmar';
 import { CrearClienteService } from '../../../services/popup/crearCliente.service';
 import { enviarMensajeAltaPedido } from '../../../utils/mensajesWhatsapp';
+import {senaMenorQueTotalValidator} from "../../../validadores/validadorSenaTotal";
 
 @Component({
   selector: 'app-generar',
@@ -47,12 +48,9 @@ export class GenerarComponent {
       dni: [null, Validators.required],
       formaDePago: [1, Validators.required],
       tipoDePedido: [1, Validators.required],
-    });
+    }, { validators: senaMenorQueTotalValidator() });
   }
 
-  ngOnInit() {
-
-  }
   buscarCliente() {
     if (this.myForm.value.dni) {
       this.clienteService.getClienteByDni(this.myForm.value.dni).subscribe((res) => {
@@ -134,18 +132,4 @@ export class GenerarComponent {
     this.activeModal.close(false);
   }
 
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      // Verificar que el archivo sea una imagen
-      if (file.type.startsWith('image/')) {
-        // Obtener el path del archivo
-        this.imagePath = URL.createObjectURL(file);
-        // Mostrar el path de la imagen en la consola
-        console.log('Path de la imagen seleccionada:', this.imagePath);
-      } else {
-        console.error('El archivo seleccionado no es una imagen.');
-      }
-    }
-  }
 }
