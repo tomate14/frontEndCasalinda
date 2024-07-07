@@ -18,6 +18,7 @@ import { ConfirmarService } from '../../../services/popup/confirmar';
 import { CrearClienteService } from '../../../services/popup/crearCliente.service';
 import { enviarMensajeAltaPedido } from '../../../utils/mensajesWhatsapp';
 import {senaMenorQueTotalValidator} from "../../../validadores/validadorSenaTotal";
+import {maxLengthValidator} from "../../../validadores/validador8CaracteresDni";
 
 @Component({
   selector: 'app-generar',
@@ -45,14 +46,14 @@ export class GenerarComponent {
       descripcion: [null, Validators.required],
       seña: [0, Validators.required], // Set initial value to 0
       total: [null, Validators.required],
-      dni: [null, Validators.required],
+      dni: [null, [Validators.required, maxLengthValidator(8)]],
       formaDePago: [1, Validators.required],
       tipoDePedido: [1, Validators.required],
     }, { validators: senaMenorQueTotalValidator() });
   }
 
   buscarCliente() {
-    if (this.myForm.value.dni) {
+    if (!this.myForm.get('dni')?.hasError('maxLength')) {
       this.clienteService.getClienteByDni(this.myForm.value.dni).subscribe((res) => {
         this.cliente = res;
       }, (error) => {
@@ -60,7 +61,8 @@ export class GenerarComponent {
         this.crearClienteService.crearCliente(cliente)
         .then((cliente) => {
             if(cliente){
-              this.cliente =cliente;
+              this.cliente = cliente;
+              this.myForm.value.dni = cliente.dni;
             }
         });
       });

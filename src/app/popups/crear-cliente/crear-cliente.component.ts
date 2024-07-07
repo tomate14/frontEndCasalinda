@@ -21,7 +21,7 @@ export class CrearClienteComponent {
     this.myForm = this.fb.group({});
   }
 
-  ngOnInit() { 
+  ngOnInit() {
     this.myForm = this.fb.group({
       nombre: [this.cliente ? this.cliente.nombre : null, Validators.required],
       dni: [this.cliente ? this.cliente.dni : null, Validators.required],
@@ -50,20 +50,22 @@ export class CrearClienteComponent {
       }
       if (this.cliente) {
         const idCliente = this.cliente._id as unknown as string;
-        this.clienteService.updateCliente(idCliente, cliente).subscribe((res:Cliente) => {  
-          this.myForm.reset(); 
+        this.clienteService.updateCliente(idCliente, cliente).subscribe((res:Cliente) => {
+          this.myForm.reset();
           this.activeModal.close(res);
         },(error: any) => {
           alert('Error al guardar cliente'+ error.error.message);
         });
       } else {
-        this.clienteService.postCliente(cliente).subscribe((res:Cliente) => {  
-          this.myForm.reset(); 
+        this.clienteService.postCliente(cliente).subscribe((res:Cliente) => {
+          this.myForm.reset();
           this.activeModal.close(res);
         },(error: any) => {
+          this.myForm.reset();
+          this.activeModal.close(cliente);
           alert('Error al guardar cliente'+ error.error.message);
         });
-      }      
+      }
     }
   }
 }

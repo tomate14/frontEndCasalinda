@@ -12,10 +12,13 @@
           <div class="col form-group">
             <div class="form-group">
               <label for="dni">DNI</label>
-              <input type="number" class="form-control" id="dni" name="dni" formControlName="dni" aria-describedby="emailHelp" placeholder="DNI" required>
+              <input type="number" class="form-control" id="dni" name="dni" formControlName="dni" aria-describedby="emailHelp" placeholder="DNI" maxlength="8" required>
               <div *ngIf="myForm.get('dni')?.invalid && myForm.get('dni')?.touched"
               [ngClass]="{'d-block': myForm.get('dni')?.invalid && myForm.get('dni')?.touched, 'd-none': !(myForm.get('dni')?.invalid && myForm.get('dni')?.touched)}"
               class="invalid-feedback">Debe ingresar el dni</div>
+              <div *ngIf="myForm.get('dni')?.hasError('maxLength') && myForm.get('dni')?.touched" class="text-danger">
+                El DNI no puede tener más de 8 caracteres.
+              </div>
             </div>
           </div>
           <div class="col form-group" id="divBuscar">
