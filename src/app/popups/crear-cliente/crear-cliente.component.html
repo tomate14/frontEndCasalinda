@@ -6,12 +6,21 @@
 </div>
 <div class="modal-body">
     <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container needs-validation">
-        <div class="form-group">
-          <label for="dni">DNI</label>
-          <input type="number" class="form-control" id="dni" formControlName="dni" aria-describedby="emailHelp" placeholder="DNI" required>
-          <div *ngIf="myForm.get('dni')?.invalid && myForm.get('dni')?.touched" 
-          [ngClass]="{'d-block': myForm.get('dni')?.invalid && myForm.get('dni')?.touched, 'd-none': !(myForm.get('dni')?.invalid && myForm.get('dni')?.touched)}" 
-          class="invalid-feedback">Debe ingresar el dni</div>
+        <div class="row">
+          <div class="col-md-6 form-group">
+            <label for="dni">DNI</label>
+            <input type="number" class="form-control" id="dni" formControlName="dni" aria-describedby="emailHelp" placeholder="DNI" required>
+            <div *ngIf="myForm.get('dni')?.invalid && myForm.get('dni')?.touched" 
+            [ngClass]="{'d-block': myForm.get('dni')?.invalid && myForm.get('dni')?.touched, 'd-none': !(myForm.get('dni')?.invalid && myForm.get('dni')?.touched)}" 
+            class="invalid-feedback">Debe ingresar el dni</div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="tipoUsuario">Tipo</label>
+            <select id="tipoUsuario" class="form-select" formControlName="tipoUsuario">
+              <option [value]="1">Cliente</option>
+              <option [value]="2">Proveedor</option>
+            </select>
+          </div>
         </div>
         <br/>
         <div class="form-group">
@@ -55,7 +64,7 @@
           </div>
         <br/>
         <div class="form-group">
-            <label for="cuit">Ciut</label>
+            <label for="cuit">Cuit</label>
             <input type="text" class="form-control" id="cuit" formControlName="cuit" aria-describedby="emailHelp" placeholder="Cuit" required>
             <div *ngIf="myForm.get('cuit')?.invalid && myForm.get('cuit')?.touched" 
             [ngClass]="{'d-block': myForm.get('cuit')?.invalid && myForm.get('cuit')?.touched, 'd-none': !(myForm.get('cuit')?.invalid && myForm.get('cuit')?.touched)}" 

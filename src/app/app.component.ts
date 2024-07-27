@@ -22,6 +22,10 @@ export class AppComponent {
       this.router.navigate([`/${componente}`, 1]);
     } else if (componente === 'cuentaCorriente') {
       this.router.navigate([`/${componente}`, 2]);
+    }else if (componente === 'clientes') {
+      this.router.navigate([`/${componente}`, 1]);
+    }else if (componente === 'proveedores') {
+      this.router.navigate([`/${componente}`, 2]);
     } else {
       this.router.navigate([`/${componente}`]);
     }

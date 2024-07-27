@@ -9,7 +9,8 @@ export const routes: Routes = [
     { path: '', component: TablaClientesComponent },
     { path: 'pedidos/:id', component: TablaPedidoComponent },
     { path: 'cuentaCorriente/:id', component: TablaPedidoComponent },
-    { path: 'clientes', component: TablaClientesComponent },
+    { path: 'clientes/:id', component: TablaClientesComponent },
+    { path: 'proveedores/:id', component: TablaClientesComponent },
     { path: 'caja', component: TablaCajaComponent },
     { path: 'estadisticas', component: FlujoCajaComponent }
   ];

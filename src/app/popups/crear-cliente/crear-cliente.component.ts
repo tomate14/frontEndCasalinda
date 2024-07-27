@@ -29,7 +29,8 @@ export class CrearClienteComponent {
       direccion: [this.cliente ? this.cliente.direccion : null, Validators.required],
       telefono: [this.cliente ? this.cliente.telefono : null, Validators.required],
       email: [this.cliente ? this.cliente.email : null, [Validators.required, Validators.email]],
-      cuit: [this.cliente ? this.cliente.cuit : null, Validators.required]
+      cuit: [this.cliente ? this.cliente.cuit : null, Validators.required],
+      tipoUsuario: [this.cliente ? this.cliente.tipoUsuario : null, Validators.required]
     });
   }
   cerrar() {
@@ -46,6 +47,7 @@ export class CrearClienteComponent {
         telefono: this.myForm.value.telefono,
         email: this.myForm.value.email,
         cuit: this.myForm.value.cuit,
+        tipoUsuario: +this.myForm.value.tipoUsuario,
         fechaAlta: nowConLuxonATimezoneArgentina()
       }
       if (this.cliente) {
