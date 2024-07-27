@@ -1,7 +1,5 @@
 export interface Pago {
-    _id?: {
-      $oid: string;
-    };
+    id?:string;
     idPedido?: string;
     fechaPago: string;
     valor: number;

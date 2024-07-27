@@ -39,11 +39,11 @@ export class AppComponent {
           if (res.message) {
             this.confirmarService.confirm("Cierre de caja", res.message, true,"Ok", "");
           } else {
-            const saldoCaja = res.contado + res.diferencia_caja;
+            const saldoCaja = res.contado + res.diferencia;
             this.confirmarService.confirm("Cierre de caja", `El efectivo en caja deberia ser $${saldoCaja}`, true,"Ok", "");
           }
         }, (error)=> {
-          this.confirmarService.confirm("Error", error.error.message, true,"Ok", "");
+          this.confirmarService.confirm("Error", error.error.text, true,"Ok", "");
         })
       }
     })    

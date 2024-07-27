@@ -5,6 +5,6 @@ export interface DeudaPedido {
     montoUltimoPago?:number,
     nombreCliente:string,
     telefonoCliente:string,
-    pedido:Pedido,
+    numeroComprobante:string,
     saldoRestante:number
 }

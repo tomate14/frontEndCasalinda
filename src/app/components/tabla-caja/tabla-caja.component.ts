@@ -81,7 +81,7 @@ export class TablaCajaComponent implements OnInit{
   }
 
   onSubmit() {  
-    const pagosSinPedidos = this.pagos.filter((p)=> p._id?.$oid === '-1' || p._id?.$oid === '-2' || p._id?.$oid === '-3')  
+    const pagosSinPedidos = this.pagos.filter((p)=> p.id=== '-1' || p.id === '-2' || p.id === '-3')  
     if (pagosSinPedidos && pagosSinPedidos.length === 0) {
       this.checkearCajasSinCerrar();
     } else {
@@ -93,13 +93,13 @@ export class TablaCajaComponent implements OnInit{
     this.editarPagoService.editarPago(pago).then((pago:Pago) => {
       if (pago) {
         if (pago.idPedido !== '-2' && pago.idPedido !== '-3') {
-          const index = this.pagos.findIndex(c => c._id === pago._id);
+          const index = this.pagos.findIndex(c => c.id === pago.id);
           if (index !== -1) {
               this.pagos[index] = pago;
           }
   
         } else {
-          const index = this.ingresosRetiros.findIndex(c => c._id === pago._id);
+          const index = this.ingresosRetiros.findIndex(c => c.id === pago.id);
           if (index !== -1) {
               this.ingresosRetiros[index] = pago;
           }
@@ -117,17 +117,17 @@ export class TablaCajaComponent implements OnInit{
     const titulo = "Eliminar pago";
     this.confirmarService.confirm(titulo, mensaje, false,"Si", "No").then((confirmar)=> {
       if (confirmar) {
-        const pagoId = pago._id as unknown as string;
+        const pagoId = pago.id as unknown as string;
         this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
 
           if (pago.idPedido !== '-2' && pago.idPedido !== '-3') {
-            let index = this.pagos.findIndex(item => item._id === pago._id);
+            let index = this.pagos.findIndex(item => item.id === pago.id);
   
             if (index > -1) {
               this.pagos.splice(index, 1);
             }
           } else {
-            let index = this.ingresosRetiros.findIndex(item => item._id === pago._id);
+            let index = this.ingresosRetiros.findIndex(item => item.id === pago.id);
   
             if (index > -1) {
               this.ingresosRetiros.splice(index, 1);
@@ -198,9 +198,9 @@ export class TablaCajaComponent implements OnInit{
   }
   private checkearCajasSinCerrar(): void {
     this.cajaService.getUltimasCajasCerradas().subscribe((res)=> {
-      if (res.length > 0) {
+      if (res) {
         const fechaActual = nowConLuxonATimezoneArgentina();
-        const primerFechaSinCerrar = res[0];
+        const primerFechaSinCerrar = res;
         const diferencia = diferenciaDias(fechaActual, primerFechaSinCerrar);
         const promises = [];
         if (diferencia <= 1) {

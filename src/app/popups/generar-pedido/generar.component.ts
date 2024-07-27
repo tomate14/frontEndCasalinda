@@ -85,7 +85,7 @@ export class GenerarComponent {
       }
       this.pedidosService.post(pedido).subscribe(res => {
         const numeroPedido = res.numeroComprobante as unknown as string;;
-        const id = res._id as unknown as string;
+        const id = res.id as unknown as string;
         const pago: Pago = {
           idPedido:id,
           fechaPago: nowConLuxonATimezoneArgentina(),

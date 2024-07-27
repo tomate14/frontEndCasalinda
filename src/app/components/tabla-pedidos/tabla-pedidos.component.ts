@@ -149,7 +149,7 @@ export class TablaPedidoComponent implements OnInit {
   verPagos(pedido: Pedido): void {
     const totalPedido = pedido.total;
     this.pagosPorPedidosService.crearListaPagos(pedido, totalPedido).then((p:Pedido) => {
-      const index = this.pedidos.findIndex(c => c._id === p._id);
+      const index = this.pedidos.findIndex(c => c.id === p.id);
         if (index !== -1) {
             this.pedidos[index] = p;
         }
@@ -160,7 +160,7 @@ export class TablaPedidoComponent implements OnInit {
     this.editarPedidoService.editarPedido(pedido).then((p:Pedido) => {
       if (p) {
         if (p.tipoPedido !== this.tipoPedido) {
-          const index = this.pedidos.findIndex(c => c._id === p._id);
+          const index = this.pedidos.findIndex(c => c.id === p.id);
           if (index !== -1) {
               this.pedidos.splice(index, 1);
           }
@@ -168,7 +168,7 @@ export class TablaPedidoComponent implements OnInit {
           p.dniCliente = pedido.dniCliente;
           p.fechaPedido = pedido.fechaPedido;
           p.nombreCliente = pedido.nombreCliente;
-          const index = this.pedidos.findIndex(c => c._id === p._id);
+          const index = this.pedidos.findIndex(c => c.id === p.id);
           if (index !== -1) {
               this.pedidos[index] = p;
           }
@@ -178,7 +178,7 @@ export class TablaPedidoComponent implements OnInit {
   }
 
   notificarDeuda(pedido: Pedido) {
-    const pedidoId = pedido._id as unknown as string;
+    const pedidoId = pedido.id as unknown as string;
     this.pedidosService.getInformeDeudaPedido(pedidoId).subscribe((res:DeudaPedido) => {
       if (res) {
         this.enviarWP(res);
@@ -187,7 +187,7 @@ export class TablaPedidoComponent implements OnInit {
   }
 
   enviarConfirmacion(pedido:Pedido) {
-    const pedidoId = pedido._id as unknown as string;
+    const pedidoId = pedido.id as unknown as string;
     const numeroComprobante = pedido.numeroComprobante as unknown as string;
     this.pagosService.getPagoByIdPedido(pedidoId).subscribe((res)=> {
       let sena = res.pagos && pedido.conSena ? res.pagos[res.pagos.length - 1].valor : 0;

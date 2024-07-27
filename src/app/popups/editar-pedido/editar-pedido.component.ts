@@ -49,7 +49,7 @@ export class EditarPedidoComponent {
         estado: this.myForm.value.estado,
         estadoEnvio: +this.myForm.value.estadoDeEnvio,
       }
-      const idPedido = this.pedido?._id  as unknown as string;
+      const idPedido = this.pedido?.id  as unknown as string;
       if (idPedido) {
         this.pedidosService.put(idPedido, pedido).subscribe(res => {
           if (this.pedido) {
