@@ -25,11 +25,11 @@ export class CrearClienteComponent {
     this.myForm = this.fb.group({
       nombre: [this.cliente ? this.cliente.nombre : null, Validators.required],
       dni: [this.cliente ? this.cliente.dni : null, Validators.required],
-      fechaNacimiento: [this.cliente ? this.cliente.fechaNacimiento : null, Validators.required],
+      fechaNacimiento: [this.cliente ? this.cliente.fechaNacimiento : null],
       direccion: [this.cliente ? this.cliente.direccion : null, Validators.required],
       telefono: [this.cliente ? this.cliente.telefono : null, Validators.required],
       email: [this.cliente ? this.cliente.email : null, [Validators.required, Validators.email]],
-      cuit: [this.cliente ? this.cliente.cuit : null, Validators.required],
+      cuit: [this.cliente ? this.cliente.cuit : null],
       tipoUsuario: [this.cliente ? this.cliente.tipoUsuario : null, Validators.required]
     });
   }
