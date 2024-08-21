@@ -11,7 +11,7 @@
           <input type="number" class="form-control" id="dni" formControlName="dni" aria-describedby="emailHelp" placeholder="DNI" required>
           <div *ngIf="myForm.get('dni')?.invalid && myForm.get('dni')?.touched" 
           [ngClass]="{'d-block': myForm.get('dni')?.invalid && myForm.get('dni')?.touched, 'd-none': !(myForm.get('dni')?.invalid && myForm.get('dni')?.touched)}" 
-          class="invalid-feedback">Debe ingresar el dni</div>
+          class="invalid-feedback">Dni invalido, verificar el numero</div>
         </div>
         <br/>
         <div class="form-group">

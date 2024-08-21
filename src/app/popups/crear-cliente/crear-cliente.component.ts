@@ -5,6 +5,7 @@ import { ClienteService } from '../../../services/cliente.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Cliente } from '../../../clases/dominio/cliente';
 import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
+import {maxLengthValidator} from "../../../validadores/validador8CaracteresDni";
 
 @Component({
   selector: 'app-crear-cliente',
@@ -24,7 +25,7 @@ export class CrearClienteComponent {
   ngOnInit() {
     this.myForm = this.fb.group({
       nombre: [this.cliente ? this.cliente.nombre : null, Validators.required],
-      dni: [this.cliente ? this.cliente.dni : null, Validators.required],
+      dni: [this.cliente ? this.cliente.dni : null, [Validators.required, maxLengthValidator(8)]],
       fechaNacimiento: [this.cliente ? this.cliente.fechaNacimiento : null, Validators.required],
       direccion: [this.cliente ? this.cliente.direccion : null, Validators.required],
       telefono: [this.cliente ? this.cliente.telefono : null, Validators.required],

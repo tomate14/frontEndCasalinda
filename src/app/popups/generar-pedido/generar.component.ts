@@ -62,7 +62,11 @@ export class GenerarComponent {
         .then((cliente) => {
             if(cliente){
               this.cliente = cliente;
-              this.myForm.value.dni = cliente.dni;
+              this.myForm.patchValue({ 
+                dni: cliente.dni,
+                nombre: cliente.nombre,
+                email: cliente.email,
+              })
             }
         });
       });
