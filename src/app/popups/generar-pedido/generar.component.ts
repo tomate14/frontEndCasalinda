@@ -56,6 +56,10 @@ export class GenerarComponent {
     if (!this.myForm.get('dni')?.hasError('maxLength')) {
       this.clienteService.getClienteByDni(this.myForm.value.dni).subscribe((res) => {
         this.cliente = res;
+        this.myForm.patchValue({ 
+          nombre: res.nombre,
+          email: res.email,
+        })
       }, (error) => {
         const cliente = undefined;
         this.crearClienteService.crearCliente(cliente)
