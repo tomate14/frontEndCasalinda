@@ -81,7 +81,7 @@ export class TablaCajaComponent implements OnInit{
   }
 
   onSubmit() {  
-    const pagosSinPedidos = this.pagos.filter((p)=> p._id?.$oid === '-1' || p._id?.$oid === '-2' || p._id?.$oid === '-3')  
+    const pagosSinPedidos = this.pagos.filter((p)=> p.idPedido == -1 || p.idPedido == -2 || p.idPedido == -3)  
     if (pagosSinPedidos && pagosSinPedidos.length === 0) {
       this.checkearCajasSinCerrar();
     } else {
@@ -92,14 +92,14 @@ export class TablaCajaComponent implements OnInit{
   editarPago(pago: Pago) {
     this.editarPagoService.editarPago(pago).then((pago:Pago) => {
       if (pago) {
-        if (pago.idPedido !== '-2' && pago.idPedido !== '-3') {
-          const index = this.pagos.findIndex(c => c._id === pago._id);
+        if (pago.idPedido !== -2 && pago.idPedido !== -3) {
+          const index = this.pagos.findIndex(c => c.id === pago.id);
           if (index !== -1) {
               this.pagos[index] = pago;
           }
   
         } else {
-          const index = this.ingresosRetiros.findIndex(c => c._id === pago._id);
+          const index = this.ingresosRetiros.findIndex(c => c.id === pago.id);
           if (index !== -1) {
               this.ingresosRetiros[index] = pago;
           }
@@ -117,17 +117,17 @@ export class TablaCajaComponent implements OnInit{
     const titulo = "Eliminar pago";
     this.confirmarService.confirm(titulo, mensaje, false,"Si", "No").then((confirmar)=> {
       if (confirmar) {
-        const pagoId = pago._id as unknown as string;
+        const pagoId = pago.id as unknown as string;
         this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
 
-          if (pago.idPedido !== '-2' && pago.idPedido !== '-3') {
-            let index = this.pagos.findIndex(item => item._id === pago._id);
+          if (pago.idPedido !== -2 && pago.idPedido !== -3) {
+            let index = this.pagos.findIndex(item => item.id === pago.id);
   
             if (index > -1) {
               this.pagos.splice(index, 1);
             }
           } else {
-            let index = this.ingresosRetiros.findIndex(item => item._id === pago._id);
+            let index = this.ingresosRetiros.findIndex(item => item.id === pago.id);
   
             if (index > -1) {
               this.ingresosRetiros.splice(index, 1);
@@ -149,8 +149,8 @@ export class TablaCajaComponent implements OnInit{
     if (this.pagos.length === 0) {
       this.pagosServices.getCajaByDate(fechaDesde, fechaHasta).subscribe((res) => {
         //Separar pagos de retiros
-        this.pagos = res.filter((pago) => pago.idPedido !== '-2' && pago.idPedido !== '-3');
-        this.ingresosRetiros = res.filter((pago) => pago.idPedido === '-2' || pago.idPedido === '-3');
+        this.pagos = res.filter((pago) => pago.idPedido !== -2 && pago.idPedido !== -3);
+        this.ingresosRetiros = res.filter((pago) => pago.idPedido === -2 || pago.idPedido === -3);
         this.actualizarTotales();
       })
     } else {
@@ -159,14 +159,14 @@ export class TablaCajaComponent implements OnInit{
   }
   
   private actualizarTotalesPorPago(pago:Pago) {
-    if (pago.idPedido && (pago.idPedido !== '-2' && pago.idPedido !== '-3')) {
+    if (pago.idPedido && (pago.idPedido !== -2 && pago.idPedido !== -3)) {
       pago.formaPago ===  1 ? this.totalContado += pago.valor : null;
       pago.formaPago ===  2 ? this.totalTarjeta += pago.valor : null;
       pago.formaPago ===  3 ? this.totalDNI += pago.valor : null;
       pago.formaPago ===  4 ? this.totalTransferencia += pago.valor : null;
     } else {
-      pago.idPedido ===  '-2' ? this.totalIngresosCaja += pago.valor : null;
-      pago.idPedido ===  '-3' ? this.totalRetirosCaja += pago.valor : null;
+      pago.idPedido ===  -2 ? this.totalIngresosCaja += pago.valor : null;
+      pago.idPedido ===  -3 ? this.totalRetirosCaja += pago.valor : null;
     }
   }
 
@@ -191,27 +191,27 @@ export class TablaCajaComponent implements OnInit{
     return new Promise<void>((resolve,reject)=> {
       this.cajaService.cierreCaja(fechaDesde, fechaHasta).subscribe((res) => {
         resolve();
-      }, (error)=> {
-        reject();
       })
     })
   }
   private checkearCajasSinCerrar(): void {
     this.cajaService.getUltimasCajasCerradas().subscribe((res)=> {
-      if (res.length > 0) {
+      if (res) {
         const fechaActual = nowConLuxonATimezoneArgentina();
-        const primerFechaSinCerrar = res[0];
-        const diferencia = diferenciaDias(fechaActual, primerFechaSinCerrar);
+        const primerFechaSinCerrar = res;
+        const diferencia = diferenciaDias(fechaActual, primerFechaSinCerrar.fecha);
         const promises = [];
         if (diferencia <= 1) {
           //No hay cajas sin cerrar, proceder
           this.checkearForm();
         } else {
-          for(let i=diferencia; i > 0; i--) {
+          for(let i=diferencia-1; i > 0; i--) {
             promises.push(this.generarPromesaCierreCajaViejo(i));
           }
           Promise.all(promises).then((res)=> {
             this.checkearForm();
+          }).catch((error)=> {
+            console.log(error);
           })
         }
       } else {
@@ -222,7 +222,7 @@ export class TablaCajaComponent implements OnInit{
 }
   private checkearForm() {
     if (this.myForm.valid) {
-      const idPedido: string = tipoDePago[this.tipoBoton];
+      const idPedido: number = tipoDePago[this.tipoBoton];
       const pago: Pago = {
         idPedido: idPedido,
         fechaPago: nowConLuxonATimezoneArgentina(),
@@ -233,7 +233,7 @@ export class TablaCajaComponent implements OnInit{
       this.pagosServices.postPago(pago).subscribe((res) => {
         this.myForm.reset({descripcion: '',valor: null,formaDePago: 1});
         this.actualizarTotalesPorPago(pago);
-        if (idPedido === '-1') {
+        if (idPedido === -1) {
           this.pagos.unshift(res);
         } else {
           this.ingresosRetiros.unshift(res);

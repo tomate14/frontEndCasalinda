@@ -1,4 +1,11 @@
 <div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h2 >{{titulo}}</h2>
+    </div>
+    <hr/>
+  </div>
+
   <div class="row mb-3">
     <div class="col-11">
       <button class="btn btn-dark" (click)="isCollapsed = !isCollapsed">{{isCollapsed ? 'Mostrar filtros' : 'Ocultar filtros'}}</button>
@@ -9,7 +16,7 @@
   </div>
 
   <div *ngIf="!isCollapsed">
-    <form [formGroup]="filterForm" class="container filter-form">
+    <form [formGroup]="filterForm" class="filter-form">
       <div class="row">
         <div class="col-4 form-group">
           <div class="form-group">
@@ -119,10 +126,11 @@
           </td>
           <td>
             <button class="btn btn-dark" (click)="verPagos(pedido)"><i class="fas fa-search" title="Ver pagos"></i></button>
+            <button class="btn btn-dark btnEditar" (click)="verPedido(pedido)"><i class="fa fa-list" title="Ver detalle"></i></button>
             <button class="btn btn-dark btnEditar" (click)="editarPedido(pedido)"><i class="fas fa-edit" title="Editar"></i></button>
             <button *ngIf="pedido.estado === 'PENDIENTE'" class="btn btn-danger btnEditar" (click)="notificarDeuda(pedido)"><i class="fa fa-exclamation-triangle" title="Notificar Deuda"></i></button>
             <button class="btn btn-warning btnEditar" (click)="enviarConfirmacion(pedido)"><i class="fa fa-paper-plane" title="Enviar Confirmacion"></i></button>
-            
+            <button class="btn btn-dark btnEditar" (click)="imprimirComprobante(pedido)"><i class="fa fa-print" title="Imprimir"></i></button>
           </td>
         </tr>
       </tbody>

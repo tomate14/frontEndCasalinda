@@ -1,7 +1,5 @@
 export interface Cliente {
-    _id?: {
-      $oid: string;
-    };
+    id?:string;
     nombre: string;
     dni: number;
     fechaNacimiento: string;
@@ -11,4 +9,6 @@ export interface Cliente {
     cuit: string;
     fechaAlta: string;
     esDeudor?:boolean;
+    tipoUsuario?:number;
+    porcentajeRemarcar?:number;
 }

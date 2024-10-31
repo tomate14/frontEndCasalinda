@@ -1,0 +1,101 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{title}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+  <div class="container-fluid">
+    <div *ngIf="!readonly" class="row">
+      <div class="col-md-3">
+        <button type="button" class="btn btn-dark" (click)="onSubmitHeader()">Confirmar</button>
+      </div>
+    </div>
+    <div *ngIf="!readonly" class="row">
+        <div class="col-md-6" *ngIf="usuarios.length > 0">
+            <app-searchable-select                
+              [searchAttribute]="'nombre'"
+              [originalValues]="usuarios"
+              [key]="'dni'"
+              [placeHolder]="'Buscar Proveedor...'"
+              (valueChange)="onProveedorSelect($event)">
+            </app-searchable-select>
+        </div>
+        <div class="col-md-6" *ngIf="productosProveedor.length > 0">
+            <app-searchable-select
+                [searchAttribute]="'nombre'"
+                [originalValues]="productosProveedor"
+                [key]="'id'"
+                [placeHolder]="'Buscar Producto...'"
+                (valueChange)="onProductoSelect($event)">
+            </app-searchable-select>
+        </div>
+    </div>
+    <hr *ngIf="!readonly" />
+    <div *ngIf="!readonly" class="row">
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container needs-validation d-flex flex-wrap align-items-end"> 
+            <div class="col-md-5 form-group">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" formControlName="nombre" aria-describedby="emailHelp" [readOnly]="readonly" placeholder="Nombre" required>
+                </div>
+            </div>
+            <div class="col-md-2 form-group">
+                <div class="form-group">
+                    <label for="codigoBarra">Codigo de barra</label>
+                    <input type="text" class="form-control" id="codigoBarra" formControlName="codigoBarra" aria-describedby="emailHelp" [readOnly]="readonly" placeholder="Codigo de Barra">
+                </div>
+            </div>
+            <div class="col-md-1 form-group">       
+                <div class="form-group">
+                    <label for="stock">Stock</label>
+                    <input type="number" class="form-control" formControlName="stock" id="stock" aria-describedby="stockHelp" placeholder="Stock" required>
+                </div>
+            </div>
+            <div class="col-md-2 form-group">
+                <div class="form-group">
+                    <label for="precio">Precio</label>
+                    <input type="number" class="form-control" formControlName="precio" id="precio" aria-describedby="compraHelp" placeholder="Precio" required>
+                </div>
+            </div>
+            <div class="col-md-1 form-group">
+                <div class="form-group">
+                    <span></span>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-dark">Agregar</button>
+          
+        </form>
+    </div>
+    <hr *ngIf="!readonly" />
+    <div class="row">
+      <div class="col">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Codigo de barra</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let producto of productos">
+              <td>{{ producto.nombre }}</td>
+              <td>{{ producto.codigoBarra }}</td>
+              <td>{{ getPrecioProducto(producto) | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
+              <td>{{ producto.stock }}</td>
+              <td>
+                <button *ngIf="!readonly" class="btn btn-dark btnEditar" (click)="editarProducto(producto)">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

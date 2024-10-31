@@ -47,10 +47,10 @@ export class EditarPagoComponent implements OnInit{
         idPedido: this.pago?.idPedido,
         formaPago: +this.myForm.value.formaDePago
       }
-      const idPago = this.pago?._id  as unknown as string;
+      const idPago = this.pago?.id  as unknown as string;
       if (idPago) {
         this.pagosService.putPago(idPago, pago).subscribe(res => {
-          pago._id = this.pago?._id;
+          pago.id = this.pago?.id;
           this.activeModal.close(pago);
         }, (error) => {
           alert(error.error.message);

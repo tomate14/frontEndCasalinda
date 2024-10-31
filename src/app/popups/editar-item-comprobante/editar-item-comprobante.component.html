@@ -1,0 +1,41 @@
+<div class="modal-header">
+    <h4 class="modal-title">Editar Item</h4>
+      <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="productoForm" (ngSubmit)="onSubmit()" class="container-fluid">
+        
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" class="form-control" id="nombre" formControlName="nombre" aria-describedby="emailHelp" readonly placeholder="Nombre" required>
+        </div>
+
+        <div class="form-group">
+            <label for="stock">Stock</label>
+            <input type="number" class="form-control" formControlName="stock" id="stock" aria-describedby="stockHelp" placeholder="Stock" required>
+            
+            <div *ngIf="productoForm.get('stock')?.invalid && productoForm.get('stock')?.touched" 
+                [ngClass]="{'d-block': productoForm.get('stock')?.invalid && productoForm.get('stock')?.touched, 'd-none': !(productoForm.get('stock')?.invalid && productoForm.get('stock')?.touched)}" 
+                class="invalid-feedback">
+                <small *ngIf="productoForm.get('stock')?.errors?.['required']">El stock es obligatorio.</small>
+                <small *ngIf="productoForm.get('stock')?.errors?.['min']">El stock no puede ser negativo.</small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="precio">Precio</label>
+            <input class="form-control" id="precio" type="number" formControlName="precio" aria-describedby="precioHelp" placeholder="Precio" required />
+
+            <div *ngIf="productoForm.get('precio')?.invalid && productoForm.get('precio')?.touched" 
+                [ngClass]="{'d-block': productoForm.get('precio')?.invalid && productoForm.get('precio')?.touched, 'd-none': !(productoForm.get('precio')?.invalid && productoForm.get('precio')?.touched)}" 
+                class="invalid-feedback">
+                <small *ngIf="productoForm.get('precio')?.errors?.['required']">El precio es obligatorio.</small>
+                <small *ngIf="productoForm.get('precio')?.errors?.['min']">El precio no puede ser negativo.</small>
+            </div>
+
+        </div>
+        <button type="submit" class="btn btn-dark" [disabled]="productoForm.invalid">Guardar</button>
+    </form>
+</div>

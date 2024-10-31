@@ -15,7 +15,7 @@ export function enviarMensajeAltaPedido(nombre:string, id:string, descripcion:st
 }
 
 export function notificarDeudaPedido(res:DeudaPedido) {
-    let body = `Hola ${res.nombreCliente}. Notificamos que el pedido *_${res.pedido.numeroComprobante}_* adeuda pagos.`;
+    let body = `Hola ${res.nombreCliente}. Notificamos que el pedido *_${res.numeroComprobante}_* adeuda pagos.`;
       if (res.fechaUltimoPago) {
         body = body + ` El ultimo pago registrado fue el *_${formatearFechaDesdeUnIso(res.fechaUltimoPago, 'dd/MM/yyyy HH:mm')}_* por un monto de *_$${res.montoUltimoPago}_*.`;
       }

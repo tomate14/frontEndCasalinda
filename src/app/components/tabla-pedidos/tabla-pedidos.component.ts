@@ -18,6 +18,7 @@ import { EstadoEnvio, estadoDeEnvio } from '../../../clases/constantes/estadoEnv
 import { PagosService } from '../../../services/pago.service';
 import { DeudaPedido } from '../../../clases/dto/deudaPedido';
 import { enviarMensajeAltaPedido, notificarDeudaPedido } from '../../../utils/mensajesWhatsapp';
+import { ExportPDFService } from '../../../services/exportPDF.service';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -48,22 +49,28 @@ export class TablaPedidoComponent implements OnInit {
   tipoDePedido:TipoPedido[] = [];
   tipoPedido:number= 1;
   estadoDeEnvio:EstadoEnvio[] = [];
+  titulo: string = "";
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService,
     private pagosService: PagosService,
     private crearPedidoModal:CrearPedidoService, private pagosPorPedidosService: ListarPagosPorPedidosService,
-    private editarPedidoService:EditarPedidoService) {
+    private editarPedidoService:EditarPedidoService, private exportPDFService:ExportPDFService) {
     this.route.params.subscribe(params => {
       this.tipoPedido = +params['id']; // El + convierte el string a number
     });
     this.filterForm = this.fb.group({});
     this.tipoDePedido = tipoDePedido;
+    
   }
 
   ngOnInit(): void {
 
     this.filterForm = this.fb.group(defaultFormObject);
     this.estadoDeEnvio = estadoDeEnvio;
+    const itemTipoPedido = this.tipoDePedido.find((tipo)=> tipo.value === this.tipoPedido);
+    if (itemTipoPedido) {
+      this.titulo = itemTipoPedido.viewValue;
+    }
     this.pedidosService.getPedidosPorTipo(this.tipoPedido).subscribe(
       (data: Pedido[]) => {
         this.pedidos = data;
@@ -129,7 +136,9 @@ export class TablaPedidoComponent implements OnInit {
   }
 
   crearPedido() {
-    this.crearPedidoModal.crearPedido().then((res)=> {
+    const tipoCompro = this.tipoDePedido.find((tipo)=> tipo.value === this.tipoPedido);
+    const sigla = tipoCompro?.sigla || 'PED';
+    this.crearPedidoModal.crearPedido(sigla, false, null).then((res)=> {
       if(res){
         this.pedidos.unshift(res);
       }
@@ -149,7 +158,7 @@ export class TablaPedidoComponent implements OnInit {
   verPagos(pedido: Pedido): void {
     const totalPedido = pedido.total;
     this.pagosPorPedidosService.crearListaPagos(pedido, totalPedido).then((p:Pedido) => {
-      const index = this.pedidos.findIndex(c => c._id === p._id);
+      const index = this.pedidos.findIndex(c => c.id === p.id);
         if (index !== -1) {
             this.pedidos[index] = p;
         }
@@ -160,7 +169,7 @@ export class TablaPedidoComponent implements OnInit {
     this.editarPedidoService.editarPedido(pedido).then((p:Pedido) => {
       if (p) {
         if (p.tipoPedido !== this.tipoPedido) {
-          const index = this.pedidos.findIndex(c => c._id === p._id);
+          const index = this.pedidos.findIndex(c => c.id === p.id);
           if (index !== -1) {
               this.pedidos.splice(index, 1);
           }
@@ -168,17 +177,17 @@ export class TablaPedidoComponent implements OnInit {
           p.dniCliente = pedido.dniCliente;
           p.fechaPedido = pedido.fechaPedido;
           p.nombreCliente = pedido.nombreCliente;
-          const index = this.pedidos.findIndex(c => c._id === p._id);
+          const index = this.pedidos.findIndex(c => c.id === p.id);
           if (index !== -1) {
               this.pedidos[index] = p;
           }
         }
       }
-    })
+    })    
   }
 
   notificarDeuda(pedido: Pedido) {
-    const pedidoId = pedido._id as unknown as string;
+    const pedidoId = pedido.id as unknown as string;
     this.pedidosService.getInformeDeudaPedido(pedidoId).subscribe((res:DeudaPedido) => {
       if (res) {
         this.enviarWP(res);
@@ -187,7 +196,7 @@ export class TablaPedidoComponent implements OnInit {
   }
 
   enviarConfirmacion(pedido:Pedido) {
-    const pedidoId = pedido._id as unknown as string;
+    const pedidoId = pedido.id as unknown as string;
     const numeroComprobante = pedido.numeroComprobante as unknown as string;
     this.pagosService.getPagoByIdPedido(pedidoId).subscribe((res)=> {
       let sena = res.pagos && pedido.conSena ? res.pagos[res.pagos.length - 1].valor : 0;
@@ -195,6 +204,27 @@ export class TablaPedidoComponent implements OnInit {
       const nombre = pedido.nombreCliente || "";
       enviarMensajeAltaPedido(nombre, pedidoId, pedido.descripcion, sena, saldo, pedido.telefonoCliente, numeroComprobante);
     })
+  }
+
+  imprimirComprobante(pedido: Pedido) {
+    if (pedido.id) {
+      const idPedido = pedido.id;
+      this.exportPDFService.getDocumentoPDF(idPedido).subscribe((res: Blob | MediaSource) => {
+        console.log("asd")
+        const url = window.URL.createObjectURL(res);
+        window.open(url);
+      });
+    }
+  }
+
+  verPedido(pedido: Pedido) {
+    const tipoCompro = this.tipoDePedido.find((tipo)=> tipo.value === this.tipoPedido);
+    if ((tipoCompro) && (this.tipoPedido === 3 || this.tipoPedido === 4 || this.tipoPedido === 5)) {
+      const sigla = tipoCompro.sigla || 'PED';
+      this.crearPedidoModal.crearPedido(sigla, true, pedido).then(res => {
+        console.log("asd");
+      });
+    } 
   }
 
   private enviarWP(res:DeudaPedido) {

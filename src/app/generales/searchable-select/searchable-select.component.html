@@ -1,0 +1,20 @@
+<div class="searchable-select">
+    <form [formGroup]="myForm" class="container needs-validation">
+        <label for="nombre"></label>
+        <input
+          type="text"
+          class="form-control search-input"
+          (input)="filterOptions()"
+          id="nombre"
+          formControlName="nombre"
+          aria-describedby="emailHelp"
+          placeholder="{{this.placeHolder}}"
+        />
+        <select (change)="onSelect()" formControlName="seleccion" class="form-select mt-2">
+          <option *ngFor="let value of values" [value]="value[key]">
+            {{ value[searchAttribute] }}
+          </option>
+        </select>
+    </form>
+  </div>
+  

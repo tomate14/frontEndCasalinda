@@ -56,21 +56,13 @@ export class GenerarComponent {
     if (!this.myForm.get('dni')?.hasError('maxLength')) {
       this.clienteService.getClienteByDni(this.myForm.value.dni).subscribe((res) => {
         this.cliente = res;
-        this.myForm.patchValue({ 
-          nombre: res.nombre,
-          email: res.email,
-        })
       }, (error) => {
         const cliente = undefined;
         this.crearClienteService.crearCliente(cliente)
         .then((cliente) => {
             if(cliente){
               this.cliente = cliente;
-              this.myForm.patchValue({ 
-                dni: cliente.dni,
-                nombre: cliente.nombre,
-                email: cliente.email,
-              })
+              this.myForm.value.dni = cliente.dni;
             }
         });
       });
@@ -93,7 +85,7 @@ export class GenerarComponent {
       }
       this.pedidosService.post(pedido).subscribe(res => {
         const numeroPedido = res.numeroComprobante as unknown as string;;
-        const id = res._id as unknown as string;
+        const id = res.id as unknown as string;
         const pago: Pago = {
           idPedido:id,
           fechaPago: nowConLuxonATimezoneArgentina(),

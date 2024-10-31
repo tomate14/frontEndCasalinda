@@ -1,0 +1,72 @@
+<div class="modal-header">
+    <h4 class="modal-title">Editar producto</h4>
+    <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container needs-validation">
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="idProveedor">Proveedor</label>
+                <select id="idProveedor" class="form-select" formControlName="idProveedor">
+                  <option *ngFor="let proveedor of proveedores" [value]="proveedor.dni">{{proveedor.nombre}}</option>
+                </select>
+              </div>
+        </div>   
+        <div class="row">
+            <div class="col-md-12 form-group">
+                <div class="form-group">
+                    <label for="nombre">Nombre Producto</label>
+                    <input type="text" class="form-control" id="nombre" formControlName="nombre" aria-describedby="emailHelp" placeholder="Nombre">
+                    <div *ngIf="myForm.get('nombre')?.invalid && myForm.get('nombre')?.touched" 
+                        [ngClass]="{'d-block': myForm.get('nombre')?.invalid && myForm.get('nombre')?.touched, 'd-none': !(myForm.get('nombre')?.invalid && myForm.get('nombre')?.touched)}" 
+                        class="invalid-feedback">Debe ingresar el Nombre</div>
+                </div>
+              </div>
+        </div> 
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <div class="form-group">
+                    <label for="codigoBarra">Codigo de Barra</label>
+                    <input type="text" class="form-control" id="codigoBarra" formControlName="codigoBarra" aria-describedby="emailHelp" placeholder="Codigo de Barra">
+                    <div *ngIf="myForm.get('codigoBarra')?.invalid && myForm.get('codigoBarra')?.touched" 
+                        [ngClass]="{'d-block': myForm.get('codigoBarra')?.invalid && myForm.get('codigoBarra')?.touched, 'd-none': !(myForm.get('codigoBarra')?.invalid && myForm.get('codigoBarra')?.touched)}" 
+                        class="invalid-feedback">Debe ingresar el Codigo de barra</div>
+                </div>
+            </div>
+            <div class="col-md-6 form-group">       
+                <div class="form-group">
+                    <label for="stock">Stock</label>
+                    <input type="number" class="form-control" formControlName="stock" id="stock" aria-describedby="stockHelp" placeholder="Stock" required>
+                    <div *ngIf="myForm.get('stock')?.invalid && myForm.get('stock')?.touched" 
+                    [ngClass]="{'d-block': myForm.get('stock')?.invalid && myForm.get('stock')?.touched, 'd-none': !(myForm.get('stock')?.invalid && myForm.get('stock')?.touched)}" 
+                    class="invalid-feedback">Debe ingresar el stock</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <div class="form-group">
+                    <label for="precioCompra">Precio Compra</label>
+                    <input type="number" class="form-control" formControlName="precioCompra" id="precioCompra" aria-describedby="compraHelp" placeholder="Precio Compra" required>
+                    <div *ngIf="myForm.get('precioCompra')?.invalid && myForm.get('precioCompra')?.touched" 
+                    [ngClass]="{'d-block': myForm.get('precioCompra')?.invalid && myForm.get('precioCompra')?.touched, 'd-none': !(myForm.get('precioCompra')?.invalid && myForm.get('precioCompra')?.touched)}" 
+                    class="invalid-feedback">Debe ingresar el precio de compra</div>
+                </div>
+            </div>
+            <div class="col-md-6 form-group">                
+                <div class="form-group">
+                    <label for="precioVenta">Precio Venta</label>
+                    <input type="number" class="form-control" formControlName="precioVenta" id="precioVenta" aria-describedby="ventaHelp" placeholder="Precio Venta" required>
+                    <div *ngIf="myForm.get('precioVenta')?.invalid && myForm.get('precioVenta')?.touched" 
+                    [ngClass]="{'d-block': myForm.get('precioVenta')?.invalid && myForm.get('precioVenta')?.touched, 'd-none': !(myForm.get('precioVenta')?.invalid && myForm.get('precioVenta')?.touched)}" 
+                    class="invalid-feedback">Debe ingresar el precio de venta</div>
+                </div>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-dark">Agregar</button>
+      
+    </form>
+</div>

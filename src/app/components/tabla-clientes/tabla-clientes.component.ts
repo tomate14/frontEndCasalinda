@@ -9,6 +9,7 @@ import { ListarPedidosService } from '../../../services/popup/listarPedidos.serv
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ConfirmarService } from '../../../services/popup/confirmar';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-tabla-clientes',
@@ -21,18 +22,22 @@ export class TablaClientesComponent implements OnInit {
   clientes: Cliente[] = [];
   filterForm: FormGroup;
   isCollapsed: boolean = true;
+  tipoUsuario:number= 1;
   p: number = 1;
-  constructor(private fb: FormBuilder, private clientesService: ClienteService, private pedidosService: PedidosService, 
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private clientesService: ClienteService, private pedidosService: PedidosService, 
     private crearClienteService: CrearClienteService, private listaPedidosService: ListarPedidosService, private confirmarService:ConfirmarService) {
     this.filterForm = this.fb.group({
       dniCliente: [''],
       nombre: [''],
       opciones:null
     });
+    this.route.params.subscribe(params => {
+      this.tipoUsuario = +params['id']; // El + convierte el string a number
+    });
   }
 
   ngOnInit(): void {
-    this.clientesService.getClientes().subscribe((data: Cliente[]) => {
+    this.clientesService.getClientes(this.tipoUsuario).subscribe((data: Cliente[]) => {
         this.clientes = data;
       },(error) => {
         console.error('Error al obtener los datos de los clientes', error);
@@ -45,7 +50,7 @@ export class TablaClientesComponent implements OnInit {
     this.crearClienteService.crearCliente(cliente)
     .then((cliente) => {
         if(cliente){
-          this.clientes.push(cliente);
+          this.limpiar();
         }
     });
   }
@@ -67,10 +72,7 @@ export class TablaClientesComponent implements OnInit {
     this.crearClienteService.crearCliente(cliente)
     .then((cliente:Cliente)  => {
       if (cliente) {
-        const index = this.clientes.findIndex(c => c.dni === cliente.dni);
-        if (index !== -1) {
-            this.clientes[index] = cliente;
-        }
+        this.limpiar();
       }
     });
   }
@@ -88,7 +90,7 @@ export class TablaClientesComponent implements OnInit {
   }
   limpiar() {
     this.filterForm.reset();
-    this.clientesService.getClientes().subscribe(
+    this.clientesService.getClientes(this.tipoUsuario).subscribe(
       (data: Cliente[]) => {
         this.clientes = data;
       },
