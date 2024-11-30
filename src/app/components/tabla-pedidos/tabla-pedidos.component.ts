@@ -216,7 +216,12 @@ export class TablaPedidoComponent implements OnInit {
       });
     }
   }
-
+  mostrarBotonDetalle(pedido:Pedido) {
+    return pedido.tipoPedido !== 1 && pedido.tipoPedido !== 2;
+  }
+  mostrarEditarYNotificar(pedido:Pedido) {
+    return pedido.tipoPedido !== 3 && pedido.tipoPedido !== 4 && pedido.tipoPedido !== 5;
+  }
   verPedido(pedido: Pedido) {
     const tipoCompro = this.tipoDePedido.find((tipo)=> tipo.value === this.tipoPedido);
     if ((tipoCompro) && (this.tipoPedido === 3 || this.tipoPedido === 4 || this.tipoPedido === 5)) {
