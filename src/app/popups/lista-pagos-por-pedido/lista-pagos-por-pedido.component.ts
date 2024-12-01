@@ -132,8 +132,9 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   enviarWP(res: PagosPorPedido) {
     const pago = res && res.pagos ? res.pagos[0] : null;
     const resto = this.totalPedido - this.subTotal;
+    const tipo = this.pedido && this.pedido.tipoPedido === 1 ? 'el pedido' : 'la Cuenta Corriente';
     if (pago) {
-      let body = `Hola ${res.nombreCliente}. Notificamos que el pedido *_${this.pedido?.numeroComprobante}_* registro un pago`;
+      let body = `Hola ${res.nombreCliente}. Notificamos que ${tipo} *_${this.pedido?.numeroComprobante}_* registro un pago`;
     
       body = body + ` con fecha *_${formatearFechaDesdeUnIso(pago.fechaPago, 'dd/MM/yyyy HH:mm')}_* por un monto de *_$${pago.valor}_*.`;      
       body = body + ` El saldo restante a abonar es *_$${resto}_*.`;

@@ -17,7 +17,7 @@ import { EditarPedidoService } from '../../../services/popup/editarPedido.servic
 import { EstadoEnvio, estadoDeEnvio } from '../../../clases/constantes/estadoEnvio';
 import { PagosService } from '../../../services/pago.service';
 import { DeudaPedido } from '../../../clases/dto/deudaPedido';
-import { enviarMensajeAltaPedido, notificarDeudaPedido } from '../../../utils/mensajesWhatsapp';
+import { enviarMensajeAltaCC, enviarMensajeAltaPedido, notificarDeudaPedido } from '../../../utils/mensajesWhatsapp';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -193,7 +193,11 @@ export class TablaPedidoComponent implements OnInit {
       let sena = res.pagos && pedido.conSena ? res.pagos[res.pagos.length - 1].valor : 0;
       let saldo = pedido.total - sena;
       const nombre = pedido.nombreCliente || "";
-      enviarMensajeAltaPedido(nombre, pedidoId, pedido.descripcion, sena, saldo, pedido.telefonoCliente, numeroComprobante);
+      if (pedido.tipoPedido === 1) {
+        enviarMensajeAltaPedido(nombre, pedidoId, pedido.descripcion, sena, saldo, pedido.telefonoCliente, numeroComprobante);
+      } else {
+        enviarMensajeAltaCC(nombre, pedidoId, pedido.descripcion, sena, saldo, pedido.telefonoCliente, numeroComprobante);
+      }
     })
   }
 

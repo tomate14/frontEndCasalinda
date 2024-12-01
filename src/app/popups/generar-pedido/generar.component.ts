@@ -16,7 +16,7 @@ import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmarService } from '../../../services/popup/confirmar';
 import { CrearClienteService } from '../../../services/popup/crearCliente.service';
-import { enviarMensajeAltaPedido } from '../../../utils/mensajesWhatsapp';
+import { enviarMensajeAltaCC, enviarMensajeAltaPedido } from '../../../utils/mensajesWhatsapp';
 import {senaMenorQueTotalValidator} from "../../../validadores/validadorSenaTotal";
 import {maxLengthValidator} from "../../../validadores/validador8CaracteresDni";
 
@@ -134,7 +134,12 @@ export class GenerarComponent {
   enviarWp(id: string, numeroComprobante:string) {
     if (this.myForm.valid) {
       const saldo = this.myForm.value.total - this.myForm.value.seña;
-      enviarMensajeAltaPedido(this.myForm.value.nombre, id, this.myForm.value.descripcion, this.myForm.value.seña, saldo, this.cliente?.telefono, numeroComprobante);
+      if (+this.myForm.value.tipoDePedido === 1) {
+        enviarMensajeAltaPedido(this.myForm.value.nombre, id, this.myForm.value.descripcion, this.myForm.value.seña, saldo, this.cliente?.telefono, numeroComprobante);
+      } else {
+        enviarMensajeAltaCC(this.myForm.value.nombre, id, this.myForm.value.descripcion, this.myForm.value.seña, saldo, this.cliente?.telefono, numeroComprobante);
+      }
+      
     }
   }
   cerrar() {
