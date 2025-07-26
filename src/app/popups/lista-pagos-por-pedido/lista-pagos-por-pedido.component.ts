@@ -51,7 +51,7 @@ export class ListaPagosPorPedidoComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.pedido) {
-      const id = this.pedido._id as unknown as string;
+      const id = this.pedido.id as unknown as string;
       this.pagosServices.getPagoByIdPedido(id).subscribe((res) => {
         this.respuesta = res;
         if (res.pagos) {
@@ -64,7 +64,7 @@ export class ListaPagosPorPedidoComponent implements OnInit {
 
   cerrar() {
     if (this.pedido) {
-      const id = this.pedido._id as unknown as string;
+      const id = this.pedido.id as unknown as string;
       this.pedidosService.getByIdPedido(id).subscribe((res)=> {
         if (res) {
           this.activeModal.close(res[0]);
@@ -74,8 +74,8 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   }
   eliminarPago(pago: Pago) {
     if (this.pedido) { 
-      const id = this.pedido._id as unknown as string;
-      const pagoId = pago._id as unknown as string;
+      const id = this.pedido.id as unknown as string;
+      const pagoId = pago.id as unknown as string;
       this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
         this.pagosServices.getPagoByIdPedido(id).subscribe((res) => {
           this.respuesta = res;
@@ -92,7 +92,7 @@ export class ListaPagosPorPedidoComponent implements OnInit {
 
   agregarPago() {
     if (this.pagoForm.valid && this.pedido) { 
-      const id = this.pedido._id as unknown as string;     
+      const id = this.pedido.id as unknown as string;     
       const pago: Pago = {
         idPedido: id,
         fechaPago: nowConLuxonATimezoneArgentina(),
@@ -152,7 +152,7 @@ export class ListaPagosPorPedidoComponent implements OnInit {
 
   private actualizarEstado(preSubTotal:number) {
     if (this.pedido) {
-      const id = this.pedido._id as unknown as string;   
+      const id = this.pedido.id as unknown as string;   
       if (preSubTotal === this.totalPedido) {
         const pedido: any = {
           estado: "COMPLETO",

@@ -41,9 +41,9 @@ export class GraficoResumenUltimoDiaComponent {
 
   private generarArribaIzquierdaTortas() {
     this.cajaService.getUltimasCajasCerradas().subscribe((res)=> {
-      if (res.length > 0) {
-        const fechaDesde = horaPrincipioFinDia(res[0], false);
-        const fechaHasta = horaPrincipioFinDia(res[0], true);
+      if (res) {
+        const fechaDesde = horaPrincipioFinDia(res.fecha, false);
+        const fechaHasta = horaPrincipioFinDia(res.fecha, true);
 
         this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res) => {
           if (res) {

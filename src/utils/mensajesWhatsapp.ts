@@ -11,7 +11,7 @@ export function enviarMensajeAltaPedido(nombre:string, id:string, descripcion:st
     const phoneNumber = telefono;
     const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
     const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-    window.open(url);  
+    window.open(url);
 }
 export function enviarMensajeAltaCC(nombre:string, id:string, descripcion:string, entrega:number, saldo:number, telefono:string|undefined, numeroComprobante:string) {
   let body = `Hola ${nombre}. Registramos un nuevo ingreso a su Cuenta Corriente con numero *_${numeroComprobante}_* en concepto de ${descripcion}.`;
@@ -20,13 +20,13 @@ export function enviarMensajeAltaCC(nombre:string, id:string, descripcion:string
   const phoneNumber = telefono;
   const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
   const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-  window.open(url);  
+  window.open(url);
 }
 
 
 export function notificarDeudaPedido(res:DeudaPedido) {
   const mensaje = res.pedido.tipoPedido === 1 ? 'Notificamos que el pedido' : 'Notificamos que la Cuenta Corriente numero'
-    let body = `Hola ${res.nombreCliente}. ${mensaje} *_${res.pedido.numeroComprobante}_* adeuda pagos.`;
+    let body = `Hola ${res.nombreCliente}. ${mensaje} *_${res.numeroComprobante}_* adeuda pagos.`;
       if (res.fechaUltimoPago) {
         body = body + ` El ultimo pago registrado fue el *_${formatearFechaDesdeUnIso(res.fechaUltimoPago, 'dd/MM/yyyy HH:mm')}_* por un monto de *_$${res.montoUltimoPago}_*.`;
       }
@@ -37,5 +37,5 @@ export function notificarDeudaPedido(res:DeudaPedido) {
 
       const encodedMessage = encodeURIComponent(body); // Codificar el mensaje para URL
       const url = `https://wa.me/${res.telefonoCliente}?text=${encodedMessage}`;
-      window.open(url);  
+      window.open(url);
 }

@@ -50,7 +50,7 @@ export class CrearClienteComponent {
         fechaAlta: nowConLuxonATimezoneArgentina()
       }
       if (this.cliente) {
-        const idCliente = this.cliente._id as unknown as string;
+        const idCliente = this.cliente.id as unknown as string;
         this.clienteService.updateCliente(idCliente, cliente).subscribe((res:Cliente) => {
           this.myForm.reset();
           this.activeModal.close(res);

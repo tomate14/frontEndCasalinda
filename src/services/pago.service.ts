@@ -18,16 +18,16 @@ export class PagosService {
   }
 
   public postPago(pago:Pago): Observable<Pago> {
-    return this.httpClient.post<Pago>(`${BACKEND_URL}/pago`,pago);    
+    return this.httpClient.post<Pago>(`${BACKEND_URL}/pago`,pago);
   }
   public putPago(idPago:string, pago:Pago): Observable<Pago> {
-    return this.httpClient.put<Pago>(`${BACKEND_URL}/pago/${idPago}`,pago);    
+    return this.httpClient.put<Pago>(`${BACKEND_URL}/pago/${idPago}`,pago);
   }
 
   public deletePagoByIdPago(idPago:string): Observable<Pago> {
     return this.httpClient.delete<Pago>(`${BACKEND_URL}/pago/${idPago}`);
   }
-  
+
   public getCajaByDate(fechaInicio:string, fechaFin:string): Observable<Pago[]> {
     return this.httpClient.get<Pago[]>(`${BACKEND_URL}/pago/caja/${fechaInicio}/${fechaFin}`);
   }

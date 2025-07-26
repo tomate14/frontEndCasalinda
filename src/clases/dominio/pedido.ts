@@ -1,8 +1,6 @@
 
 export interface Pedido {
-    _id?: {
-      $oid: string;
-    };
+    id?:string;
     numeroComprobante?:string
     fechaPedido?: string;
     total: number;

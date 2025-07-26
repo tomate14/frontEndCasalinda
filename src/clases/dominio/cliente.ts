@@ -1,7 +1,5 @@
 export interface Cliente {
-    _id?: {
-      $oid: string;
-    };
+    id?:string;
     nombre: string;
     dni: number;
     fechaNacimiento: string;

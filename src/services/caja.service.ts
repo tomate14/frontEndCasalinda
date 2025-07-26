@@ -23,6 +23,6 @@ export class CajaService {
   }
 
   public postCliente(caja:Caja): Observable<Caja> {
-    return this.httpClient.post<Caja>("${BACKEND_URL}/caja",caja);    
+    return this.httpClient.post<Caja>("${BACKEND_URL}/caja",caja);
   }
 }

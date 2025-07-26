@@ -17,11 +17,11 @@ export class ClienteService {
   }
 
   public postCliente(cliente:Cliente): Observable<Cliente> {
-    return this.httpClient.post<Cliente>(`${BACKEND_URL}/cliente`,cliente);    
+    return this.httpClient.post<Cliente>(`${BACKEND_URL}/cliente`,cliente);
   }
 
   public updateCliente(idCliente: string, cliente:Cliente): Observable<Cliente> {
-    return this.httpClient.put<Cliente>(`${BACKEND_URL}/cliente/${idCliente}`,cliente);    
+    return this.httpClient.put<Cliente>(`${BACKEND_URL}/cliente/${idCliente}`,cliente);
   }
   public getClientes(): Observable<Cliente[]> {
     return this.httpClient.get<Cliente[]>(`${BACKEND_URL}/cliente`);
