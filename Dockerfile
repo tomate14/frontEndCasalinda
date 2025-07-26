@@ -4,7 +4,9 @@ WORKDIR /usr/src/app
 
 COPY . /usr/src/app
 
-RUN npm install -g @angular/cli
+RUN npm cache clean --force
+
+RUN npm install --verbose --no-cache --timeout=120000 -g @angular/cli
 
 RUN npm install
 

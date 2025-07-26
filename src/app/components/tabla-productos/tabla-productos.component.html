@@ -1,0 +1,64 @@
+<!-- src/app/person-table/person-table.component.html -->
+<div class="container-fluid">
+    <div class="row mb-3">
+      
+      <div class="col-11">
+        <button class="btn btn-dark" (click)="isCollapsed = !isCollapsed">{{isCollapsed ? 'Mostrar filtros' : 'Ocultar filtros'}}</button>
+        <div *ngIf="!isCollapsed">
+          <form [formGroup]="filterForm" class="container">
+            <div class="row">
+              <div class="col form-group">
+                <div class="form-group">
+                  <label for="id">Codigo:</label>
+                  <input type="text" id="id" formControlName="id" class="form-control" name="id" aria-describedby="idHelp" placeholder="ID"/>
+                </div>
+              </div>
+              <div class="col form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" formControlName="nombre" class="form-control" name="nombre" aria-describedby="nombreHelp" placeholder="nombre"/>
+              </div>            
+            </div>
+            <button id="buscar" class="btn btn-dark" (click)="buscar()">Buscar</button>
+            <button id="limpiar" class="btn btn-dark" (click)="limpiar()">Limpiar</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-1">
+        <!--button class="btn btn-dark" (click)="crearCliente()">Crear</button-->
+      </div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="col">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Codigo</th>
+              <th>Nombre</th>
+              <th>Proveedor</th>
+              <th>Precio Compra</th>
+              <th>Precio Venta</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let producto of productos| paginate: { itemsPerPage: 15, currentPage: p }">
+              <td>{{ producto.id }}</td>
+              <td>{{ producto.nombre }}</td>
+              <td>{{ producto.nombreProveedor }}</td>
+              <td>{{ producto.precioCompra | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
+              <td>{{ producto.precioVenta | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
+              <td>{{ producto.stock }}</td>
+              <td>
+                <button class="btn btn-dark btnEditar" (click)="editarProducto(producto)"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-dark" (click)="imprimirComprobante(producto)"><i class="fa fa-print" aria-hidden="true"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+  

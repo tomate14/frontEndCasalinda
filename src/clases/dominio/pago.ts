@@ -1,6 +1,6 @@
 export interface Pago {
-    id?:string;
-    idPedido?: string;
+    id?:number;
+    idPedido?: number;
     fechaPago: string;
     valor: number;
     formaPago?: number;

@@ -18,6 +18,7 @@ import { EstadoEnvio, estadoDeEnvio } from '../../../clases/constantes/estadoEnv
 import { PagosService } from '../../../services/pago.service';
 import { DeudaPedido } from '../../../clases/dto/deudaPedido';
 import { enviarMensajeAltaCC, enviarMensajeAltaPedido, notificarDeudaPedido } from '../../../utils/mensajesWhatsapp';
+import { ExportPDFService } from '../../../services/exportPDF.service';
 
 const defaultFormObject = {
   dniCliente: null,
@@ -48,22 +49,28 @@ export class TablaPedidoComponent implements OnInit {
   tipoDePedido:TipoPedido[] = [];
   tipoPedido:number= 1;
   estadoDeEnvio:EstadoEnvio[] = [];
+  titulo: string = "";
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private pedidosService: PedidosService,
     private pagosService: PagosService,
     private crearPedidoModal:CrearPedidoService, private pagosPorPedidosService: ListarPagosPorPedidosService,
-    private editarPedidoService:EditarPedidoService) {
+    private editarPedidoService:EditarPedidoService, private exportPDFService:ExportPDFService) {
     this.route.params.subscribe(params => {
       this.tipoPedido = +params['id']; // El + convierte el string a number
     });
     this.filterForm = this.fb.group({});
     this.tipoDePedido = tipoDePedido;
+
   }
 
   ngOnInit(): void {
 
     this.filterForm = this.fb.group(defaultFormObject);
     this.estadoDeEnvio = estadoDeEnvio;
+    const itemTipoPedido = this.tipoDePedido.find((tipo)=> tipo.value === this.tipoPedido);
+    if (itemTipoPedido) {
+      this.titulo = itemTipoPedido.viewValue;
+    }
     this.pedidosService.getPedidosPorTipo(this.tipoPedido).subscribe(
       (data: Pedido[]) => {
         this.pedidos = data;
@@ -129,7 +136,9 @@ export class TablaPedidoComponent implements OnInit {
   }
 
   crearPedido() {
-    this.crearPedidoModal.crearPedido().then((res)=> {
+    const tipoCompro = this.tipoDePedido.find((tipo)=> tipo.value === this.tipoPedido);
+    const sigla = tipoCompro?.sigla || 'PED';
+    this.crearPedidoModal.crearPedido(sigla, false, null).then((res)=> {
       if(res){
         this.pedidos.unshift(res);
       }
@@ -199,6 +208,32 @@ export class TablaPedidoComponent implements OnInit {
         enviarMensajeAltaCC(nombre, pedidoId, pedido.descripcion, sena, saldo, pedido.telefonoCliente, numeroComprobante);
       }
     })
+  }
+
+  imprimirComprobante(pedido: Pedido) {
+    if (pedido.id) {
+      const idPedido = pedido.id;
+      this.exportPDFService.getDocumentoPDF(idPedido).subscribe((res: Blob | MediaSource) => {
+        console.log("asd")
+        const url = window.URL.createObjectURL(res);
+        window.open(url);
+      });
+    }
+  }
+  mostrarBotonDetalle(pedido:Pedido) {
+    return pedido.tipoPedido !== 1 && pedido.tipoPedido !== 2;
+  }
+  mostrarEditarYNotificar(pedido:Pedido) {
+    return pedido.tipoPedido !== 3 && pedido.tipoPedido !== 4 && pedido.tipoPedido !== 5;
+  }
+  verPedido(pedido: Pedido) {
+    const tipoCompro = this.tipoDePedido.find((tipo)=> tipo.value === this.tipoPedido);
+    if ((tipoCompro) && (this.tipoPedido === 3 || this.tipoPedido === 4 || this.tipoPedido === 5)) {
+      const sigla = tipoCompro.sigla || 'PED';
+      this.crearPedidoModal.crearPedido(sigla, true, pedido).then(res => {
+        console.log("asd");
+      });
+    }
   }
 
   private enviarWP(res:DeudaPedido) {

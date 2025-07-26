@@ -23,15 +23,19 @@ export class CrearClienteComponent {
   }
 
   ngOnInit() {
-    this.myForm = this.fb.group({
+    const validator = {
+      dni: [this.cliente ? this.cliente.dni : null, Validators.required],
+      tipoUsuario: [this.cliente ? this.cliente.tipoUsuario : null, Validators.required],
       nombre: [this.cliente ? this.cliente.nombre : null, Validators.required],
-      dni: [this.cliente ? this.cliente.dni : null, [Validators.required, maxLengthValidator(8)]],
-      fechaNacimiento: [this.cliente ? this.cliente.fechaNacimiento : null, Validators.required],
+      email: [this.cliente ? this.cliente.email : null, [Validators.required, Validators.email]],
       direccion: [this.cliente ? this.cliente.direccion : null, Validators.required],
       telefono: [this.cliente ? this.cliente.telefono : null, Validators.required],
-      email: [this.cliente ? this.cliente.email : null, [Validators.required, Validators.email]],
-      cuit: [this.cliente ? this.cliente.cuit : null, Validators.required]
-    });
+      cuit: [this.cliente ? this.cliente.cuit : null],
+      fechaNacimiento: [this.cliente ? this.cliente.fechaNacimiento : null],
+      porcentajeRemarcar: [this.cliente ? this.cliente.porcentajeRemarcar : null],
+    }
+
+    this.myForm = this.fb.group(validator);
   }
   cerrar() {
     this.myForm.reset();
@@ -47,7 +51,9 @@ export class CrearClienteComponent {
         telefono: this.myForm.value.telefono,
         email: this.myForm.value.email,
         cuit: this.myForm.value.cuit,
-        fechaAlta: nowConLuxonATimezoneArgentina()
+        tipoUsuario: +this.myForm.value.tipoUsuario,
+        fechaAlta: nowConLuxonATimezoneArgentina(),
+        porcentajeRemarcar: +this.myForm.value.porcentajeRemarcar
       }
       if (this.cliente) {
         const idCliente = this.cliente.id as unknown as string;

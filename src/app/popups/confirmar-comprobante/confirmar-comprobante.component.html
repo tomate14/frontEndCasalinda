@@ -1,0 +1,31 @@
+
+<div class="modal-header">
+    <h4 class="modal-title">Confirmar {{tipoComprobante}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+</div>
+<div class="modal-body">
+    <div class="container-fluid">
+        <form [formGroup]="myForm" class="needs-validation">
+            <div class="col-md-12">
+                <select class="form-select" formControlName="formaDePago">
+                    <option *ngFor="let fPago of formaDePago" [value]="fPago.value">{{fPago.viewValue}}</option>
+                </select>
+            </div>
+            <div *ngIf="tipoComprobante === 'ORV' || tipoComprobante === 'NDC'" class="col-md-12 form-group">
+                <div class="form-group">
+                    <label for="dni">Dni (opcional)</label>
+                    <input type="text" class="form-control" id="dni" formControlName="dni" aria-describedby="dniHelp" placeholder="Dni">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <h2>Total: {{total | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</h2>
+            </div>
+        </form>
+    </div>
+  </div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="decline()">Cancelar</button>
+    <button type="button" class="btn btn-dark" (click)="accept()">Aceptar</button>
+</div>

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Pedido } from '../clases/dominio/pedido';
 import { DeudaPedido } from '../clases/dto/deudaPedido';
 import { BACKEND_URL } from '../environments';
+import { Producto } from '../clases/dominio/producto';
 //import { saveAs } from 'file-saver';
 
 @Injectable({
@@ -31,6 +32,17 @@ export class PedidosService {
 
   public post(pedido:Pedido): Observable<Pedido> {
     return this.httpClient.post<Pedido>(`${BACKEND_URL}/pedido`,pedido);
+  }
+
+  public crearPedido(productos:Producto[], tipoComprobante:string, formaPago:number, total:number, dni?:number): Observable<Pedido> {
+    const pedidoDto = {
+      productos,
+      tipoComprobante,
+      formaPago,
+      total,
+      dni
+    }
+    return this.httpClient.post<Pedido>(`${BACKEND_URL}/pedido/crear`,pedidoDto);
   }
 
   public put(idPedido:string, pedido:Pedido): Observable<Pedido> {

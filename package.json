@@ -26,6 +26,7 @@
     "@swimlane/ngx-charts": "^20.5.0",
     "bootstrap": "^5.3.3",
     "file-saver": "^2.0.5",
+    "generar-pedido": "file:",
     "luxon": "^3.4.4",
     "ngx-pagination": "^6.0.3",
     "ngx-spinner": "^17.0.0",

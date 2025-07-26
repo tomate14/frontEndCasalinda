@@ -4,11 +4,31 @@
           <div id="sidebar" class="collapse collapse-horizontal show border-end">
               <ul id="sidebar-nav" class="list-group min-vh-100">
                 <li class="list-group-item" (click)="cambiarComponente('caja')">Caja</li>
-                <li class="list-group-item" (click)="cambiarComponente('clientes')">Clientes</li>
-                <li class="list-group-item" (click)="cambiarComponente('cuentaCorriente')">Cuenta Corriente</li>
+                <li class="list-group-item" (click)="cambiarComponente('productos')">Productos</li>
+                <li class="list-group-item" data-bs-toggle="collapse" data-bs-target="#usuariosCollapse" aria-expanded="false" aria-controls="usuariosCollapse" (click)="toggleCollapse('usuario')">
+                  <i *ngIf="isUsuariosCollapsed" class="fa fa-arrow-down"></i>
+                  <i *ngIf="!isUsuariosCollapsed" class="fa fa-arrow-up"></i>
+                  Usuarios
+                </li>
+                <div class="collapse" id="usuariosCollapse">
+                  <li class="list-group-item" (click)="cambiarComponente('clientes')">Clientes</li>
+                  <li class="list-group-item" (click)="cambiarComponente('proveedores')">Proveedores</li>
+                </div>
+                <li class="list-group-item" data-bs-toggle="collapse" data-bs-target="#ordenesCollapse" aria-expanded="false" aria-controls="ordenesCollapse" (click)="toggleCollapse('comprobante')">
+                  <i *ngIf="isComprobanteCollapsed" class="fa fa-arrow-down"></i>
+                  <i *ngIf="!isComprobanteCollapsed" class="fa fa-arrow-up"></i>
+                  Comprobantes
+                </li>
+                <div class="collapse" id="ordenesCollapse">
+                  <li class="list-group-item" (click)="cambiarComponente('cuentaCorriente')">Cuenta Corriente</li>
+                  <li class="list-group-item" (click)="cambiarComponente('notacredito')">Nota de Credito</li>  
+                  <li class="list-group-item" (click)="cambiarComponente('ordencompra')">Orden de Compra</li>
+                  <li class="list-group-item" (click)="cambiarComponente('ordenventa')">Orden de Venta</li>              
+                </div> 
                 <li class="list-group-item" (click)="cambiarComponente('pedidos')">Pedidos</li>
                 <li class="list-group-item" (click)="cambiarComponente('estadisticas')">Resumen Cuentas</li>
-                <li class="list-group-item cierre-caja" (click)="cerrarCaja()">Cerrar Caja</li>
+                <li class="list-group-item cierre-caja" (click)="cerrarCaja()">Cerrar Caja</li>     
+                         
               </ul>
           </div>
       </div>

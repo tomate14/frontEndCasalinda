@@ -80,8 +80,8 @@ export class TablaCajaComponent implements OnInit{
     this.tipoBoton = tipoBoton;
   }
 
-  onSubmit() {  
-    const pagosSinPedidos = this.pagos.filter((p)=> p.id=== '-1' || p.id === '-2' || p.id === '-3')  
+  onSubmit() {
+    const pagosSinPedidos = this.pagos.filter((p)=> p.idPedido == -1 || p.idPedido == -2 || p.idPedido == -3)
     if (pagosSinPedidos && pagosSinPedidos.length === 0) {
       this.checkearCajasSinCerrar();
     } else {
@@ -92,19 +92,19 @@ export class TablaCajaComponent implements OnInit{
   editarPago(pago: Pago) {
     this.editarPagoService.editarPago(pago).then((pago:Pago) => {
       if (pago) {
-        if (pago.idPedido !== '-2' && pago.idPedido !== '-3') {
+        if (pago.idPedido !== -2 && pago.idPedido !== -3) {
           const index = this.pagos.findIndex(c => c.id === pago.id);
           if (index !== -1) {
               this.pagos[index] = pago;
           }
-  
+
         } else {
           const index = this.ingresosRetiros.findIndex(c => c.id === pago.id);
           if (index !== -1) {
               this.ingresosRetiros[index] = pago;
           }
         }
-        
+
         this.actualizarTotales();
       }
     }).catch((error) => {
@@ -120,15 +120,15 @@ export class TablaCajaComponent implements OnInit{
         const pagoId = pago.id as unknown as string;
         this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
 
-          if (pago.idPedido !== '-2' && pago.idPedido !== '-3') {
+          if (pago.idPedido !== -2 && pago.idPedido !== -3) {
             let index = this.pagos.findIndex(item => item.id === pago.id);
-  
+
             if (index > -1) {
               this.pagos.splice(index, 1);
             }
           } else {
             let index = this.ingresosRetiros.findIndex(item => item.id === pago.id);
-  
+
             if (index > -1) {
               this.ingresosRetiros.splice(index, 1);
             }
@@ -138,35 +138,35 @@ export class TablaCajaComponent implements OnInit{
           this.actualizarTotalesPorPago(pago);
         }, (error) => {
           this.confirmarService.confirm("Error", error.error.message, true,"Ok", "");
-        }); 
+        });
       }
     })
-         
+
   }
-  
-  
+
+
   private cargarPagos(fechaDesde:string, fechaHasta:string) {
     if (this.pagos.length === 0) {
       this.pagosServices.getCajaByDate(fechaDesde, fechaHasta).subscribe((res) => {
         //Separar pagos de retiros
-        this.pagos = res.filter((pago) => pago.idPedido !== '-2' && pago.idPedido !== '-3');
-        this.ingresosRetiros = res.filter((pago) => pago.idPedido === '-2' || pago.idPedido === '-3');
+        this.pagos = res.filter((pago) => pago.idPedido !== -2 && pago.idPedido !== -3);
+        this.ingresosRetiros = res.filter((pago) => pago.idPedido === -2 || pago.idPedido === -3);
         this.actualizarTotales();
       })
     } else {
       this.actualizarTotales();
     }
   }
-  
+
   private actualizarTotalesPorPago(pago:Pago) {
-    if (pago.idPedido && (pago.idPedido !== '-2' && pago.idPedido !== '-3')) {
+    if (pago.idPedido && (pago.idPedido !== -2 && pago.idPedido !== -3)) {
       pago.formaPago ===  1 ? this.totalContado += pago.valor : null;
       pago.formaPago ===  2 ? this.totalTarjeta += pago.valor : null;
       pago.formaPago ===  3 ? this.totalDNI += pago.valor : null;
       pago.formaPago ===  4 ? this.totalTransferencia += pago.valor : null;
     } else {
-      pago.idPedido ===  '-2' ? this.totalIngresosCaja += pago.valor : null;
-      pago.idPedido ===  '-3' ? this.totalRetirosCaja += pago.valor : null;
+      pago.idPedido ===  -2 ? this.totalIngresosCaja += pago.valor : null;
+      pago.idPedido ===  -3 ? this.totalRetirosCaja += pago.valor : null;
     }
   }
 
@@ -197,43 +197,45 @@ export class TablaCajaComponent implements OnInit{
     })
   }
   private checkearCajasSinCerrar(): void {
-    this.cajaService.getUltimasCajasCerradas().subscribe((res)=> {
+    this.cajaService.getUltimasCajasCerradas().subscribe((res:any)=> {
       if (res) {
         const fechaActual = nowConLuxonATimezoneArgentina();
         const primerFechaSinCerrar = res;
-        const diferencia = diferenciaDias(fechaActual, primerFechaSinCerrar);
+        const diferencia = diferenciaDias(fechaActual, primerFechaSinCerrar.fecha);
         const promises = [];
         if (diferencia <= 1) {
           //No hay cajas sin cerrar, proceder
           this.checkearForm();
         } else {
-          for(let i=diferencia; i > 0; i--) {
+          for(let i=diferencia-1; i > 0; i--) {
             promises.push(this.generarPromesaCierreCajaViejo(i));
           }
           Promise.all(promises).then((res)=> {
             this.checkearForm();
+          }).catch((error)=> {
+            console.log(error);
           })
         }
       } else {
         this.checkearForm();
       }
     })
-  
+
 }
   private checkearForm() {
     if (this.myForm.valid) {
-      const idPedido: string = tipoDePago[this.tipoBoton];
+      const idPedido: number = tipoDePago[this.tipoBoton];
       const pago: Pago = {
         idPedido: idPedido,
         fechaPago: nowConLuxonATimezoneArgentina(),
         valor: this.tipoBoton === 1 || this.tipoBoton === 3 ? -this.myForm.value.valor : this.myForm.value.valor,
         formaPago: +this.myForm.value.formaDePago,
-        descripcion: this.myForm.value.descripcion  
+        descripcion: this.myForm.value.descripcion
       }
       this.pagosServices.postPago(pago).subscribe((res) => {
         this.myForm.reset({descripcion: '',valor: null,formaDePago: 1});
         this.actualizarTotalesPorPago(pago);
-        if (idPedido === '-1') {
+        if (idPedido === -1) {
           this.pagos.unshift(res);
         } else {
           this.ingresosRetiros.unshift(res);

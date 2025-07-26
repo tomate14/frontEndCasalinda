@@ -25,7 +25,11 @@
                   <td>{{ pedido.dniCliente }}</td>
                   <td>{{ pedido.fechaPedido | date: 'dd/MM/yyyy HH:mm' }}</td>
                   <td>{{ pedido.total | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
-                  <td>{{ pedido.tipoPedido === 1 ? 'PEDIDO' : 'CUENTA CORRIENTE'}}</td>
+                  <td *ngIf="pedido.tipoPedido === 1">PEDIDO</td>
+                  <td *ngIf="pedido.tipoPedido === 2">CUENTA CORRIENTE</td>
+                  <td *ngIf="pedido.tipoPedido === 3">ORDEN DE COMPRA</td>
+                  <td *ngIf="pedido.tipoPedido === 4">ORDEN DE VENTA</td>
+                  <td *ngIf="pedido.tipoPedido === 5">NOTA DE CREDITO</td>
                   <td>
                     <i *ngIf="pedido.estado === 'COMPLETO'" class="fa fa-check" title="Completo"></i>
                     <i *ngIf="pedido.estado === 'PENDIENTE'" class="fa fa-times" title="Pendiente"></i>

@@ -23,7 +23,7 @@ export class ClienteService {
   public updateCliente(idCliente: string, cliente:Cliente): Observable<Cliente> {
     return this.httpClient.put<Cliente>(`${BACKEND_URL}/cliente/${idCliente}`,cliente);
   }
-  public getClientes(): Observable<Cliente[]> {
-    return this.httpClient.get<Cliente[]>(`${BACKEND_URL}/cliente`);
+  public getClientes(tipoUsuario:number): Observable<Cliente[]> {
+    return this.httpClient.get<Cliente[]>(`${BACKEND_URL}/cliente?tipoUsuario=${tipoUsuario}`);
   }
 }

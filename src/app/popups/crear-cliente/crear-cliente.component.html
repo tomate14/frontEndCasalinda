@@ -1,17 +1,27 @@
 <div class="modal-header">
-    <h4 class="modal-title">Alta cliente</h4>
-      <button type="button" class="close" aria-label="Close" (click)="cerrar()">
-        <span aria-hidden="true">&times;</span>
-      </button>
+    <h4 class="modal-title">Alta Usuario</h4>
+    <p class="modal-title">Usar dni para cliente y cuit para proveedor</p>
+    <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+      <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 <div class="modal-body">
     <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container needs-validation">
-        <div class="form-group">
-          <label for="dni">DNI</label>
-          <input type="number" class="form-control" id="dni" formControlName="dni" aria-describedby="emailHelp" placeholder="DNI" required>
-          <div *ngIf="myForm.get('dni')?.invalid && myForm.get('dni')?.touched" 
-          [ngClass]="{'d-block': myForm.get('dni')?.invalid && myForm.get('dni')?.touched, 'd-none': !(myForm.get('dni')?.invalid && myForm.get('dni')?.touched)}" 
-          class="invalid-feedback">Dni invalido, verificar el numero</div>
+        <div class="row">
+          <div class="col-md-6 form-group">
+            <label for="dni">DNI/CUIT</label>
+            <input type="number" class="form-control" id="dni" formControlName="dni" aria-describedby="emailHelp" placeholder="Usar dni para cliente y cuit para proveedor" required>
+            <div *ngIf="myForm.get('dni')?.invalid && myForm.get('dni')?.touched" 
+            [ngClass]="{'d-block': myForm.get('dni')?.invalid && myForm.get('dni')?.touched, 'd-none': !(myForm.get('dni')?.invalid && myForm.get('dni')?.touched)}" 
+            class="invalid-feedback">Debe ingresar el dni</div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="tipoUsuario">Tipo</label>
+            <select id="tipoUsuario" class="form-select" formControlName="tipoUsuario">
+              <option [value]="1">Cliente</option>
+              <option [value]="2">Proveedor</option>
+            </select>
+          </div>
         </div>
         <br/>
         <div class="form-group">
@@ -29,10 +39,10 @@
               [ngClass]="{'d-block': myForm.get('email')?.invalid && myForm.get('email')?.touched, 'd-none': !(myForm.get('email')?.invalid && myForm.get('email')?.touched)}" 
               class="invalid-feedback">Debe ingresar el email</div>
         </div>
-        <br/>
-        <div class="form-group">
+        <br *ngIf="myForm.get('tipoUsuario') && myForm.get('tipoUsuario')?.value === '1'"/>
+        <div *ngIf="myForm.get('tipoUsuario') && myForm.get('tipoUsuario')?.value === '1'" class="form-group">
           <label for="fechaNacimiento">Fecha Nacimiento</label>
-          <input type="date" class="form-control" formControlName="fechaNacimiento" id="fechaNacimiento" placeholder="fechaNacimiento" required>
+          <input type="date" class="form-control" formControlName="fechaNacimiento" id="fechaNacimiento" placeholder="fechaNacimiento">
           <div *ngIf="myForm.get('fechaNacimiento')?.invalid && myForm.get('fechaNacimiento')?.touched" 
             [ngClass]="{'d-block': myForm.get('fechaNacimiento')?.invalid && myForm.get('fechaNacimiento')?.touched, 'd-none': !(myForm.get('fechaNacimiento')?.invalid && myForm.get('fechaNacimiento')?.touched)}" 
             class="invalid-feedback">Debe ingresar una fecha nacimiento</div>
@@ -46,17 +56,31 @@
             class="invalid-feedback">Debe ingresar la direccion</div>
           </div>
         <br/>
-        <div class="form-group">
-            <label for="telefono">Telefono</label>
-            <input type="text" class="form-control" id="telefono" formControlName="telefono" aria-describedby="emailHelp" placeholder="Telefono" required>
-            <div *ngIf="myForm.get('telefono')?.invalid && myForm.get('telefono')?.touched" 
-            [ngClass]="{'d-block': myForm.get('telefono')?.invalid && myForm.get('telefono')?.touched, 'd-none': !(myForm.get('telefono')?.invalid && myForm.get('telefono')?.touched)}" 
-            class="invalid-feedback">Debe ingresar el telefono</div>
+        <div class="row">
+          <div *ngIf="myForm.get('tipoUsuario') && (myForm.get('tipoUsuario')?.value === 2 || myForm.get('tipoUsuario')?.value === '2')" class="col-md-3">
+            <div class="form-group">
+              <label for="porcentajeRemarcar">% Aumento</label>
+              <input type="number" class="form-control" id="porcentajeRemarcar" formControlName="porcentajeRemarcar" aria-describedby="emailHelp" placeholder="Remarcar" required>
+              <div *ngIf="myForm.get('porcentajeRemarcar')?.invalid && myForm.get('porcentajeRemarcar')?.touched" 
+              [ngClass]="{'d-block': myForm.get('porcentajeRemarcar')?.invalid && myForm.get('porcentajeRemarcar')?.touched, 'd-none': !(myForm.get('porcentajeRemarcar')?.invalid && myForm.get('porcentajeRemarcar')?.touched)}" 
+              class="invalid-feedback">Debe ingresar el Porcentaje</div>
+            </div>
           </div>
+          <div class="col-md-9">
+            <div class="form-group">
+              <label for="telefono">Telefono</label>
+              <input type="text" class="form-control" id="telefono" formControlName="telefono" aria-describedby="emailHelp" placeholder="Telefono" required>
+              <div *ngIf="myForm.get('telefono')?.invalid && myForm.get('telefono')?.touched" 
+              [ngClass]="{'d-block': myForm.get('telefono')?.invalid && myForm.get('telefono')?.touched, 'd-none': !(myForm.get('telefono')?.invalid && myForm.get('telefono')?.touched)}" 
+              class="invalid-feedback">Debe ingresar el telefono</div>
+            </div>
+          </div>
+        </div>
+        
         <br/>
-        <div class="form-group">
-            <label for="cuit">Ciut</label>
-            <input type="text" class="form-control" id="cuit" formControlName="cuit" aria-describedby="emailHelp" placeholder="Cuit" required>
+        <div *ngIf="myForm.get('tipoUsuario') && myForm.get('tipoUsuario')?.value === '1'" class="form-group">
+            <label for="cuit">Cuit</label>
+            <input type="text" class="form-control" id="cuit" formControlName="cuit" aria-describedby="emailHelp" placeholder="Cuit">
             <div *ngIf="myForm.get('cuit')?.invalid && myForm.get('cuit')?.touched" 
             [ngClass]="{'d-block': myForm.get('cuit')?.invalid && myForm.get('cuit')?.touched, 'd-none': !(myForm.get('cuit')?.invalid && myForm.get('cuit')?.touched)}" 
             class="invalid-feedback">Debe ingresar el Cuit</div>
