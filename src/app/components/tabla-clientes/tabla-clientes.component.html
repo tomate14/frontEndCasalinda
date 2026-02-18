@@ -1,7 +1,7 @@
 <!-- src/app/person-table/person-table.component.html -->
 <div class="container-fluid">
     <div class="row mb-3">
-      
+
       <div class="col-11">
         <button class="btn btn-dark" (click)="isCollapsed = !isCollapsed">{{isCollapsed ? 'Mostrar filtros' : 'Ocultar filtros'}}</button>
         <div *ngIf="!isCollapsed">
@@ -16,7 +16,7 @@
               <div class="col form-group">
                 <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre" formControlName="nombre" class="form-control" name="nombre" aria-describedby="nombreHelp" placeholder="nombre"/>
-              </div>            
+              </div>
             </div>
             <div class="row">
               <div class="col form-group deudores">
@@ -48,8 +48,8 @@
               <th>DNI</th>
               <th>Nombre</th>
               <th>Estado</th>
-              <th>Dirección</th>
-              <th>Teléfono</th>
+              <th>Direccion</th>
+              <th>Telefono</th>
               <th>Email</th>
               <th>CUIT</th>
               <th>Acciones</th>
@@ -69,7 +69,10 @@
               <td>{{ cliente.cuit }}</td>
               <td>
                 <button class="btn btn-dark" (click)="verPedidos(cliente)">
-                  <i class="fas fa-search"></i>
+                  <i class="fas fa-search" title="Ver pedidos"></i>
+                </button>
+                <button *ngIf="esVistaClientes()" class="btn btn-dark btnEditar" (click)="verCuentasCorrientes(cliente)">
+                  <i class="fa fa-list" title="Ver cuentas corrientes"></i>
                 </button>
                 <button class="btn btn-dark btnEditar" (click)="editarCliente(cliente)">
                   <i class="fas fa-edit"></i>
@@ -82,4 +85,3 @@
       </div>
     </div>
   </div>
-  

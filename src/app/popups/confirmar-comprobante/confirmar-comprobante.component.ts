@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
-
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormaDePago } from '../../../clases/constantes/formaPago';
+
 @Component({
   selector: 'app-confirmar-comprobante',
   standalone: true,
@@ -13,16 +13,19 @@ import { FormaDePago } from '../../../clases/constantes/formaPago';
 })
 export class ConfirmarComprobanteComponent {
   myForm: FormGroup;
-  
-  @Input() total:number = 0;
-  @Input() tipoComprobante:string = "";
-  @Input() formaDePago:FormaDePago[] = [];
+
+  @Input() total = 0;
+  @Input() tipoComprobante = '';
+  @Input() formaDePago: FormaDePago[] = [];
+  @Input() solicitarMonto = false;
+
+  errorMonto = '';
 
   constructor(private fb: FormBuilder, private activeModal: NgbActiveModal) {
-
-    this.myForm = this.fb.group({  
-      dni: null,    
-      formaDePago: [null, Validators.required]
+    this.myForm = this.fb.group({
+      dni: null,
+      formaDePago: [null, Validators.required],
+      monto: [null]
     });
   }
 
@@ -31,24 +34,41 @@ export class ConfirmarComprobanteComponent {
       this.myForm.get('formaDePago')?.clearValidators();
       this.myForm.get('formaDePago')?.updateValueAndValidity();
     }
+
+    if (this.solicitarMonto) {
+      this.myForm.get('monto')?.setValidators([Validators.required, Validators.min(1)]);
+      this.myForm.get('monto')?.updateValueAndValidity();
+    }
   }
 
-  public decline() {
+  public decline(): void {
     this.activeModal.close(null);
   }
 
-  public accept() {
-    if (this.myForm.valid) {
-      const response = {
-        dni: this.myForm.value.dni || 0,
-        formaDePago: this.myForm.value.formaDePago
-      }
-      this.activeModal.close(response);
+  public accept(): void {
+    this.errorMonto = '';
+
+    if (!this.myForm.valid) {
+      this.myForm.markAllAsTouched();
+      return;
     }
-    
+
+    const monto = +this.myForm.value.monto || 0;
+    if (this.solicitarMonto && (monto <= 0 || monto >= this.total)) {
+      this.errorMonto = 'El monto debe ser inferior al total adeudado.';
+      return;
+    }
+
+    const response = {
+      dni: this.myForm.value.dni || 0,
+      formaDePago: +this.myForm.value.formaDePago,
+      monto
+    };
+
+    this.activeModal.close(response);
   }
 
-  public dismiss() {
+  public dismiss(): void {
     this.activeModal.dismiss(null);
   }
 }

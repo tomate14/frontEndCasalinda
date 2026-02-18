@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ConfirmarService } from '../../../services/popup/confirmar';
 import { ActivatedRoute } from '@angular/router';
+import { ListarCuentasCorrientesService } from '../../../services/popup/listarCuentasCorrientes.service';
 
 @Component({
   selector: 'app-tabla-clientes',
@@ -24,15 +25,24 @@ export class TablaClientesComponent implements OnInit {
   isCollapsed: boolean = true;
   tipoUsuario:number= 1;
   p: number = 1;
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private clientesService: ClienteService, private pedidosService: PedidosService, 
-    private crearClienteService: CrearClienteService, private listaPedidosService: ListarPedidosService, private confirmarService:ConfirmarService) {
+
+  constructor(
+    private route: ActivatedRoute,
+    private fb: FormBuilder,
+    private clientesService: ClienteService,
+    private pedidosService: PedidosService,
+    private crearClienteService: CrearClienteService,
+    private listaPedidosService: ListarPedidosService,
+    private confirmarService:ConfirmarService,
+    private listarCuentasCorrientesService: ListarCuentasCorrientesService
+  ) {
     this.filterForm = this.fb.group({
       dniCliente: [''],
       nombre: [''],
       opciones:null
     });
     this.route.params.subscribe(params => {
-      this.tipoUsuario = +params['id']; // El + convierte el string a number
+      this.tipoUsuario = +params['id'];
     });
   }
 
@@ -43,6 +53,10 @@ export class TablaClientesComponent implements OnInit {
         console.error('Error al obtener los datos de los clientes', error);
       }
     );
+  }
+
+  esVistaClientes(): boolean {
+    return this.tipoUsuario === 1;
   }
 
   crearCliente(): void {
@@ -59,15 +73,37 @@ export class TablaClientesComponent implements OnInit {
     this.pedidosService.getByDniCliente(cliente.dni).subscribe((res) => {
       this.listaPedidosService.crearLista(cliente.dni, res).then((confirmed) => {
         if(confirmed){
-          console.log("Listado")
+          console.log('Listado');
         }
       });
-      // Lógica para ver detalles del cliente
       console.log('Pedidos por cliente:', res);
     }, (error) => {
-      this.confirmarService.confirm("Cliente sin pedidos", error.error.message, true,"Ok", "No");
-    })    
+      this.confirmarService.confirm('Cliente sin pedidos', error.error.message, true,'Ok', 'No');
+    });
   }
+
+  verCuentasCorrientes(cliente: Cliente): void {
+    if (!this.esVistaClientes()) {
+      return;
+    }
+
+    this.pedidosService.getByDniCliente(cliente.dni).subscribe((res) => {
+      const cuentasCorrientes = res.filter((pedido) => pedido.tipoPedido === 2);
+      if (!cuentasCorrientes.length) {
+        this.confirmarService.confirm('Cliente sin cuentas corrientes', 'No se encontraron cuentas corrientes para el cliente.', true, 'Ok', 'No');
+        return;
+      }
+
+      this.listarCuentasCorrientesService.crearLista(cliente.dni, cuentasCorrientes).then((confirmed) => {
+        if (confirmed) {
+          console.log('Listado de cuentas corrientes');
+        }
+      });
+    }, (error) => {
+      this.confirmarService.confirm('Cliente sin cuentas corrientes', error.error.message, true,'Ok', 'No');
+    });
+  }
+
   editarCliente(cliente:Cliente) {
     this.crearClienteService.crearCliente(cliente)
     .then((cliente:Cliente)  => {
@@ -88,6 +124,7 @@ export class TablaClientesComponent implements OnInit {
       return matchesDniCliente && matchesNombre && matchesDeudor && matchesNoDeudor;
     });
   }
+
   limpiar() {
     this.filterForm.reset();
     this.clientesService.getClientes(this.tipoUsuario).subscribe(
@@ -95,10 +132,11 @@ export class TablaClientesComponent implements OnInit {
         this.clientes = data;
       },
       (error) => {
-        alert('Error al obtener los productos '+error.error.message);
+        alert('Error al obtener los productos ' + error.error.message);
       }
     );
   }
+
   verClientesDeudores() {
 
   }

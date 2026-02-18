@@ -1,0 +1,53 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{title}}</h4>
+  <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div *ngIf="cargando" class="text-center py-3">Cargando cuentas corrientes...</div>
+
+  <div *ngIf="!cargando" class="row">
+    <div class="col">
+      <div class="table-wrapper">
+        <table class="table table-striped" [ngClass]="{'scroll-x': cuentasCorrientesConDeuda.length > 10}">
+          <thead>
+            <tr>
+              <th>Numero de Cuenta Corriente</th>
+              <th>Monto total</th>
+              <th>Monto restante</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cuenta of cuentasCorrientesConDeuda | paginate: { itemsPerPage: 10, currentPage: p }">
+              <td>{{ cuenta.numeroComprobante }}</td>
+              <td>{{ cuenta.montoTotal | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
+              <td>{{ cuenta.montoRestante | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
+            </tr>
+            <tr *ngIf="!cuentasCorrientesConDeuda.length">
+              <td colspan="3" class="text-center">No hay cuentas corrientes para mostrar.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="row w-100">
+    <div class="col">
+      <h3>Resumen de cuenta:</h3>
+    </div>
+    <div class="col text-end">
+      <h3>{{ totalAdeudado | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR' }}</h3>
+    </div>
+  </div>
+  <div class="row w-100 mt-2">
+    <div class="col text-end">
+      <button class="btn btn-success" [disabled]="cargando || procesandoPago || totalAdeudado <= 0" (click)="registrarPago()">
+        {{ procesandoPago ? 'Procesando...' : 'Registrar pago' }}
+      </button>
+    </div>
+  </div>
+</div>
