@@ -8,9 +8,11 @@
 <div class="modal-body">
     <div class="container-fluid">
         <form [formGroup]="myForm" class="needs-validation">
-            <div class="col-md-12">
+            <div *ngIf="tipoComprobante !== 'NDC'" class="col-md-12">
                 <select class="form-select" formControlName="formaDePago">
-                    <option *ngFor="let fPago of formaDePago" [value]="fPago.value">{{fPago.viewValue}}</option>
+                    <option *ngFor="let fPago of formaDePago" [value]="fPago.value">
+                        {{fPago.viewValue}}
+                    </option>
                 </select>
             </div>
             <div *ngIf="tipoComprobante === 'ORV' || tipoComprobante === 'NDC'" class="col-md-12 form-group">

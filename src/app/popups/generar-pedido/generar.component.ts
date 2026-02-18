@@ -84,8 +84,8 @@ export class GenerarComponent {
         conSena: this.myForm.value.seña > 0
       }
       this.pedidosService.post(pedido).subscribe(res => {
-        const numeroPedido = res.numeroComprobante as unknown as string;;
-        const id = res.id as unknown as string;
+        const numeroPedido = res.numeroComprobante as unknown as string;
+        const id = res.id as unknown as number;
         const pago: Pago = {
           idPedido:id,
           fechaPago: nowConLuxonATimezoneArgentina(),
@@ -123,7 +123,7 @@ export class GenerarComponent {
     window.open(`mailto:${this.myForm.value.email}?subject=${subject}&body=${body}`);
 
   }
-  enviarWp(id: string, numeroComprobante:string) {
+  enviarWp(id: number, numeroComprobante:string) {
     if (this.myForm.valid) {
       const saldo = this.myForm.value.total - this.myForm.value.seña;
       if (+this.myForm.value.tipoDePedido === 1) {

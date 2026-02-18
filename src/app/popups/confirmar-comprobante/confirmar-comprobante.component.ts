@@ -26,6 +26,13 @@ export class ConfirmarComprobanteComponent {
     });
   }
 
+  ngOnInit(): void {
+    if (this.tipoComprobante === 'NDC') {
+      this.myForm.get('formaDePago')?.clearValidators();
+      this.myForm.get('formaDePago')?.updateValueAndValidity();
+    }
+  }
+
   public decline() {
     this.activeModal.close(null);
   }

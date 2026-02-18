@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SearchableSelectComponent } from "../../generales/searchable-select/searchable-select.component";
 import { ClienteService } from '../../../services/cliente.service';
@@ -42,6 +42,8 @@ export class GenerarComprobanteComponent implements OnInit{
   @Input() pedido:Pedido | undefined;
   @Input() title:string = "";
   @Input() tipoComprobante:string = "";
+  @ViewChild(SearchableSelectComponent)
+  proveedorSelect!: SearchableSelectComponent;
   constructor(private route: ActivatedRoute, private clienteService: ClienteService, private fb: FormBuilder,
     private productoService:ProductoService, private confirmarService:ConfirmarService, private pedidoService: PedidosService,
     private confirmarComprobanteService: ConfirmarComprobanteService, private activeModal: NgbActiveModal,
@@ -81,15 +83,23 @@ export class GenerarComprobanteComponent implements OnInit{
       }
     }
   }
-  
+  validSelection(cliente: Cliente) {
+    return this.proveedor && this.tipoComprobante === 'ORC' && this.productos.length > 0 && this.proveedor.dni !== cliente.dni
+  }
   onProveedorSelect(cliente: Cliente) {
     console.log(cliente);
-    this.proveedor = cliente;
-    if (cliente ) {
-      const filtro = `idProveedor=${cliente.dni}`;
-      this.productoService.getByParams([filtro]).subscribe((res:Producto[]) =>{
-        this.productosProveedor = res;
-      })
+    if (cliente) {
+      if (this.validSelection(cliente)) {
+        this.confirmarService.confirm('Error', 'El proveedor debe ser unico para las Ordenes de Compra', true, 'Aceptar', 'Cancelar');
+        this.proveedorSelect.setValue(this.proveedor?.dni);
+      } else {
+        this.proveedor = cliente;
+        const filtro = `idProveedor=${this.proveedor.dni}`;
+        this.productoService.getByParams([filtro]).subscribe((res:Producto[]) =>{
+          this.productosProveedor = res;
+        })
+      }
+      
     }
   }
   onProductoSelect(producto: Producto) {
@@ -199,11 +209,26 @@ export class GenerarComprobanteComponent implements OnInit{
 
   private stockValido(productoNuevo:Producto) {
     if (this.tipoComprobante === 'ORV') {
-      const productoExistente = this.productosProveedor.find((p) => p.id == productoNuevo.id);
-      const value = productoExistente && productoExistente.stock - productoNuevo.stock >= 0;
-      if (!value) {
-        throw new Error('Stock no valido para el producto '+ productoNuevo.nombre+". Cantidad disponible "+productoExistente?.stock);
+       const productoExistente = this.productosProveedor
+      .find((p) => p.id == productoNuevo.id);
+
+      if (!productoExistente) {
+        throw new Error('Producto no encontrado en el proveedor');
       }
+
+      const stockResultante = productoExistente.stock - productoNuevo.stock;
+
+      if (stockResultante < 0) {
+        throw new Error(
+          'Stock no valido para el producto ' +
+          productoNuevo.nombre +
+          '. Cantidad disponible ' +
+          productoExistente.stock
+        );
+      }
+
+      // 🔥 ACA DESCONTAMOS EL STOCK REAL
+      productoExistente.stock = stockResultante;
     }
     return productoNuevo.stock > 0;
   }
@@ -237,6 +262,28 @@ export class GenerarComprobanteComponent implements OnInit{
       producto.precioCompra = +value.precio;
     } else if (this.tipoComprobante === 'ORV' || this.tipoComprobante === 'NDC') {
       producto.precioVenta = +value.precio;
+    }
+  }
+  eliminarProducto(producto: Producto) {
+    if (this.tipoComprobante === 'ORC') {
+
+      // 🔥 En ORC se elimina sin validar nada
+      this.productos = this.productos.filter(p => p !== producto);
+      return;
+    }
+
+    if (this.tipoComprobante === 'ORV') {
+
+      // 🔥 Restaurar stock al listado original
+      const productoProveedor = this.productosProveedor
+        .find(p => p.id === producto.id);
+
+      if (productoProveedor) {
+        productoProveedor.stock += producto.stock;
+      }
+
+      // 🔥 Eliminar del comprobante
+      this.productos = this.productos.filter(p => p !== producto);
     }
   }
   editarProducto(producto: Producto) {

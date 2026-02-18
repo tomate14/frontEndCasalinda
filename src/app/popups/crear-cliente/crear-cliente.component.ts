@@ -56,7 +56,7 @@ export class CrearClienteComponent {
         porcentajeRemarcar: +this.myForm.value.porcentajeRemarcar
       }
       if (this.cliente) {
-        const idCliente = this.cliente.id as unknown as string;
+        const idCliente = this.cliente.dni as unknown as number;
         this.clienteService.updateCliente(idCliente, cliente).subscribe((res:Cliente) => {
           this.myForm.reset();
           this.activeModal.close(res);

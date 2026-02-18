@@ -117,7 +117,7 @@ export class TablaCajaComponent implements OnInit{
     const titulo = "Eliminar pago";
     this.confirmarService.confirm(titulo, mensaje, false,"Si", "No").then((confirmar)=> {
       if (confirmar) {
-        const pagoId = pago.id as unknown as string;
+        const pagoId = pago.id as unknown as number;
         this.pagosServices.deletePagoByIdPago(pagoId).subscribe((res)=> {
 
           if (pago.idPedido !== -2 && pago.idPedido !== -3) {

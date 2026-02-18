@@ -81,8 +81,8 @@
                             {{pago.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
                         </span>
                     </td>
-                    <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                    <td class="col-md-1"><button *ngIf="pago.idPedido === '-1' && !readOnly" class="btn btn-dark" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
+                    <td class="col-md-1"><button *ngIf="pago.idPedido === -1 && !readOnly" class="btn btn-danger" (click)="eliminarPago(pago)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                    <td class="col-md-1"><button *ngIf="pago.idPedido === -1 && !readOnly" class="btn btn-dark" (click)="editarPago(pago)"><i class="fas fa-edit"></i></button></td>
                 </tr>
                 <tr>
                     <td class="col-md-5"><b>Total</b></td>
@@ -118,12 +118,12 @@
                     <td class="col-md-5">{{ movimiento.descripcion }}</td>
                     <td class="col-md-1">{{ movimiento.fechaPago | date: 'HH:mm' }}</td> <!-- dd/MM/yyyy  -->
                     <td class="col-md-1">
-                        <span *ngIf="movimiento.idPedido === '-2'" class="green-text">
+                        <span *ngIf="movimiento.idPedido === -2" class="green-text">
                             {{movimiento.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
                         </span>
                     </td>
                     <td class="col-md-1">
-                        <span *ngIf="movimiento.idPedido === '-3'" class="red-text">
+                        <span *ngIf="movimiento.idPedido === -3" class="red-text">
                             {{movimiento.valor | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}
                         </span>
                     </td>
