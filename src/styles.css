@@ -2,8 +2,30 @@
 @import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 @import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
 
+:root {
+  --pastel-bg: #f8f6ff;
+  --pastel-bg-alt: #fff8ef;
+  --content-bg: #fffdf9;
+  --menu-panel-bg: #f7fbff;
+  --menu-border: #d8d8ea;
+  --menu-item-bg: #eef6ff;
+  --menu-item-hover: #e5f0ff;
+  --menu-subitem-bg: #f2f8f0;
+  --menu-text: #4a4f65;
+  --table-head-bg: #eaf3ec;
+  --field-bg: #fffefc;
+  --field-border: #d9d3e8;
+}
+
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #47415e;
+  background: radial-gradient(circle at 10% 10%, var(--pastel-bg-alt), transparent 40%),
+              radial-gradient(circle at 90% 20%, #eefaff, transparent 35%),
+              var(--pastel-bg);
+}
 
 input.ng-invalid.ng-touched:not(div.mat-date-range-input-wrapper input), select.ng-valid.ng-touched {
     border: 1px solid red;
@@ -15,6 +37,13 @@ input.ng-valid.ng-touched:not(div.mat-date-range-input-wrapper input), select.ng
 
 .modal-header {
     justify-content: space-between;
+    background: #f2f8ff;
+    border-bottom: 1px solid #ddd7ea;
+}
+
+.modal-footer {
+    background: #fffaf2;
+    border-top: 1px solid #ddd7ea;
 }
 
 button.close {
@@ -45,10 +74,37 @@ button.close {
     color: orange;
 }
 
+.table {
+  border-color: #d9d5e4;
+}
+
+.table thead th {
+  background-color: var(--table-head-bg);
+  color: #3f4b62;
+  border-bottom-color: #cbd7cd;
+}
+
 .table tbody tr:hover {
-    background-color: #f5f5f5;
+    background-color: #fff8e9;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    transform: scale(1.03);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.12);
+    transform: scale(1.01);
     transition: transform 0.2s, box-shadow 0.2s;
-  }
+}
+
+.form-control,
+.form-select,
+.mat-mdc-text-field-wrapper {
+  background-color: var(--field-bg);
+  border-color: var(--field-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #bcaed7;
+  box-shadow: 0 0 0 0.2rem rgba(190, 173, 219, 0.25);
+}
+
+hr {
+  border-color: #ddd7ea;
+}
