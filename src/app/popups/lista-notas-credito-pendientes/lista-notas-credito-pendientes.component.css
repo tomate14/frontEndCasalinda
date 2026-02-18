@@ -1,0 +1,13 @@
+.modal-header {
+  justify-content: space-between;
+}
+
+button.close {
+  border: hidden;
+  background: white;
+}
+
+.table-wrapper {
+  max-height: 55vh;
+  overflow-y: auto;
+}

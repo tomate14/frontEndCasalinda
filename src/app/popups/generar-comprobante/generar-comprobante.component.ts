@@ -15,6 +15,12 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
 import { Pedido } from '../../../clases/dominio/pedido';
 import { EditarItemComprobanteService } from '../../../services/popup/editarItemComprobante.service';
+import { SeleccionarNotasCreditoService } from '../../../services/popup/seleccionarNotasCredito.service';
+import { NotaCreditoPendiente } from '../../../clases/dto/notaCreditoPendiente';
+import { firstValueFrom } from 'rxjs';
+import { PagosService } from '../../../services/pago.service';
+import { Pago } from '../../../clases/dominio/pago';
+import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 
 @Component({
   selector: 'app-generar-comprobante',
@@ -27,7 +33,7 @@ export class GenerarComprobanteComponent implements OnInit{
   cerrar() {
     this.activeModal.close(null);
   }
-  
+
   tipoUsuario:number = 0;
   usuarios: Cliente[] = [];
   productosProveedor:Producto[] = [];
@@ -40,54 +46,65 @@ export class GenerarComprobanteComponent implements OnInit{
   tipoDePedido:TipoPedido[] = [];
   @Input() readonly:boolean = false;
   @Input() pedido:Pedido | undefined;
-  @Input() title:string = "";
-  @Input() tipoComprobante:string = "";
+  @Input() title:string = '';
+  @Input() tipoComprobante:string = '';
   @ViewChild(SearchableSelectComponent)
   proveedorSelect!: SearchableSelectComponent;
-  constructor(private route: ActivatedRoute, private clienteService: ClienteService, private fb: FormBuilder,
-    private productoService:ProductoService, private confirmarService:ConfirmarService, private pedidoService: PedidosService,
-    private confirmarComprobanteService: ConfirmarComprobanteService, private activeModal: NgbActiveModal,
-    private editarItemComprobanteService: EditarItemComprobanteService
+
+  constructor(
+    private route: ActivatedRoute,
+    private clienteService: ClienteService,
+    private fb: FormBuilder,
+    private productoService:ProductoService,
+    private confirmarService:ConfirmarService,
+    private pedidoService: PedidosService,
+    private confirmarComprobanteService: ConfirmarComprobanteService,
+    private activeModal: NgbActiveModal,
+    private editarItemComprobanteService: EditarItemComprobanteService,
+    private seleccionarNotasCreditoService: SeleccionarNotasCreditoService,
+    private pagosService: PagosService
   ) {
     this.formaDePago = formaDePago;
     this.tipoDePedido = tipoDePedido;
-    this.myForm = this.fb.group({  
-      id: null,    
-      codigoBarra: null,      
+    this.myForm = this.fb.group({
+      id: null,
+      codigoBarra: null,
       stock: [null, Validators.required],
       precio: [null, Validators.required],
       nombre: [null, Validators.required]
     });
-    this.myFormHeader = this.fb.group({  
-      dni: null,    
+    this.myFormHeader = this.fb.group({
+      dni: null,
       formaDePago: 1
     });
   }
+
   ngOnInit(): void {
     if (this.readonly && this.pedido && this.pedido.id) {
       const id = +this.pedido.id;
       this.productoService.getProductoByIdPedido(id).subscribe(res => {
         this.productos = res;
-      })
+      });
     } else {
       if (this.tipoComprobante === 'ORC') {
         this.tipoUsuario = 2;
         this.clienteService.getClientes(this.tipoUsuario).subscribe(res => {
           this.usuarios = res;
-        })
-      } else /*if (this.tipoComprobante === 'ORV')*/ {
+        });
+      } else {
         this.tipoUsuario = 0;
         this.productoService.getByParams([]).subscribe(res => {
           this.productosProveedor = res;
-        })
+        });
       }
     }
   }
+
   validSelection(cliente: Cliente) {
-    return this.proveedor && this.tipoComprobante === 'ORC' && this.productos.length > 0 && this.proveedor.dni !== cliente.dni
+    return this.proveedor && this.tipoComprobante === 'ORC' && this.productos.length > 0 && this.proveedor.dni !== cliente.dni;
   }
+
   onProveedorSelect(cliente: Cliente) {
-    console.log(cliente);
     if (cliente) {
       if (this.validSelection(cliente)) {
         this.confirmarService.confirm('Error', 'El proveedor debe ser unico para las Ordenes de Compra', true, 'Aceptar', 'Cancelar');
@@ -97,11 +114,11 @@ export class GenerarComprobanteComponent implements OnInit{
         const filtro = `idProveedor=${this.proveedor.dni}`;
         this.productoService.getByParams([filtro]).subscribe((res:Producto[]) =>{
           this.productosProveedor = res;
-        })
+        });
       }
-      
     }
   }
+
   onProductoSelect(producto: Producto) {
     this.myForm.patchValue({
       id: producto.id,
@@ -109,35 +126,92 @@ export class GenerarComprobanteComponent implements OnInit{
       codigoBarra: producto.codigoBarra,
       precio: this.getPrecioProducto(producto)
     });
-    //this.readonly = true;
   }
-  onSubmitHeader() {
-    if (this.myFormHeader.valid) {
-      const total = this.calcularTotal();
-      const tipoComprobante = this.tipoComprobante || "";
-      const dni = this.myFormHeader.value.dni || 0;
-      try {
-        if (this.checkeoExitoso()) {
-          this.confirmarComprobanteService.confirm(total, this.tipoComprobante, this.formaDePago).then((res)=> {
-            if (res) {
-              this.pedidoService.crearPedido(this.productos, tipoComprobante, res.formaDePago, total, res.dni).subscribe((res:any)=> {
-                console.log(res);
-                this.productos = [];
-                this.productosProveedor = [];
-                this.activeModal.close(res);
-                //this.readonly = false;
-              }, (error) => {
-                this.confirmarService.confirm('Error', error.error.message, true, 'Aceptar', 'Cancelar');
-              })
-            }
-          })
-          
-        }
-      } catch (error) {
-        this.confirmarService.confirm('Error', JSON.stringify(error), true, 'Aceptar', 'Cancelar');
-      }
+
+  async onSubmitHeader() {
+    if (!this.myFormHeader.valid) {
+      return;
     }
-  } 
+
+    const total = this.calcularTotal();
+    const tipoComprobante = this.tipoComprobante || '';
+
+    try {
+      if (!this.checkeoExitoso()) {
+        return;
+      }
+
+      const res = await this.confirmarComprobanteService.confirm(total, this.tipoComprobante, this.formaDePago);
+      if (!res) {
+        return;
+      }
+
+      let totalFinal = total;
+      let notasAplicadas: NotaCreditoPendiente[] = [];
+
+      if (tipoComprobante === 'ORV') {
+        const dni = +res.dni || 0;
+        if (dni > 0) {
+          const notasPendientes = await this.obtenerNotasCreditoPendientes(dni);
+          if (notasPendientes.length > 0) {
+            const seleccionadas = await this.seleccionarNotasCreditoService.seleccionarNotasCredito(notasPendientes);
+            if (seleccionadas === null || seleccionadas.length === 0) {
+              const continuarSinNotas = await this.confirmarService.confirm(
+                'Sin notas de credito seleccionadas',
+                'No selecciono ninguna nota de credito. Desea continuar con el total completo?',
+                false,
+                'Si',
+                'No'
+              );
+
+              if (!continuarSinNotas) {
+                return;
+              }
+            } else {
+              notasAplicadas = seleccionadas;
+              const totalNotas = notasAplicadas.reduce((acc, item) => acc + item.monto, 0);
+              const totalNotasAbs = Math.abs(totalNotas);
+              if (totalNotasAbs > total) {
+                this.confirmarService.confirm('Error', 'Las notas de credito seleccionadas superan el total de la orden de venta', true, 'Aceptar', 'Cancelar');
+                return;
+              }
+
+              totalFinal = total + totalNotas;
+              const totalFinalFormateado = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(totalFinal);
+              const confirmarAplicacion = await this.confirmarService.confirm(
+                'Confirmar aplicacion de notas de credito',
+                `El monto total a cobrar sera ${totalFinalFormateado}. Desea continuar?`,
+                false,
+                'Si',
+                'No'
+              );
+
+              if (!confirmarAplicacion) {
+                return;
+              }
+
+              await this.aplicarNotasCredito(notasAplicadas, +res.formaDePago);
+            }
+          }
+        }
+      }
+
+      const pedidoCreado = await firstValueFrom(
+        this.pedidoService.crearPedido(this.productos, tipoComprobante, +res.formaDePago, totalFinal, +res.dni || 0)
+      );
+
+      if (tipoComprobante === 'ORV' && pedidoCreado.id) {
+        await firstValueFrom(this.pedidoService.put(pedidoCreado.id, { estado: 'COMPLETO' } as Pedido));
+      }
+
+      this.productos = [];
+      this.productosProveedor = [];
+      this.activeModal.close(pedidoCreado);
+    } catch (error: any) {
+      this.confirmarService.confirm('Error', error?.error?.message || error?.message || 'Error al confirmar comprobante', true, 'Aceptar', 'Cancelar');
+    }
+  }
+
   onSubmit() {
     if (this.myForm.valid) {
       try {
@@ -149,13 +223,11 @@ export class GenerarComprobanteComponent implements OnInit{
             codigoBarra: this.myForm.value.codigoBarra,
             stock: this.myForm.value.stock,
             idProveedor: this.proveedor ? this.proveedor.dni : 0
-          }
+          };
           this.setPrecio(producto, this.myForm.value);
-          // Ordenes de ventas no habilitadas para dar de alta productos. Solo hacer por ORDEN DE COMPRA
-          // para agregar el stock correspondiente.
           if ((this.tipoComprobante === 'ORV' || this.tipoComprobante === 'NDC') && !producto.id) {
             this.confirmarService.confirm('Error', 'Para agregar un producto nuevo hacerlo desde la Orden de Compra', true, 'Aceptar', 'Cancelar')
-            .then((res)=> {
+            .then(() => {
               this.myForm.reset();
             });
           } else {
@@ -164,16 +236,14 @@ export class GenerarComprobanteComponent implements OnInit{
               this.myForm.reset();
             }
           }
-          //this.readonly = false;
         } else {
           this.confirmarService.confirm('Error', 'No se puede agregar. Edite el existente', true, 'Aceptar', 'Cancelar');
-        }  
+        }
       } catch (error:any) {
-        this.confirmarService.confirm('Error', error.message, true, 'Aceptar', 'Cancelar').then((res) => {
+        this.confirmarService.confirm('Error', error.message, true, 'Aceptar', 'Cancelar').then(() => {
           this.myForm.reset();
         });
       }
-      
     }
   }
 
@@ -187,7 +257,7 @@ export class GenerarComprobanteComponent implements OnInit{
 
   private esUnicoProveedor(): boolean {
     if (this.productos.length === 0) {
-      return true; // No hay productos, se considera único
+      return true;
     }
 
     const idProveedorSet = new Set<number>();
@@ -202,15 +272,14 @@ export class GenerarComprobanteComponent implements OnInit{
 
   private productoExiste(id:any) {
     if (id === null) {
-      return false; // Si el ID es null, no hacemos la validación
+      return false;
     }
     return this.productos.some(producto => producto.id === id);
   }
 
   private stockValido(productoNuevo:Producto) {
     if (this.tipoComprobante === 'ORV') {
-       const productoExistente = this.productosProveedor
-      .find((p) => p.id == productoNuevo.id);
+      const productoExistente = this.productosProveedor.find((p) => p.id == productoNuevo.id);
 
       if (!productoExistente) {
         throw new Error('Producto no encontrado en el proveedor');
@@ -219,23 +288,17 @@ export class GenerarComprobanteComponent implements OnInit{
       const stockResultante = productoExistente.stock - productoNuevo.stock;
 
       if (stockResultante < 0) {
-        throw new Error(
-          'Stock no valido para el producto ' +
-          productoNuevo.nombre +
-          '. Cantidad disponible ' +
-          productoExistente.stock
-        );
+        throw new Error('Stock no valido para el producto ' + productoNuevo.nombre + '. Cantidad disponible ' + productoExistente.stock);
       }
 
-      // 🔥 ACA DESCONTAMOS EL STOCK REAL
       productoExistente.stock = stockResultante;
     }
     return productoNuevo.stock > 0;
   }
+
   onFormaDePagoChange(event: Event) {
     const target = event.target as HTMLSelectElement;
     this.selectedFormaDePago = +target.value;
-    console.log('Forma de pago seleccionada:', this.selectedFormaDePago);
   }
 
   calcularTotal() {
@@ -243,10 +306,8 @@ export class GenerarComprobanteComponent implements OnInit{
       return this.productos.reduce((accum, producto) => accum + ((producto.precioCompra || 0) * producto.stock), 0);
     } else if (this.tipoComprobante === 'ORV' || this.tipoComprobante === 'NDC') {
       return this.productos.reduce((accum, producto) => accum + ((producto.precioVenta || 0) * producto.stock), 0);
-    } else {
-      return 0;
     }
-    
+    return 0;
   }
 
   getPrecioProducto(producto: Producto): any {
@@ -264,28 +325,22 @@ export class GenerarComprobanteComponent implements OnInit{
       producto.precioVenta = +value.precio;
     }
   }
+
   eliminarProducto(producto: Producto) {
     if (this.tipoComprobante === 'ORC') {
-
-      // 🔥 En ORC se elimina sin validar nada
       this.productos = this.productos.filter(p => p !== producto);
       return;
     }
 
     if (this.tipoComprobante === 'ORV') {
-
-      // 🔥 Restaurar stock al listado original
-      const productoProveedor = this.productosProveedor
-        .find(p => p.id === producto.id);
-
+      const productoProveedor = this.productosProveedor.find(p => p.id === producto.id);
       if (productoProveedor) {
         productoProveedor.stock += producto.stock;
       }
-
-      // 🔥 Eliminar del comprobante
       this.productos = this.productos.filter(p => p !== producto);
     }
   }
+
   editarProducto(producto: Producto) {
     this.editarItemComprobanteService.editarItem(producto).then((res => {
       if (res) {
@@ -298,14 +353,47 @@ export class GenerarComprobanteComponent implements OnInit{
             } else if (this.tipoComprobante === 'ORV' || this.tipoComprobante === 'NDC') {
               producto.precioVenta = res.precio;
             }
-          }  
+          }
         } catch (error) {
           producto.stock = stockViejo;
         }
       }
     }));
   }
+
+  private async obtenerNotasCreditoPendientes(dni: number): Promise<NotaCreditoPendiente[]> {
+    const params = ['dniCliente=' + dni, 'tipoPedido=5', 'estado=PENDIENTE'];
+    const notas = await firstValueFrom(this.pedidoService.getByParams(params));
+
+    return notas
+      .filter((nota) => !!nota.id && nota.total < 0)
+      .map((nota) => ({
+        idPedido: nota.id || '',
+        numeroComprobante: nota.numeroComprobante || '',
+        fechaCreacion: nota.fechaPedido || '',
+        monto: nota.total
+      } as NotaCreditoPendiente));
+  }
+
+  private async aplicarNotasCredito(notasAplicadas: NotaCreditoPendiente[], formaPago: number): Promise<void> {
+    for (const nota of notasAplicadas) {
+      const pago: Pago = {
+        idPedido: nota.idPedido as unknown as number,
+        fechaPago: nowConLuxonATimezoneArgentina(),
+        valor: nota.monto,
+        formaPago: 0,
+        descripcion: `Uso de nota de credito ${nota.numeroComprobante}`
+      };
+
+      await firstValueFrom(this.pagosService.postPago(pago));
+      await firstValueFrom(this.pedidoService.put(nota.idPedido, { estado: 'COMPLETO' } as Pedido));
+    }
+  }
 }
+
+
+
+
 
 
 

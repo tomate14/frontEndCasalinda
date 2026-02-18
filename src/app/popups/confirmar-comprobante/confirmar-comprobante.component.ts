@@ -53,7 +53,7 @@ export class ConfirmarComprobanteComponent {
       return;
     }
 
-    const monto = +this.myForm.value.monto || 0;
+    const monto = +this.myForm.value.monto || this.total;
     if (this.solicitarMonto && (monto <= 0 || monto >= this.total)) {
       this.errorMonto = 'El monto debe ser inferior al total adeudado.';
       return;
