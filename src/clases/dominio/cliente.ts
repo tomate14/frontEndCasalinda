@@ -1,5 +1,4 @@
 export interface Cliente {
-    id?:string;
     nombre: string;
     dni: number;
     fechaNacimiento: string;

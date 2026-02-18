@@ -196,7 +196,7 @@ export class TablaPedidoComponent implements OnInit {
   }
 
   enviarConfirmacion(pedido:Pedido) {
-    const pedidoId = pedido.id as unknown as string;
+    const pedidoId = pedido.id as unknown as number;
     const numeroComprobante = pedido.numeroComprobante as unknown as string;
     this.pagosService.getPagoByIdPedido(pedidoId).subscribe((res)=> {
       let sena = res.pagos && pedido.conSena ? res.pagos[res.pagos.length - 1].valor : 0;

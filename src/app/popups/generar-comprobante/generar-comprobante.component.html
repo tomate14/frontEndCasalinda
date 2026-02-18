@@ -26,6 +26,7 @@
                 [searchAttribute]="'nombre'"
                 [originalValues]="productosProveedor"
                 [key]="'id'"
+                [selectedValue]="this.proveedor?.dni"
                 [placeHolder]="'Buscar Producto...'"
                 (valueChange)="onProductoSelect($event)">
             </app-searchable-select>
@@ -87,10 +88,13 @@
               <td>{{ producto.codigoBarra }}</td>
               <td>{{ getPrecioProducto(producto) | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
               <td>{{ producto.stock }}</td>
-              <td>
+              <td class="col-md-1">
                 <button *ngIf="!readonly" class="btn btn-dark btnEditar" (click)="editarProducto(producto)">
                   <i class="fas fa-edit"></i>
                 </button>
+              </td>
+              <td class="col-md-1">
+                <button *ngIf="!readonly" class="btn btn-danger" (click)="eliminarProducto(producto)"><i class="fa fa-trash" aria-hidden="true"></i></button>
               </td>
             </tr>
           </tbody>

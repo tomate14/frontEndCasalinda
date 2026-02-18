@@ -13,7 +13,7 @@ export class PagosService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public getPagoByIdPedido(idPedido:string): Observable<PagosPorPedido> {
+  public getPagoByIdPedido(idPedido:number): Observable<PagosPorPedido> {
       return this.httpClient.get<PagosPorPedido>(`${BACKEND_URL}/pago/${idPedido}`);
   }
 
@@ -24,7 +24,7 @@ export class PagosService {
     return this.httpClient.put<Pago>(`${BACKEND_URL}/pago/${idPago}`,pago);
   }
 
-  public deletePagoByIdPago(idPago:string): Observable<Pago> {
+  public deletePagoByIdPago(idPago:number): Observable<Pago> {
     return this.httpClient.delete<Pago>(`${BACKEND_URL}/pago/${idPago}`);
   }
 

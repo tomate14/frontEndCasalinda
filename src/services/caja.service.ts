@@ -14,15 +14,15 @@ export class CajaService {
   public getCajaByFecha(fechaInicio:string,fechaFin:string): Observable<any> {
     return this.httpClient.get<any>(`${BACKEND_URL}/caja/${fechaInicio}/${fechaFin}`);
   }
-  public getUltimasCajasCerradas() :Observable<string> {
-    return this.httpClient.get<any>(`${BACKEND_URL}/caja/ultima-cerrada`);
+  public getUltimasCajasCerradas() :Observable<Caja> {
+    return this.httpClient.get<Caja>(`${BACKEND_URL}/caja/ultima-cerrada`);
   }
 
   public cierreCaja(fechaInicio:string,fechaFin:string): Observable<any> {
-    return this.httpClient.get<any>(`${BACKEND_URL}/caja-cierre/${fechaInicio}/${fechaFin}`);
+    return this.httpClient.get<any>(`${BACKEND_URL}/caja/caja-cierre/${fechaInicio}/${fechaFin}`);
   }
 
   public postCliente(caja:Caja): Observable<Caja> {
-    return this.httpClient.post<Caja>("${BACKEND_URL}/caja",caja);
+    return this.httpClient.post<Caja>(`${BACKEND_URL}/caja`,caja);
   }
 }

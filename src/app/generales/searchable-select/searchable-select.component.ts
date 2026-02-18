@@ -12,7 +12,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 export class SearchableSelectComponent implements OnInit, OnChanges {
   @Input() searchAttribute: string = '';
   @Input() key: string = '';
-  @Input() selectedValue: string = '';
+  @Input() selectedValue: any = '';
   @Input() placeHolder: string = '';
   @Input() originalValues: any[] = [];
   @Output() valueChange = new EventEmitter<any>();
@@ -30,12 +30,20 @@ export class SearchableSelectComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.values = this.originalValues;
+
+    if (this.selectedValue) {
+    this.myForm.get('seleccion')?.setValue(this.selectedValue, { emitEvent: false });
+  }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['originalValues']) {
       this.values = this.originalValues;
       this.filterOptions();
+    }
+
+    if (changes['selectedValue'] && changes['selectedValue'].currentValue !== undefined) {
+      this.myForm.get('seleccion')?.setValue(this.selectedValue, { emitEvent: false });
     }
   }
 
@@ -47,11 +55,24 @@ export class SearchableSelectComponent implements OnInit, OnChanges {
   }
 
   onSelect(): void {
+
     const selectedValue = this.myForm.get('seleccion')?.value;
-    this.selectedValue = selectedValue;
-    if (selectedValue) {
-      const seleccion = this.originalValues.find(o => o[this.key] == selectedValue);
-      this.valueChange.emit(seleccion);
+
+    if (!selectedValue) {
+      return;
     }
+
+    const seleccion = this.originalValues.find(
+      o => o[this.key] == selectedValue
+    );
+
+    // 🔥 El hijo NO decide nada.
+    // Solo informa al padre.
+    this.valueChange.emit(seleccion);
+  }
+
+  public setValue(value: any) {
+    this.selectedValue = value;
+    this.myForm.get('seleccion')?.setValue(value, { emitEvent: false });
   }
 }

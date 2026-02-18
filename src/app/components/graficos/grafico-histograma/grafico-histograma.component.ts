@@ -102,8 +102,8 @@ export class GraficoHistogramaComponent implements OnInit {
     const fechaHasta = horaPrincipioFinDia(new Date(data.name).toISOString(),true);
     this.pagosService.getCajaByDate(fechaDesde, fechaHasta).subscribe((res)=> {
       if (res && res.length > 0) {
-        const pagos = res.filter((p) => p.idPedido !== '-2' && p.idPedido !== '-3');
-        const ingresosRetiros = res.filter((p) => p.idPedido === '-2' || p.idPedido === '-3');
+        const pagos = res.filter((p) => p.idPedido !== -2 && p.idPedido !== -3);
+        const ingresosRetiros = res.filter((p) => p.idPedido === -2 || p.idPedido === -3);
         this.cajaPasadaModal.mostrarPagosPasados(pagos, ingresosRetiros).then((res)=>{
           console.log(res);
         })
