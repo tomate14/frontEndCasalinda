@@ -2,14 +2,43 @@
     <div class="row mb-3">
         <app-tablero-ejecutivo-diario></app-tablero-ejecutivo-diario>
     </div>
-    <div class="row">
-        <app-grafico-resumen-ultimo-dia></app-grafico-resumen-ultimo-dia>
+
+    <div class="tabs-container">
+        <div class="nav nav-tabs">
+            <button
+                type="button"
+                class="nav-link"
+                [class.active]="tabActiva === 'resumen_historico'"
+                (click)="cambiarTab('resumen_historico')">
+                Resumen historico
+            </button>
+            <button
+                type="button"
+                class="nav-link"
+                [class.active]="tabActiva === 'ranking'"
+                (click)="cambiarTab('ranking')">
+                Ranking
+            </button>
+        </div>
+
+        <div class="tab-content-panel">
+            <div *ngIf="tabActiva === 'resumen_historico'">
+                <div class="row">
+                    <app-grafico-resumen-ultimo-dia></app-grafico-resumen-ultimo-dia>
+                </div>
+                <div class="row">
+                    <app-grafico-resumen-barra-ultimos-dias></app-grafico-resumen-barra-ultimos-dias>
+                </div>
+                <div class="row">
+                    <app-grafico-histograma></app-grafico-histograma>
+                </div>
+            </div>
+
+            <div *ngIf="tabActiva === 'ranking'" class="ranking-placeholder">
+                <app-ranking-resumen></app-ranking-resumen>
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <app-grafico-resumen-barra-ultimos-dias></app-grafico-resumen-barra-ultimos-dias>
-    </div>
-    <div class="row">
-        <app-grafico-histograma></app-grafico-histograma>
-    </div>
+
     <!--app-tabla-caja-historial></app-tabla-caja-historial-->
 </div>

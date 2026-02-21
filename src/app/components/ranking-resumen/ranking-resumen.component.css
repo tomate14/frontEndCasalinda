@@ -1,0 +1,30 @@
+.ranking-wrapper {
+  padding: 4px;
+}
+
+.floating-card {
+  background: #ffffff;
+  border: 1px solid #dce2e8;
+  border-radius: 10px;
+  box-shadow: 0 10px 22px rgba(34, 48, 63, 0.08);
+  padding: 14px;
+  height: 100%;
+}
+
+.card-title {
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2a37;
+}
+
+.table thead th {
+  font-size: 0.8rem;
+  color: #5a6775;
+  border-bottom: 1px solid #dce2e8;
+}
+
+.table tbody td {
+  font-size: 0.85rem;
+}
+
