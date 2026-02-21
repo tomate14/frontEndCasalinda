@@ -12,6 +12,7 @@ import localeEsAr from '@angular/common/locales/es-AR';
 import localeEsArExtra from '@angular/common/locales/extra/es-AR';
 import { CrearProductoService } from '../../../services/popup/crearProducto.service';
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
+
 @Component({
   selector: 'app-tabla-productos',
   standalone: true,
@@ -26,8 +27,14 @@ export class TablaProductoComponent {
   isCollapsed: boolean = true;
   tipoUsuario:number= 1;
   p: number = 1;
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private productosService: ProductoService,
-    private crearProductoService: CrearProductoService, private confirmarService:ConfirmarService) {
+
+  constructor(
+    private route: ActivatedRoute,
+    private fb: FormBuilder,
+    private productosService: ProductoService,
+    private crearProductoService: CrearProductoService,
+    private confirmarService:ConfirmarService
+  ) {
     this.filterForm = this.fb.group({
       id: [''],
       nombre: ['']
@@ -45,28 +52,19 @@ export class TablaProductoComponent {
 
   imprimirComprobante(producto: Producto) {
     if (producto.id) {
-      this.productosService.getCodigoBarraPDF(producto.id).subscribe((res: any) => {
+      this.productosService.getCodigoBarraPDF(producto.id, 20).subscribe((res: Blob) => {
         const url = window.URL.createObjectURL(res);
-        const newWindow = window.open();
+        const newWindow = window.open(url, '_blank');
 
-        const rows = 4; // Número de filas de imágenes
-        const cols = 4; // Número de columnas de imágenes
-
-        let content = `<html><head><style>
-          body { margin: 0; }
-          .grid { display: grid; grid-template-columns: repeat(${cols}, 1fr); grid-gap: 10px; }
-          img { width: 100%; height: auto; }
-        </style></head><body>`;
-        
-        content += '<div class="grid">';
-        for (let i = 0; i < rows * cols; i++) {
-          content += `<div><img src="${url}" alt="Código de Barras" /></div>`;
+        if (!newWindow) {
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `codigo-barras-${producto.id}.pdf`;
+          link.click();
         }
-        content += '</div></body></html>';
 
-        newWindow?.document.write(content);
-        newWindow?.document.close();
-      })
+        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+      });
     }
   }
 
@@ -92,9 +90,10 @@ export class TablaProductoComponent {
     this.productosService.getByParams(params).subscribe((res) => {
       this.productos = res;
     }, (error) => {
-      this.productos = []
+      this.productos = [];
     });
   }
+
   limpiar() {
     this.filterForm.reset();
     this.productosService.getByParams([]).subscribe(
