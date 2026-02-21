@@ -1,0 +1,56 @@
+.stock-wrapper {
+  padding: 4px;
+}
+
+.floating-card {
+  background: #ffffff;
+  border: 1px solid #dce2e8;
+  border-radius: 10px;
+  box-shadow: 0 10px 22px rgba(34, 48, 63, 0.08);
+  padding: 14px;
+}
+
+.btn-help {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #a8b3bf;
+  background: #ffffff;
+  color: #2a3948;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0;
+  font-weight: 700;
+}
+
+.help-box {
+  border: 1px solid #dce2e8;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.help-title {
+  margin-bottom: 6px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #2a3948;
+}
+
+.table thead th {
+  font-size: 0.8rem;
+  color: #5a6775;
+  border-bottom: 1px solid #dce2e8;
+}
+
+.table tbody td {
+  font-size: 0.85rem;
+}
+
+.pagination-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}

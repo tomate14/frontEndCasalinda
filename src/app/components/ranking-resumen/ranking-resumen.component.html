@@ -1,0 +1,90 @@
+<div class="ranking-wrapper">
+  <form [formGroup]="filtrosForm" (ngSubmit)="buscar()" class="row g-2 align-items-end mb-3">
+    <div class="col-12 col-md-3">
+      <label class="form-label mb-1">Desde</label>
+      <input type="date" class="form-control" formControlName="fechaDesde">
+    </div>
+    <div class="col-12 col-md-3">
+      <label class="form-label mb-1">Hasta</label>
+      <input type="date" class="form-control" formControlName="fechaHasta">
+    </div>
+    <div class="col-12 col-md-2">
+      <label class="form-label mb-1">Top N</label>
+      <input type="number" class="form-control" min="1" max="100" formControlName="topN">
+    </div>
+    <div class="col-12 col-md-2">
+      <label class="form-label mb-1">Top productos por</label>
+      <select class="form-select" formControlName="criterioProductos">
+        <option value="cantidad">Cantidad</option>
+        <option value="facturacion">Facturación</option>
+      </select>
+    </div>
+    <div class="col-12 col-md-2">
+      <button type="submit" class="btn btn-dark w-100">Aplicar</button>
+    </div>
+  </form>
+
+  <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>
+  <div *ngIf="cargando" class="text-muted">Cargando ranking...</div>
+
+  <div class="row g-3" *ngIf="!cargando && resumen">
+    <div class="col-12 col-lg-6">
+      <div class="floating-card">
+        <h4 class="card-title">Top {{ resumen.topN }} productos (ORV)</h4>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Producto</th>
+                <th class="text-end">Cantidad</th>
+                <th class="text-end">Facturación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of resumen.topProductos; index as i">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.nombreProducto }}</td>
+                <td class="text-end">{{ item.cantidadVendida }}</td>
+                <td class="text-end">{{ formatMoneda(item.facturacion) }}</td>
+              </tr>
+              <tr *ngIf="resumen.topProductos.length === 0">
+                <td colspan="4" class="text-center text-muted">Sin ventas ORV en el periodo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="floating-card">
+        <h4 class="card-title">Top {{ resumen.topN }} clientes por neto (ORV)</h4>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th class="text-end">DNI</th>
+                <th class="text-end">Neto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of resumen.topClientes; index as i">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.nombreCliente }}</td>
+                <td class="text-end">{{ item.dniCliente }}</td>
+                <td class="text-end">{{ formatMoneda(item.netoVenta) }}</td>
+              </tr>
+              <tr *ngIf="resumen.topClientes.length === 0">
+                <td colspan="4" class="text-center text-muted">Sin clientes ORV en el periodo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
