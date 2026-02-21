@@ -225,6 +225,11 @@ export class TablaPedidoComponent implements OnInit {
   mostrarBotonDetalle(pedido:Pedido) {
     return pedido.tipoPedido !== 1 && pedido.tipoPedido !== 2;
   }
+
+  mostrarBotonImprimir(pedido:Pedido) {
+    return pedido.tipoPedido >= 1 && pedido.tipoPedido <= 5;
+  }
+
   mostrarEditarYNotificar(pedido:Pedido) {
     return pedido.tipoPedido !== 3 && pedido.tipoPedido !== 4 && pedido.tipoPedido !== 5;
   }
