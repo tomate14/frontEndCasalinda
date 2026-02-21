@@ -214,9 +214,11 @@ export class TablaPedidoComponent implements OnInit {
     if (pedido.id) {
       const idPedido = pedido.id;
       this.exportPDFService.getDocumentoPDF(idPedido).subscribe((res: Blob | MediaSource) => {
-        console.log("asd")
         const url = window.URL.createObjectURL(res);
-        window.open(url);
+        window.open(url, '_blank');
+      }, (error: any) => {
+        const message = error?.error?.message || 'Se produjo un error al imprimir el comprobante';
+        alert(message);
       });
     }
   }
