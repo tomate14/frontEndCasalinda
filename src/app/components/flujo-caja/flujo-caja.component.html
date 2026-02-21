@@ -19,6 +19,13 @@
                 (click)="cambiarTab('ranking')">
                 Ranking
             </button>
+            <button
+                type="button"
+                class="nav-link"
+                [class.active]="tabActiva === 'stock_faltante'"
+                (click)="cambiarTab('stock_faltante')">
+                Stock faltante
+            </button>
         </div>
 
         <div class="tab-content-panel">
@@ -36,6 +43,10 @@
 
             <div *ngIf="tabActiva === 'ranking'" class="ranking-placeholder">
                 <app-ranking-resumen></app-ranking-resumen>
+            </div>
+
+            <div *ngIf="tabActiva === 'stock_faltante'" class="stock-placeholder">
+                <app-stock-faltante-resumen></app-stock-faltante-resumen>
             </div>
         </div>
     </div>

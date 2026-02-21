@@ -1,0 +1,87 @@
+<div class="stock-wrapper">
+  <form [formGroup]="filtrosForm" (ngSubmit)="buscar(0)" class="row g-2 align-items-end mb-3">
+    <div class="col-12 col-md-3">
+      <label class="form-label mb-1">Fecha de referencia</label>
+      <input type="date" class="form-control" formControlName="fechaReferencia">
+    </div>
+    <div class="col-12 col-md-3">
+      <label class="form-label mb-1">Modelo de calculo</label>
+      <select class="form-select" formControlName="estrategia">
+        <option [value]="estrategiaDefault">Estacional con eventos</option>
+      </select>
+    </div>
+    <div class="col-12 col-md-2">
+      <button type="submit" class="btn btn-dark w-100">Aplicar</button>
+    </div>
+    <div class="col-12 col-md-4 text-md-end">
+      <div class="d-flex align-items-center justify-content-md-end gap-2">
+        <span class="text-muted" *ngIf="resumen">
+          Corte del dia {{ formatFecha(resumen.fechaReferencia) }}
+        </span>
+        <button
+          type="button"
+          class="btn-help"
+          (click)="toggleAyuda()"
+          [attr.title]="ayudaVisible ? 'Ocultar formula' : 'Ver formula'"
+          [attr.aria-label]="ayudaVisible ? 'Ocultar formula' : 'Ver formula'">
+          ?
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div *ngIf="ayudaVisible && resumen" class="help-box mb-3">
+    <p class="help-title">Como se calcula el stock sugerido</p>
+    <p class="mb-1">{{ resumen.formulaExplicacion }}</p>
+    <p class="mb-0 text-muted">
+      Reposicion: {{ resumen.diasReposicion }} dias | Buffer: {{ resumen.diasBuffer }} dias | Seguridad: {{ resumen.diasSeguridad }} dias
+    </p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>
+  <div *ngIf="cargando" class="text-muted">Cargando stock faltante...</div>
+
+  <div class="floating-card" *ngIf="!cargando && resumen">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th class="text-end">Stock actual</th>
+            <th class="text-end">Stock necesario</th>
+            <th>Proveedor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of resumen.items">
+            <td>{{ item.nombreProducto }}</td>
+            <td class="text-end">{{ item.stockActual }}</td>
+            <td class="text-end">{{ item.stockNecesario }}</td>
+            <td>{{ item.nombreProveedor }}</td>
+          </tr>
+          <tr *ngIf="resumen.items.length === 0">
+            <td colspan="4" class="text-center text-muted">No hay faltantes para el criterio seleccionado</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-footer">
+      <span class="text-muted">
+        Total: {{ resumen.totalElements }} productos | Pagina {{ resumen.totalPages === 0 ? 0 : (resumen.page + 1) }} de {{ resumen.totalPages }}
+      </span>
+      <div class="btn-group btn-group-sm">
+        <button type="button" class="btn btn-outline-secondary" (click)="paginaAnterior()" [disabled]="resumen.page <= 0">
+          Anterior
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="paginaSiguiente()"
+          [disabled]="resumen.totalPages === 0 || resumen.page + 1 >= resumen.totalPages">
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

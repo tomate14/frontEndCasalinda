@@ -6,21 +6,31 @@ import { TablaCajaHistorialComponent } from '../tabla-caja-historial/tabla-caja-
 import { GraficoResumenUltimoDiaComponent } from '../graficos/grafico-resumen-ultimo-dia/grafico-resumen-ultimo-dia.component';
 import { GraficoResumenBarraUltimosDiasComponent } from '../graficos/grafico-resumen-barra-ultimos-dias/grafico-resumen-barra-ultimos-dias.component';
 import { RankingResumenComponent } from '../ranking-resumen/ranking-resumen.component';
+import { StockFaltanteResumenComponent } from '../stock-faltante-resumen/stock-faltante-resumen.component';
 import { TableroEjecutivoDiarioComponent } from '../tablero-ejecutivo-diario/tablero-ejecutivo-diario.component';
 
 @Component({
   selector: 'app-flujo-caja',
   standalone: true,
-  imports: [CommonModule, TablaCajaHistorialComponent, GraficoHistogramaComponent, GraficoResumenUltimoDiaComponent, GraficoResumenBarraUltimosDiasComponent, RankingResumenComponent, TableroEjecutivoDiarioComponent],
+  imports: [
+    CommonModule,
+    TablaCajaHistorialComponent,
+    GraficoHistogramaComponent,
+    GraficoResumenUltimoDiaComponent,
+    GraficoResumenBarraUltimosDiasComponent,
+    RankingResumenComponent,
+    StockFaltanteResumenComponent,
+    TableroEjecutivoDiarioComponent
+  ],
   templateUrl: './flujo-caja.component.html',
   styleUrl: './flujo-caja.component.css'
 })
 export class FlujoCajaComponent {
-  tabActiva: 'resumen_historico' | 'ranking' = 'resumen_historico';
+  tabActiva: 'resumen_historico' | 'ranking' | 'stock_faltante' = 'resumen_historico';
 
   constructor() { }
 
-  cambiarTab(tab: 'resumen_historico' | 'ranking'): void {
+  cambiarTab(tab: 'resumen_historico' | 'ranking' | 'stock_faltante'): void {
     this.tabActiva = tab;
   }
 }
