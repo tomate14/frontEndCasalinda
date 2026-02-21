@@ -33,6 +33,9 @@ export class ConfirmarComprobanteComponent {
     if (this.tipoComprobante === 'NDC') {
       this.myForm.get('formaDePago')?.clearValidators();
       this.myForm.get('formaDePago')?.updateValueAndValidity();
+    } else {
+      const formaPagoDefault = this.formaDePago.find((formaPago) => formaPago.value === 1) ?? this.formaDePago[0];
+      this.myForm.get('formaDePago')?.setValue(formaPagoDefault ? formaPagoDefault.value : null);
     }
 
     if (this.solicitarMonto) {

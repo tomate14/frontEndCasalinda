@@ -9,7 +9,7 @@ import { Producto } from '../../../clases/dominio/producto';
 import { ProductoService } from '../../../services/producto.service';
 import { ConfirmarService } from '../../../services/popup/confirmar';
 import { PedidosService } from '../../../services/pedidos.service';
-import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
+import { FormaDePago } from '../../../clases/constantes/formaPago';
 import { ConfirmarComprobanteService } from '../../../services/popup/confirmarComprobante.setvice';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
@@ -21,6 +21,7 @@ import { firstValueFrom } from 'rxjs';
 import { PagosService } from '../../../services/pago.service';
 import { Pago } from '../../../clases/dominio/pago';
 import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
+import { FormaPagoService } from '../../../services/forma-pago.service';
 
 @Component({
   selector: 'app-generar-comprobante',
@@ -42,7 +43,7 @@ export class GenerarComprobanteComponent implements OnInit{
   myForm: FormGroup;
   myFormHeader: FormGroup;
   formaDePago:FormaDePago[] = [];
-  selectedFormaDePago:number = 1;
+  selectedFormaDePago:number = 0;
   tipoDePedido:TipoPedido[] = [];
   @Input() readonly:boolean = false;
   @Input() pedido:Pedido | undefined;
@@ -62,9 +63,9 @@ export class GenerarComprobanteComponent implements OnInit{
     private activeModal: NgbActiveModal,
     private editarItemComprobanteService: EditarItemComprobanteService,
     private seleccionarNotasCreditoService: SeleccionarNotasCreditoService,
-    private pagosService: PagosService
+    private pagosService: PagosService,
+    private formaPagoService: FormaPagoService
   ) {
-    this.formaDePago = formaDePago;
     this.tipoDePedido = tipoDePedido;
     this.myForm = this.fb.group({
       id: null,
@@ -75,11 +76,12 @@ export class GenerarComprobanteComponent implements OnInit{
     });
     this.myFormHeader = this.fb.group({
       dni: null,
-      formaDePago: 1
+      formaDePago: null
     });
   }
 
   ngOnInit(): void {
+    this.cargarFormasPago();
     if (this.readonly && this.pedido && this.pedido.id) {
       const id = +this.pedido.id;
       this.productoService.getProductoByIdPedido(id).subscribe(res => {
@@ -98,6 +100,15 @@ export class GenerarComprobanteComponent implements OnInit{
         });
       }
     }
+  }
+
+  private cargarFormasPago(): void {
+    this.formaPagoService.getFormasPagoDropdown().subscribe((formasPago) => {
+      this.formaDePago = formasPago;
+      const formaPagoDefault = this.formaDePago.find((formaPago) => formaPago.value === 1) ?? this.formaDePago[0];
+      this.selectedFormaDePago = formaPagoDefault ? formaPagoDefault.value : 0;
+      this.myFormHeader.patchValue({ formaDePago: formaPagoDefault ? formaPagoDefault.value : null });
+    });
   }
 
   validSelection(cliente: Cliente) {
@@ -252,7 +263,7 @@ export class GenerarComprobanteComponent implements OnInit{
     if (this.tipoComprobante === 'ORC') {
       unicoProveedor = this.esUnicoProveedor();
     }
-    return this.productos.length > 0 && this.selectedFormaDePago > 0 && this.tipoComprobante && unicoProveedor;
+    return this.productos.length > 0 && this.formaDePago.length > 0 && this.selectedFormaDePago > 0 && this.tipoComprobante && unicoProveedor;
   }
 
   private esUnicoProveedor(): boolean {

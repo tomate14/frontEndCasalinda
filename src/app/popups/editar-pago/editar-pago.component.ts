@@ -2,12 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Pago } from '../../../clases/dominio/pago';
 import { PagosService } from '../../../services/pago.service';
-import { HttpClient } from '@angular/common/http';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
+import { FormaDePago } from '../../../clases/constantes/formaPago';
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { esIngresoEgresoCaja } from '../../../utils/funciones';
+import { FormaPagoService } from '../../../services/forma-pago.service';
 
 @Component({
   selector: 'app-editar-pedido',
@@ -22,13 +21,13 @@ export class EditarPagoComponent implements OnInit{
   @Input() pago:Pago | undefined;
   formaDePago:FormaDePago[] = [];
 
-  constructor(private fb: FormBuilder, private pagosService: PagosService, private httpClient: HttpClient, private activeModal: NgbActiveModal) {    
+  constructor(private fb: FormBuilder, private pagosService: PagosService, private activeModal: NgbActiveModal,
+    private formaPagoService: FormaPagoService) {
 
       this.myForm = this.fb.group({}); 
   }
 
   ngOnInit(): void {
-    this.formaDePago = formaDePago;
     if (this.pago) {
       this.myForm = this.fb.group({      
         descripcion: [this.pago.descripcion, Validators.required],      
@@ -36,7 +35,29 @@ export class EditarPagoComponent implements OnInit{
         formaDePago: [this.pago.formaPago, Validators.required]
       }); 
     }
+    this.cargarFormasPago();
   }
+
+  private cargarFormasPago(): void {
+    this.formaPagoService.getFormasPagoDropdown().subscribe((formasPago) => {
+      this.formaDePago = formasPago;
+      this.setFormaPagoDefault();
+    });
+  }
+
+  private setFormaPagoDefault(): void {
+    const control = this.myForm.get('formaDePago');
+    if (!control) {
+      return;
+    }
+    const valorActual = Number(control.value);
+    if (this.formaDePago.some((formaPago) => formaPago.value === valorActual)) {
+      return;
+    }
+    const formaPagoDefault = this.formaDePago.find((formaPago) => formaPago.value === 1) ?? this.formaDePago[0];
+    control.setValue(formaPagoDefault ? formaPagoDefault.value : null);
+  }
+
   onSubmit() {
     if (this.myForm.valid) {
       const fechaPago = this.pago?.fechaPago  as unknown as string;

@@ -3,7 +3,7 @@ import { Component, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
+import { FormaDePago } from '../../../clases/constantes/formaPago';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Pago } from '../../../clases/dominio/pago';
@@ -16,6 +16,7 @@ import { EditarPagoService } from '../../../services/popup/editarPago';
 import { CajaService } from '../../../services/caja.service';
 import { ConfirmarService } from '../../../services/popup/confirmar';
 import { tipoDePago } from '../../../clases/constantes/tipoPago';
+import { FormaPagoService } from '../../../services/forma-pago.service';
 
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 @Component({
@@ -48,18 +49,18 @@ export class TablaCajaComponent implements OnInit{
   @Input()
   readOnly:boolean = false;
   constructor(private fb: FormBuilder, private pagosServices: PagosService, private editarPagoService:EditarPagoService, private cajaService:CajaService,
-    private confirmarService: ConfirmarService
+    private confirmarService: ConfirmarService,
+    private formaPagoService: FormaPagoService
   ) {
-    this.formaDePago = formaDePago;
-
     this.myForm = this.fb.group({
       descripcion: ['', Validators.required],
       valor: [null, [Validators.required, Validators.min(0)]],
-      formaDePago: [1, Validators.required]
+      formaDePago: [null, Validators.required]
     });
   }
 
   ngOnInit(): void {
+    this.cargarFormasPago();
     const fecha = nowConLuxonATimezoneArgentina();
     const fechaDesde = horaPrincipioFinDia(fecha, false);
     const fechaHasta = horaPrincipioFinDia(fecha, true);
@@ -73,6 +74,26 @@ export class TablaCajaComponent implements OnInit{
     } else {
       this.cargarPagos(fechaDesde, fechaHasta);
     }
+  }
+
+  private cargarFormasPago(): void {
+    this.formaPagoService.getFormasPagoDropdown().subscribe((formasPago) => {
+      this.formaDePago = formasPago;
+      this.setFormaPagoDefault();
+    });
+  }
+
+  private setFormaPagoDefault(): void {
+    const control = this.myForm.get('formaDePago');
+    if (!control) {
+      return;
+    }
+    const valorActual = Number(control.value);
+    if (this.formaDePago.some((formaPago) => formaPago.value === valorActual)) {
+      return;
+    }
+    const formaPagoDefault = this.formaDePago.find((formaPago) => formaPago.value === 1) ?? this.formaDePago[0];
+    control.setValue(formaPagoDefault ? formaPagoDefault.value : null);
   }
 
   toggleForm(tipoBoton:number) {
@@ -233,7 +254,8 @@ export class TablaCajaComponent implements OnInit{
         descripcion: this.myForm.value.descripcion
       }
       this.pagosServices.postPago(pago).subscribe((res) => {
-        this.myForm.reset({descripcion: '',valor: null,formaDePago: 1});
+        this.myForm.reset({descripcion: '',valor: null,formaDePago: this.myForm.get('formaDePago')?.value});
+        this.setFormaPagoDefault();
         this.actualizarTotalesPorPago(pago);
         if (idPedido === -1) {
           this.pagos.unshift(res);

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
@@ -9,7 +9,7 @@ import { Pedido } from '../../../clases/dominio/pedido';
 import { PagosService } from '../../../services/pago.service';
 import { Pago } from '../../../clases/dominio/pago';
 import { MatSelectModule } from '@angular/material/select';
-import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
+import { FormaDePago } from '../../../clases/constantes/formaPago';
 import { TipoPedido, tipoDePedido } from '../../../clases/constantes/cuentaCorriente';
 import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -18,6 +18,7 @@ import { CrearClienteService } from '../../../services/popup/crearCliente.servic
 import { enviarMensajeAltaCC, enviarMensajeAltaPedido } from '../../../utils/mensajesWhatsapp';
 import { senaMenorQueTotalValidator } from '../../../validadores/validadorSenaTotal';
 import { maxLengthValidator } from '../../../validadores/validador8CaracteresDni';
+import { FormaPagoService } from '../../../services/forma-pago.service';
 
 @Component({
   selector: 'app-generar',
@@ -26,7 +27,7 @@ import { maxLengthValidator } from '../../../validadores/validador8CaracteresDni
   templateUrl: './generar.component.html',
   styleUrl: './generar.component.css'
 })
-export class GenerarComponent {
+export class GenerarComponent implements OnInit {
   myForm: FormGroup;
   cliente: Cliente | undefined;
   imagePath: any = '';
@@ -42,10 +43,10 @@ export class GenerarComponent {
     private pagosService: PagosService,
     private confirmarService: ConfirmarService,
     private activeModal: NgbActiveModal,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private formaPagoService: FormaPagoService
   ) {
-    this.formaDePago = formaDePago;
-    this.tipoDePedido = tipoDePedido;
+    this.tipoDePedido = tipoDePedido.filter((tipo) => tipo.value === 1 || tipo.value === 2);
     this.myForm = this.fb.group({
       nombre: [null, Validators.required],
       email: [null, [Validators.required, Validators.email]],
@@ -53,9 +54,33 @@ export class GenerarComponent {
       sena: [0, Validators.required],
       total: [null, Validators.required],
       dni: [null, [Validators.required, maxLengthValidator(8)]],
-      formaDePago: [1, Validators.required],
+      formaDePago: [null, Validators.required],
       tipoDePedido: [1, Validators.required]
     }, { validators: senaMenorQueTotalValidator() });
+  }
+
+  ngOnInit(): void {
+    this.cargarFormasPago();
+  }
+
+  private cargarFormasPago(): void {
+    this.formaPagoService.getFormasPagoDropdown().subscribe((formasPago) => {
+      this.formaDePago = formasPago;
+      this.setFormaPagoDefault();
+    });
+  }
+
+  private setFormaPagoDefault(): void {
+    const control = this.myForm.get('formaDePago');
+    if (!control) {
+      return;
+    }
+    const valorActual = Number(control.value);
+    if (this.formaDePago.some((formaPago) => formaPago.value === valorActual)) {
+      return;
+    }
+    const formaPagoDefault = this.formaDePago.find((formaPago) => formaPago.value === 1) ?? this.formaDePago[0];
+    control.setValue(formaPagoDefault ? formaPagoDefault.value : null);
   }
 
   buscarCliente() {
@@ -115,7 +140,8 @@ export class GenerarComponent {
           }
 
           this.enviarWp(id, numeroPedido);
-          this.myForm.reset();
+          this.myForm.reset({ sena: 0, formaDePago: this.myForm.get('formaDePago')?.value, tipoDePedido: 1 });
+          this.setFormaPagoDefault();
           this.selectedImageFile = undefined;
           this.spinner.hide();
           this.activeModal.close(pedidoFinal);
@@ -163,7 +189,8 @@ export class GenerarComponent {
   }
 
   cerrar() {
-    this.myForm.reset();
+    this.myForm.reset({ sena: 0, formaDePago: this.myForm.get('formaDePago')?.value, tipoDePedido: 1 });
+    this.setFormaPagoDefault();
     this.selectedImageFile = undefined;
     this.activeModal.close(false);
   }

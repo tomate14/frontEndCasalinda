@@ -8,13 +8,14 @@ import { catchError, map } from 'rxjs/operators';
 import { forkJoin, firstValueFrom, of } from 'rxjs';
 import { Pedido } from '../../../clases/dominio/pedido';
 import { PedidosService } from '../../../services/pedidos.service';
-import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
+import { FormaDePago } from '../../../clases/constantes/formaPago';
 import { ConfirmarComprobanteService } from '../../../services/popup/confirmarComprobante.setvice';
 import { PagosService } from '../../../services/pago.service';
 import { Pago } from '../../../clases/dominio/pago';
 import { nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { ConfirmarService } from '../../../services/popup/confirmar';
 import { CuentaCorrienteConDeuda } from '../../../clases/constantes/cuentaCorrienteConDeuda';
+import { FormaPagoService } from '../../../services/forma-pago.service';
 
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 
@@ -36,22 +37,34 @@ export class ListaCuentasCorrientesPorClienteComponent {
   p = 1;
   cargando = true;
   procesandoPago = false;
-  formaDePago: FormaDePago[] = formaDePago;
+  formaDePago: FormaDePago[] = [];
 
   constructor(
     private activeModal: NgbActiveModal,
     private pedidosService: PedidosService,
     private confirmarComprobanteService: ConfirmarComprobanteService,
     private pagosService: PagosService,
-    private confirmarService: ConfirmarService
+    private confirmarService: ConfirmarService,
+    private formaPagoService: FormaPagoService
   ) {}
 
   ngOnInit(): void {
+    this.cargarFormasPago();
     void this.cargarDeudas();
+  }
+
+  private cargarFormasPago(): void {
+    this.formaPagoService.getFormasPagoDropdown().subscribe((formasPago) => {
+      this.formaDePago = formasPago;
+    });
   }
 
   async registrarPago(): Promise<void> {
     if (this.totalAdeudado <= 0 || this.procesandoPago) {
+      return;
+    }
+    if (!this.formaDePago.length) {
+      this.confirmarService.confirm('Formas de pago', 'No hay formas de pago disponibles.', true, 'Ok', 'No');
       return;
     }
 

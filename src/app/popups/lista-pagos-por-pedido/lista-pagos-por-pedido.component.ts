@@ -6,7 +6,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PedidosService } from '../../../services/pedidos.service';
 import { MatSelectModule } from '@angular/material/select';
-import { FormaDePago, formaDePago } from '../../../clases/constantes/formaPago';
+import { FormaDePago } from '../../../clases/constantes/formaPago';
 import { formatearFechaDesdeUnIso, nowConLuxonATimezoneArgentina } from '../../../utils/dates';
 import { registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
@@ -14,6 +14,7 @@ import localeEsArExtra from '@angular/common/locales/extra/es-AR';
 import { ConfirmarService } from '../../../services/popup/confirmar';
 import { PagosPorPedido } from '../../../clases/dto/pagosPorPedido';
 import { Pedido } from '../../../clases/dominio/pedido';
+import { FormaPagoService } from '../../../services/forma-pago.service';
 
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 
@@ -41,15 +42,16 @@ export class ListaPagosPorPedidoComponent implements OnInit {
   };
 
   constructor(private pagosServices: PagosService, private activeModal: NgbActiveModal, private fb: FormBuilder, 
-    private pedidosService: PedidosService, private confirmarService:ConfirmarService) { 
-    this.formaDePago = formaDePago;
+    private pedidosService: PedidosService, private confirmarService:ConfirmarService,
+    private formaPagoService: FormaPagoService) {
     this.pagoForm = this.fb.group({
       valor: ['', [Validators.required, Validators.min(1)]],
-      formaDePago: [1, Validators.required]
+      formaDePago: [null, Validators.required]
     });
   }
 
   ngOnInit(): void {
+    this.cargarFormasPago();
     if (this.pedido) {
       const id = this.pedido.id as unknown as number;
       this.pagosServices.getPagoByIdPedido(id).subscribe((res) => {
@@ -60,6 +62,26 @@ export class ListaPagosPorPedidoComponent implements OnInit {
         this.actualizarSubTotal();
       })
     }    
+  }
+
+  private cargarFormasPago(): void {
+    this.formaPagoService.getFormasPagoDropdown().subscribe((formasPago) => {
+      this.formaDePago = formasPago;
+      this.setFormaPagoDefault();
+    });
+  }
+
+  private setFormaPagoDefault(): void {
+    const control = this.pagoForm.get('formaDePago');
+    if (!control) {
+      return;
+    }
+    const valorActual = Number(control.value);
+    if (this.formaDePago.some((formaPago) => formaPago.value === valorActual)) {
+      return;
+    }
+    const formaPagoDefault = this.formaDePago.find((formaPago) => formaPago.value === 1) ?? this.formaDePago[0];
+    control.setValue(formaPagoDefault ? formaPagoDefault.value : null);
   }
 
   cerrar() {
@@ -113,8 +135,9 @@ export class ListaPagosPorPedidoComponent implements OnInit {
               this.actualizarSubTotal();
               this.pagoForm.reset({
                 valor: '',
-                formaDePago: 1
+                formaDePago: this.pagoForm.get('formaDePago')?.value
               });
+              this.setFormaPagoDefault();
               res.pagos = [pago];
               this.enviarWP(res);
             }
