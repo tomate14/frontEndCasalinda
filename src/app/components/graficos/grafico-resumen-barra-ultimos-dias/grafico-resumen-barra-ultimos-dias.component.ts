@@ -1,17 +1,16 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CajaService } from '../../../../services/caja.service';
-import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
-import { formatDateToDayMonth, formatearFechaDesdeUnIso, generarFechasFromMonthPicker, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../../utils/dates';
-import { Caja } from '../../../../clases/dominio/caja';
-import { coloresGrafico } from '../../../../utils/color-graficos';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DateTime } from 'luxon';
+import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
+import { Pago } from '../../../../clases/dominio/pago';
+import { PagosService } from '../../../../services/pago.service';
+import { formatDateToDayMonth, formatearFechaDesdeUnIso, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../../utils/dates';
+import { coloresGrafico } from '../../../../utils/color-graficos';
 
 const defaultFormObject = {
-    fechaDesde: formatearFechaDesdeUnIso(getPreviousDays(nowConLuxonATimezoneArgentina(),false,7), 'yyyy-MM-dd'),
+    fechaDesde: formatearFechaDesdeUnIso(getPreviousDays(nowConLuxonATimezoneArgentina(),false,30), 'yyyy-MM-dd'),
     fechaHasta: formatearFechaDesdeUnIso(horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true), 'yyyy-MM-dd'),
-    tipoGrafico:1
-}
+};
 
 @Component({
   selector: 'app-grafico-resumen-barra-ultimos-dias',
@@ -20,117 +19,117 @@ const defaultFormObject = {
   templateUrl: './grafico-resumen-barra-ultimos-dias.component.html',
   styleUrl: './grafico-resumen-barra-ultimos-dias.component.css'
 })
-export class GraficoResumenBarraUltimosDiasComponent {
+export class GraficoResumenBarraUltimosDiasComponent implements OnInit {
 
   fechasBarrasForm: FormGroup;
-  barrasAcumulado: any[] = [];
-  tipoGrafico:any;
-  tipoGraficoNgIf:number = 1;
+  tendenciaOperativa: any[] = [];
+  totalesRango = { cobrado: 0, egresos: 0, neto: 0 };
+  cargando: boolean = false;
+
   colorScheme: Color = {
-    name: 'customScheme',
+    name: 'tendenciaOperativa',
     selectable: false,
-    group: ScaleType.Time,
-    domain: [coloresGrafico.contado, coloresGrafico.tarjeta, coloresGrafico.cuentaDni, coloresGrafico.transferencia]
+    group: ScaleType.Ordinal,
+    domain: [coloresGrafico.contado, coloresGrafico.gastos, coloresGrafico.ganancia]
   };
 
-  // options
-  showXAxis: boolean = true;
-  showYAxis: boolean = true;
-  showXAxisLabel: boolean = true;
-  xAxisLabel: string = 'Fecha';
-  yAxisLabel: string = 'Monto';
-  showYAxisLabel: boolean = true;
-  animations: boolean = true;
-
-  constructor(private fb: FormBuilder, private cajaService: CajaService) {
-    this.fechasBarrasForm = this.fb.group({});
+  constructor(private fb: FormBuilder, private pagosService: PagosService) {
+    this.fechasBarrasForm = this.fb.group({
+      fechaDesde: [defaultFormObject.fechaDesde, Validators.required],
+      fechaHasta: [defaultFormObject.fechaHasta, Validators.required]
+    });
   }
 
-  ngOnInit() {
-    this.fechasBarrasForm = this.fb.group(defaultFormObject);
-    const fechaInicio = getPreviousDays(nowConLuxonATimezoneArgentina(),false,7);
-    const fechaFin = horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true);
-    this.generarArribaDerechaGrafico(fechaInicio, fechaFin);
+  ngOnInit(): void {
+    this.onSubmitForm();
   }
 
-  onSubmitForm() {
+  onSubmitForm(): void {
     if (this.fechasBarrasForm.valid) {
-      if (this.fechasBarrasForm.value.tipoGrafico === "2") {
-        const fechas = generarFechasFromMonthPicker(this.fechasBarrasForm.value.fechaDesde, this.fechasBarrasForm.value.fechaHasta);
-        if (fechas && fechas.fechaDesde && fechas.fechaHasta) {
-          this.generarArribaDerechaGrafico(fechas.fechaDesde, fechas.fechaHasta);
-        }
-      } else {
-        const fechaDesde = horaPrincipioFinDia(this.fechasBarrasForm.value.fechaDesde, false);
-        const fechaHasta = horaPrincipioFinDia(this.fechasBarrasForm.value.fechaHasta, true);
-        this.generarArribaDerechaGrafico(fechaDesde, fechaHasta);      
-      }
-      
+      const fechaDesde = horaPrincipioFinDia(this.fechasBarrasForm.value.fechaDesde, false);
+      const fechaHasta = horaPrincipioFinDia(this.fechasBarrasForm.value.fechaHasta, true);
+      this.cargarTendencia(fechaDesde, fechaHasta);
     }
   }
+ 
+  private cargarTendencia(fechaDesde:string, fechaHasta:string): void {
+    this.cargando = true;
+    this.pagosService.getCajaByDate(fechaDesde, fechaHasta).subscribe({
+      next: (pagos: Pago[]) => {
+        const resumenPorDia = new Map<string, { cobrado: number; egresos: number; neto: number }>();
 
-  onChange(event:any) {
-    this.tipoGraficoNgIf = +event.target.value;
+        pagos.forEach((pago: Pago) => {
+          if (!this.esPagoOperativo(pago)) {
+            return;
+          }
+
+          const clave = DateTime.fromISO(pago.fechaPago, { zone: 'America/Argentina/Buenos_Aires' }).toFormat('yyyy-MM-dd');
+          const actual = resumenPorDia.get(clave) ?? { cobrado: 0, egresos: 0, neto: 0 };
+
+          if (pago.valor > 0) {
+            actual.cobrado += pago.valor;
+          } else if (pago.valor < 0) {
+            actual.egresos += Math.abs(pago.valor);
+          }
+
+          actual.neto = actual.cobrado - actual.egresos;
+          resumenPorDia.set(clave, actual);
+        });
+
+        const fechasOrdenadas = [...resumenPorDia.keys()].sort((a: string, b: string) => a.localeCompare(b));
+        const cobradoSerie: { name: string; value: number }[] = [];
+        const egresosSerie: { name: string; value: number }[] = [];
+        const netoSerie: { name: string; value: number }[] = [];
+
+        this.totalesRango = { cobrado: 0, egresos: 0, neto: 0 };
+
+        fechasOrdenadas.forEach((fecha: string) => {
+          const resumen = resumenPorDia.get(fecha);
+          if (!resumen) {
+            return;
+          }
+
+          const etiquetaFecha = formatDateToDayMonth(fecha);
+
+          cobradoSerie.push({ name: etiquetaFecha, value: resumen.cobrado });
+          egresosSerie.push({ name: etiquetaFecha, value: resumen.egresos });
+          netoSerie.push({ name: etiquetaFecha, value: resumen.neto });
+
+          this.totalesRango.cobrado += resumen.cobrado;
+          this.totalesRango.egresos += resumen.egresos;
+          this.totalesRango.neto += resumen.neto;
+        });
+
+        this.tendenciaOperativa = [
+          { name: 'Cobrado', series: cobradoSerie },
+          { name: 'Egresos', series: egresosSerie },
+          { name: 'Neto', series: netoSerie }
+        ];
+
+        this.cargando = false;
+      },
+      error: () => {
+        this.tendenciaOperativa = [];
+        this.totalesRango = { cobrado: 0, egresos: 0, neto: 0 };
+        this.cargando = false;
+      }
+    });
   }
-  
-  // Formato de las etiquetas del eje Y
-  formatYTicks(value: number): string {
+
+  private esPagoOperativo(pago: Pago): boolean {
+    if (pago.idPedido === -2 || pago.idPedido === -3) {
+      return false;
+    }
+    return this.esFormaPagoValida(pago.formaPago);
+  }
+
+  private esFormaPagoValida(formaPago?: number): boolean {
+    return formaPago === 1 || formaPago === 2 || formaPago === 3 || formaPago === 4;
+  }
+
+  formatMoneda(value: number): string {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value);
   }
 
-  private procesarPorMes(cajas:Caja[], format: string) {
-    const series: any[] = [];
-    cajas.forEach((caja) => {
-      const mes = formatearFechaDesdeUnIso(caja.fecha, format);
-      const serieMes = series.find((c)=> mes === c.name);       
-      if (serieMes) {
-        serieMes.series[0].value += caja.contado;
-        serieMes.series[1].value += caja.cuentaDni;
-        serieMes.series[2].value += caja.tarjeta;
-        serieMes.series[3].value += caja.transferencia;
-      } else {
-        series.push({
-          "name": formatearFechaDesdeUnIso(caja.fecha, format),
-          "series": [
-            {"name": "Contado","value": caja.contado },
-            {"name": "Cuenta Dni","value": caja.cuentaDni},
-            {"name": "Tarjeta","value": caja.tarjeta},
-            {"name": "Transferencia","value": caja.transferencia}
-            ]
-        });
-      };
-    });
-    return series;    
-  }
-
-  private procesarPorDia(cajas:Caja[]) {
-    const dataSet:any[] = [];
-    cajas.forEach((element:Caja) => {           
-      dataSet.push({
-        "name": formatDateToDayMonth(element.fecha),
-        "series": [
-          {"name": "Contado","value": element.contado },
-          {"name": "Cuenta Dni","value": element.cuentaDni},
-          {"name": "Tarjeta","value": element.tarjeta},
-          {"name": "Transferencia","value": element.transferencia},
-        ]
-      });
-    });
-
-    return dataSet;
-  }
-  private generarArribaDerechaGrafico(fechaDesde:string, fechaHasta:string) {
-    this.cajaService.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res) => {
-      if(res) {
-        if (this.fechasBarrasForm.value.tipoGrafico === "2") {
-          this.barrasAcumulado = this.procesarPorMes(res, 'LLL yy');
-        } else {
-          this.barrasAcumulado = this.procesarPorDia(res);
-        }
-      }
-    }, (error) => {
-      alert(error);
-    })
-  }
-
+  formatYTicks = (value: number): string => this.formatMoneda(value);
 }

@@ -1,0 +1,86 @@
+.tablero-card {
+  border: 1px solid #dce2e8;
+}
+
+.btn-help {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #a8b3bf;
+  background: #ffffff;
+  color: #2a3948;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0;
+  font-weight: 700;
+}
+
+.help-box {
+  border: 1px solid #dce2e8;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.help-title {
+  margin-bottom: 6px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #2a3948;
+}
+
+.help-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 0.82rem;
+  color: #3f4d5c;
+}
+
+.help-list li {
+  margin-bottom: 3px;
+}
+
+.kpi-card {
+  background-color: #f8fafc;
+  border: 1px solid #dce2e8;
+  border-radius: 8px;
+  padding: 10px;
+  height: 100%;
+}
+
+.kpi-label {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #5c6670;
+}
+
+.kpi-value {
+  margin: 4px 0 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1f2a37;
+}
+
+.section-title {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2a3948;
+}
+
+.metric-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e7ebef;
+  font-size: 0.9rem;
+}
+
+.positive {
+  color: #0f7a4d;
+}
+
+.negative {
+  color: #b42318;
+}

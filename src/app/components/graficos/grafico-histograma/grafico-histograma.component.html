@@ -1,57 +1,74 @@
 <div class="container-fluid">
-    <h2>Resumen de ultimos dias</h2>
-    <hr/>
-    <div class="row">
-        <ngx-charts-number-card
-            [view]="[1200,150]"
-            [scheme]="colorHistograma"
-            [results]="histogramaTotales"
-            [animations]="false"
-            [cardColor]="cardColor">
-        </ngx-charts-number-card>
-    </div>
-    <div class="row">
-        <div class="col-2">
-            <button class="btn btn-dark" (click)="toggleForm()">Filtros</button>
-        </div>
-        <div class="col-10" *ngIf="isFormVisible">
-            <form [formGroup]="myForm" (ngSubmit)="onSubmitForm()" class="container">
-                <div class="row">
-                    <div class="col-5">
-                        <div class="input-group">
-                            <span class="input-group-text">Desde</span>
-                            <input type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
-                        </div>
-                    </div>
-                    <div class="col-5">
-                        <div class="input-group">
-                            <span class="input-group-text">Hasta </span>
-                            <input type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <button type="submit" class="btn btn-dark">Buscar</button>
-                    </div>
+    <h2>Mix de cobros por medio de pago</h2>
+    <p class="text-muted mb-2">Distribucion del cobro segun el periodo elegido</p>
+    <hr />
+
+    <form [formGroup]="myForm" (ngSubmit)="onSubmitForm()" class="container px-0">
+        <div class="row g-2">
+            <div class="col-12 col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text">Desde</span>
+                    <input type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
                 </div>
-            </form>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text">Hasta</span>
+                    <input type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
+                </div>
+            </div>
+            <div class="col-12 col-md-2">
+                <select class="form-select" formControlName="modo" (change)="onChangeModo()">
+                    <option value="porcentaje">Porcentaje</option>
+                    <option value="monto">Monto</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-dark w-100">Buscar</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row g-2 my-3">
+        <div class="col-12">
+            <div class="resumen-card">
+                <p class="resumen-label">Cobrado total del periodo</p>
+                <p class="resumen-value">{{ formatMoneda(totalCobrado) }}</p>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <ngx-charts-line-chart
-            [view]="[1200,400]"
+
+    <div class="row g-3" *ngIf="!cargando">
+        <div class="col-12 col-lg-7">
+            <ngx-charts-advanced-pie-chart
+            [view]="[700,320]"
             [scheme]="colorHistograma"
-            [legend]="false"
-            [showXAxisLabel]="true"
-            [showYAxisLabel]="true"
-            [xAxis]="true"
-            [yAxis]="true"
-            [xAxisLabel]="xAxisLabel"
-            [yAxisLabel]="yAxisLabel"
-            [timeline]="true"
-            [results]="histograma"
-            [yAxisTickFormatting]="formatYTicks"
-            (select)="onSelect($event)"
-            >
-        </ngx-charts-line-chart>
+            [results]="mixData"
+            [gradient]="false"
+            [valueFormatting]="formatValorGrafico">
+            </ngx-charts-advanced-pie-chart>
+        </div>
+        <div class="col-12 col-lg-5">
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Forma de pago</th>
+                            <th class="text-end">Monto</th>
+                            <th class="text-end">Participacion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of detalleMix">
+                            <td>{{ item.forma }}</td>
+                            <td class="text-end">{{ formatMoneda(item.monto) }}</td>
+                            <td class="text-end">{{ formatPorcentaje(item.porcentaje) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
+    <div *ngIf="cargando" class="text-muted">Cargando mix de cobros...</div>
 </div>

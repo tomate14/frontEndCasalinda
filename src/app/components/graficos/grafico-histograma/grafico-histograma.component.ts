@@ -1,161 +1,145 @@
-import { NgClass, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { CajaService } from '../../../../services/caja.service';
-import { Caja } from '../../../../clases/dominio/caja';
-import { horaPrincipioFinDia, getPreviousDays, formatDateToDayMonth, nowConLuxonATimezoneArgentina, formatearFechaDesdeUnIso} from "../../../../utils/dates";
+import { Pago } from '../../../../clases/dominio/pago';
+import { PagosService } from '../../../../services/pago.service';
+import { formatearFechaDesdeUnIso, getPreviousDays, horaPrincipioFinDia, nowConLuxonATimezoneArgentina } from '../../../../utils/dates';
 import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 import { coloresGrafico } from '../../../../utils/color-graficos';
-import { PagosService } from '../../../../services/pago.service';
-import { ListaCajaPasadaService } from '../../../../services/popup/listaCajaPasada';
+
+type ModoVisualizacionMix = 'monto' | 'porcentaje';
+
 @Component({
   selector: 'app-grafico-histograma',
   standalone: true,
-  imports: [NgClass, NgbModule, NgIf, ReactiveFormsModule, FormsModule, NgxChartsModule ],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, NgxChartsModule],
   templateUrl: './grafico-histograma.component.html',
   styleUrl: './grafico-histograma.component.css'
 })
 export class GraficoHistogramaComponent implements OnInit {
-  histograma:any[] = [];
-  histogramaTotales:any[] = [];
-  totales = { contado: 0, cuentaDni:0, tarjeta:0, transferencia:0, ganancia:0, gastos:0 }
+  mixData: { name: string; value: number }[] = [];
+  detalleMix: { forma: string; monto: number; porcentaje: number }[] = [];
+  totalCobrado: number = 0;
+  modoVisualizacion: ModoVisualizacionMix = 'porcentaje';
+  cargando: boolean = false;
   myForm: FormGroup;
-  isFormVisible: boolean = false;
-
-  xAxisLabel: string = 'Fecha';
-  yAxisLabel: string = 'Monto';
 
   colorHistograma: Color = {
-    name: 'customScheme',
+    name: 'mixCobros',
     selectable: false,
-    group: ScaleType.Time,
-    domain: [coloresGrafico.contado, coloresGrafico.cuentaDni, coloresGrafico.tarjeta, coloresGrafico.transferencia, coloresGrafico.ganancia, coloresGrafico.gastos]
+    group: ScaleType.Ordinal,
+    domain: [coloresGrafico.contado, coloresGrafico.cuentaDni, coloresGrafico.tarjeta, coloresGrafico.transferencia]
   };
 
-
-  cardColor: string = '#FFFFFF';
-
-  constructor(private fb: FormBuilder, private cajaServices: CajaService, private pagosService:PagosService, private cajaPasadaModal: ListaCajaPasadaService) {
+  constructor(private fb: FormBuilder, private pagosService: PagosService) {
     const fechaFin = horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true);
-    const fechaInicio2 = getPreviousDays(nowConLuxonATimezoneArgentina(),false,14);
+    const fechaInicio2 = getPreviousDays(nowConLuxonATimezoneArgentina(), false, 30);
     this.myForm = this.fb.group({
       fechaDesde: [formatearFechaDesdeUnIso(fechaInicio2, 'yyyy-MM-dd'), Validators.required],
-      fechaHasta: [formatearFechaDesdeUnIso(fechaFin, 'yyyy-MM-dd'), Validators.required]
+      fechaHasta: [formatearFechaDesdeUnIso(fechaFin, 'yyyy-MM-dd'), Validators.required],
+      modo: ['porcentaje', Validators.required]
     });
   }
 
-  ngOnInit() {
-    const fechaFin = horaPrincipioFinDia(nowConLuxonATimezoneArgentina(), true);
-    const fechaInicio2 = getPreviousDays(nowConLuxonATimezoneArgentina(),false,14);
-    this.generarAbajoHistograma(fechaInicio2, fechaFin);
+  ngOnInit(): void {
+    this.onSubmitForm();
   }
   
-  onSubmitForm() {
+  onSubmitForm(): void {
     if (this.myForm.valid) {
       const fechaDesde = horaPrincipioFinDia(this.myForm.value.fechaDesde, false);
       const fechaHasta = horaPrincipioFinDia(this.myForm.value.fechaHasta, true);
-      this.generarAbajoHistograma(fechaDesde, fechaHasta);
-      
+      this.modoVisualizacion = this.myForm.value.modo as ModoVisualizacionMix;
+      this.cargarMixCobros(fechaDesde, fechaHasta);
     }
   }
 
-  private generarAbajoHistograma(fechaDesde:string, fechaHasta:string) {
-    this.cajaServices.getCajaByFecha(fechaDesde, fechaHasta).subscribe((res) => {
-      if(res) {
-        const dataSet:any[] = [];
-        res.forEach((element:Caja) => {
-          const contado = dataSet.find((c)=> c.name === "Contado");
-          const cuentaDni = dataSet.find((c)=> c.name === "CuentaDni");
-          const tarjeta = dataSet.find((c)=> c.name === "Tarjeta");
-          const transferencia = dataSet.find((c)=> c.name === "Transferencia");
-          const ganancias = dataSet.find((c)=> c.name === "Ganancia");
-          const gastos = dataSet.find((c)=> c.name === "Gastos"); 
-          const fecha = formatDateToDayMonth(element.fecha);
-          if (!contado) {
-            dataSet.push({ name: 'Contado', series: [{"name": fecha,"value": element.contado, "extra": {date: element.fecha} }]});
-            dataSet.push({ name: 'CuentaDni', series: [{"name": fecha,"value": element.cuentaDni }]});
-            dataSet.push({ name: 'Tarjeta', series: [{"name": fecha,"value": element.tarjeta }]});
-            dataSet.push({ name: 'Transferencia', series: [{"name": fecha,"value": element.transferencia }]});
-            dataSet.push({ name: 'Ganancia', series: [{"name": fecha,"value": element.ganancia }]});
-            dataSet.push({ name: 'Gastos', series: [{"name": fecha,"value": element.gastos }]});
-          } else {
-            contado.series.push({"name": fecha,"value": element.contado })
-            cuentaDni.series.push({"name": fecha,"value": element.cuentaDni })
-            tarjeta.series.push({"name": fecha,"value": element.tarjeta })
-            transferencia.series.push({"name": fecha,"value": element.transferencia })
-            ganancias.series.push({"name": fecha,"value": element.ganancia })
-            gastos.series.push({"name": fecha,"value": element.gastos })
+  onChangeModo(): void {
+    this.modoVisualizacion = this.myForm.value.modo as ModoVisualizacionMix;
+    this.actualizarGrafico();
+  }
+
+  private cargarMixCobros(fechaDesde: string, fechaHasta: string): void {
+    this.cargando = true;
+    this.pagosService.getCajaByDate(fechaDesde, fechaHasta).subscribe({
+      next: (pagos: Pago[]) => {
+        const totales = {
+          contado: 0,
+          cuentaDni: 0,
+          tarjeta: 0,
+          transferencia: 0
+        };
+
+        pagos.forEach((pago: Pago) => {
+          if (!this.esPagoOperativo(pago) || pago.valor <= 0) {
+            return;
+          }
+
+          if (pago.formaPago === 1) {
+            totales.contado += pago.valor;
+          } else if (pago.formaPago === 2) {
+            totales.tarjeta += pago.valor;
+          } else if (pago.formaPago === 3) {
+            totales.cuentaDni += pago.valor;
+          } else if (pago.formaPago === 4) {
+            totales.transferencia += pago.valor;
           }
         });
-        this.histograma = dataSet;
-        this.generarTotales(res);        
+
+        this.totalCobrado = totales.contado + totales.cuentaDni + totales.tarjeta + totales.transferencia;
+
+        this.detalleMix = [
+          { forma: 'Contado', monto: totales.contado, porcentaje: this.calcularPorcentaje(totales.contado) },
+          { forma: 'Cuenta DNI', monto: totales.cuentaDni, porcentaje: this.calcularPorcentaje(totales.cuentaDni) },
+          { forma: 'Tarjeta', monto: totales.tarjeta, porcentaje: this.calcularPorcentaje(totales.tarjeta) },
+          { forma: 'Transferencia', monto: totales.transferencia, porcentaje: this.calcularPorcentaje(totales.transferencia) }
+        ];
+
+        this.actualizarGrafico();
+        this.cargando = false;
+      },
+      error: () => {
+        this.totalCobrado = 0;
+        this.detalleMix = [];
+        this.mixData = [];
+        this.cargando = false;
       }
-    }, (error) => {
-      alert(error);
-    })
-
-  }
-
-  onSelect(data:any): void {
-    const fechaDesde = horaPrincipioFinDia(new Date(data.name).toISOString(),false);
-    const fechaHasta = horaPrincipioFinDia(new Date(data.name).toISOString(),true);
-    this.pagosService.getCajaByDate(fechaDesde, fechaHasta).subscribe((res)=> {
-      if (res && res.length > 0) {
-        const pagos = res.filter((p) => p.idPedido !== -2 && p.idPedido !== -3);
-        const ingresosRetiros = res.filter((p) => p.idPedido === -2 || p.idPedido === -3);
-        this.cajaPasadaModal.mostrarPagosPasados(pagos, ingresosRetiros).then((res)=>{
-          console.log(res);
-        })
-      }
-    })
-  }
-
-  private generarTotales(cajas:Caja[]) {
-    this.totales = { contado: 0, cuentaDni:0, tarjeta:0, transferencia:0, ganancia:0, gastos:0 }
-    cajas.forEach((caja:Caja)=>{
-      this.totales.contado += caja.contado;
-      this.totales.cuentaDni += caja.cuentaDni;
-      this.totales.tarjeta += caja.tarjeta;
-      this.totales.transferencia += caja.transferencia;
-      this.totales.ganancia += caja.ganancia;
-      this.totales.gastos += caja.gastos;
-    })
-    const histo:any[] = [];
-
-    histo.push({
-      name: 'Contado',
-      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.contado)
     });
-    histo.push({
-      name: 'CuentaDni',
-      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.cuentaDni)
-    })
-    histo.push({
-      name: 'Tarjeta',
-      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.tarjeta)
-    })
-    histo.push({
-      name: 'Transferencia',
-      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.transferencia)
-    })
-    histo.push({
-      name: 'Ganancia',
-      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.ganancia)
-    })
-    histo.push({
-      name: 'Gastos',
-      value: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.totales.gastos)
-    });
-    this.histogramaTotales = histo;
   }
 
-  toggleForm() {
-    this.isFormVisible = !this.isFormVisible;
+  private esPagoOperativo(pago: Pago): boolean {
+    if (pago.idPedido === -2 || pago.idPedido === -3) {
+      return false;
+    }
+    return this.esFormaPagoValida(pago.formaPago);
   }
 
-  // Formato de las etiquetas del eje Y
-  formatYTicks(value: number): string {
+  private esFormaPagoValida(formaPago?: number): boolean {
+    return formaPago === 1 || formaPago === 2 || formaPago === 3 || formaPago === 4;
+  }
+
+  private actualizarGrafico(): void {
+    this.mixData = this.detalleMix.map((item) => ({
+      name: item.forma,
+      value: this.modoVisualizacion === 'porcentaje' ? Number(item.porcentaje.toFixed(2)) : item.monto
+    }));
+  }
+
+  private calcularPorcentaje(monto: number): number {
+    if (this.totalCobrado === 0) {
+      return 0;
+    }
+    return (monto * 100) / this.totalCobrado;
+  }
+
+  formatMoneda(value: number): string {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value);
   }
+
+  formatPorcentaje(value: number): string {
+    return `${value.toFixed(1)}%`;
+  }
+
+  formatValorGrafico = (value: number): string =>
+    this.modoVisualizacion === 'porcentaje' ? this.formatPorcentaje(value) : this.formatMoneda(value);
 }

@@ -1,19 +1,45 @@
-<h2>Resumen ultimo cierre</h2>
-<hr/>
-<div class="row">
-    <ngx-charts-advanced-pie-chart
-        [view]="[1100,170]"
-        [scheme]="colorScheme"
-        [results]="single"
-        [gradient]="gradient"
-        [valueFormatting]="formatValues">
-    </ngx-charts-advanced-pie-chart>
-</div>
-<div class="row">
-    <ngx-charts-pie-grid
-        [view]="[1100,170]"
-        [scheme]="colorIngresosGastos"
-        [results]="ingresosGastos">
-    </ngx-charts-pie-grid>
+<h2>Comparativo operativo</h2>
+<p class="text-muted mb-2">Hoy vs ayer vs promedio de los ultimos 7 dias</p>
+<hr />
+
+<div class="row g-2 mb-3">
+    <div class="col-12 col-md-4">
+        <div class="resumen-card">
+            <p class="resumen-label">Cobrado hoy</p>
+            <p class="resumen-value">{{ formatMoneda(resumenHoy.cobrado) }}</p>
+            <p class="resumen-meta">{{ variacionTexto(resumenHoy.cobrado, resumenAyer.cobrado) }}</p>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="resumen-card">
+            <p class="resumen-label">Egresos hoy</p>
+            <p class="resumen-value">{{ formatMoneda(resumenHoy.egresos) }}</p>
+            <p class="resumen-meta">{{ variacionTexto(resumenHoy.egresos, resumenAyer.egresos) }}</p>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="resumen-card">
+            <p class="resumen-label">Neto hoy</p>
+            <p class="resumen-value">{{ formatMoneda(resumenHoy.neto) }}</p>
+            <p class="resumen-meta">{{ variacionTexto(resumenHoy.neto, resumenAyer.neto) }}</p>
+        </div>
+    </div>
 </div>
 
+<div class="row" *ngIf="!cargando">
+    <ngx-charts-bar-vertical-2d
+        [view]="[1100,280]"
+        [scheme]="colorScheme"
+        [results]="comparativo"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxisLabel]="'Indicador'"
+        [yAxisLabel]="'Monto'"
+        [animations]="true"
+        [yAxisTickFormatting]="formatYTicks">
+    </ngx-charts-bar-vertical-2d>
+</div>
+<div *ngIf="cargando" class="text-muted">Cargando comparativo...</div>

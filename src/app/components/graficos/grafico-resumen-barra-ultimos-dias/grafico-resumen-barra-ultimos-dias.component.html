@@ -1,49 +1,61 @@
-<h2>Resumen de caja ultimos dias</h2>
-<hr/>
+<h2>Tendencia operativa</h2>
+<p class="text-muted mb-2">Evolucion diaria de cobrado, egresos y neto en el periodo elegido</p>
+<hr />
 <form [formGroup]="fechasBarrasForm" (ngSubmit)="onSubmitForm()" class="container">
-    <div class="row">
-        <div class="col-2">
-            <select class="form-select" formControlName="tipoGrafico" (change)="onChange($event)">
-                <option [value]="1">Dia</option>
-                <option [value]="2">Mes</option>
-            </select>
-        </div>
-        <div class="col-5">
+    <div class="row g-2">
+        <div class="col-12 col-md-5">
             <div class="input-group">
                 <span class="input-group-text">Desde</span>
-                <input *ngIf="tipoGraficoNgIf === 1" type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
-                <input *ngIf="tipoGraficoNgIf === 2" type="month" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
+                <input type="date" class="form-control" placeholder="Desde" aria-label="Desde" formControlName="fechaDesde">
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-12 col-md-5">
             <div class="input-group">
-                <span class="input-group-text">Hasta </span>
-                <input *ngIf="tipoGraficoNgIf === 1" type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
-                <input *ngIf="tipoGraficoNgIf === 2" type="month" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
+                <span class="input-group-text">Hasta</span>
+                <input type="date" class="form-control" placeholder="Hasta" aria-label="Hasta" formControlName="fechaHasta">
             </div>
         </div>
-        <div class="col-1">
+        <div class="col-12 col-md-2">
             <button type="submit" class="btn btn-dark">Buscar</button>
         </div>
     </div>
 </form>
-<hr/>
-<div class="row">
-    <div class="col-12">
-        <ngx-charts-bar-vertical-stacked
-            [view]="[1100,340]"
-            [scheme]="colorScheme"
-            [results]="barrasAcumulado"
-            [gradient]="true"
-            [xAxis]="showXAxis"
-            [yAxis]="showYAxis"
-            [legend]="true"
-            [showXAxisLabel]="showXAxisLabel"
-            [showYAxisLabel]="showYAxisLabel"
-            [xAxisLabel]="xAxisLabel"
-            [yAxisLabel]="yAxisLabel"
-            [animations]="animations"
-            [yAxisTickFormatting]="formatYTicks">
-        </ngx-charts-bar-vertical-stacked>
-    </div>                
+
+<div class="row g-2 my-3">
+    <div class="col-12 col-md-4">
+        <div class="resumen-card">
+            <p class="resumen-label">Cobrado del periodo</p>
+            <p class="resumen-value">{{ formatMoneda(totalesRango.cobrado) }}</p>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="resumen-card">
+            <p class="resumen-label">Egresos del periodo</p>
+            <p class="resumen-value">{{ formatMoneda(totalesRango.egresos) }}</p>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="resumen-card">
+            <p class="resumen-label">Neto del periodo</p>
+            <p class="resumen-value">{{ formatMoneda(totalesRango.neto) }}</p>
+        </div>
+    </div>
 </div>
+
+<div class="row" *ngIf="!cargando">
+    <ngx-charts-line-chart
+        [view]="[1100,360]"
+        [scheme]="colorScheme"
+        [legend]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxis]="true"
+        [yAxis]="true"
+        [xAxisLabel]="'Fecha'"
+        [yAxisLabel]="'Monto'"
+        [timeline]="true"
+        [results]="tendenciaOperativa"
+        [yAxisTickFormatting]="formatYTicks">
+    </ngx-charts-line-chart>
+</div>
+<div *ngIf="cargando" class="text-muted">Cargando tendencia...</div>

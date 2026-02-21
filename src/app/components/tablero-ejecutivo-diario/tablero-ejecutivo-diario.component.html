@@ -1,0 +1,143 @@
+<div class="card tablero-card">
+  <div class="card-body">
+    <div class="row align-items-end g-2 mb-3">
+      <div class="col-12 col-md-3">
+        <label class="form-label mb-1">Fecha del tablero</label>
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="fechaSeleccionada">
+      </div>
+      <div class="col-12 col-md-2">
+        <button type="button" class="btn btn-dark w-100" (click)="buscar()">Actualizar</button>
+      </div>
+      <div class="col-12 col-md-7 text-md-end">
+        <div class="d-flex align-items-center justify-content-md-end gap-2">
+          <span class="text-muted" *ngIf="resumen">Corte del dia {{ formatFecha(resumen.fecha) }}</span>
+          <button
+            type="button"
+            class="btn-help"
+            (click)="toggleAyuda()"
+            [attr.title]="ayudaVisible ? 'Ocultar ayuda' : 'Mostrar ayuda'"
+            [attr.aria-label]="ayudaVisible ? 'Ocultar ayuda' : 'Mostrar ayuda'">
+            ?
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="ayudaVisible" class="help-box mb-3">
+      <p class="help-title">Guia rapida del tablero</p>
+      <ul class="help-list">
+        <li *ngFor="let item of explicacionesKpi">
+          <b>{{ item.etiqueta }}:</b> {{ item.descripcion }}
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger py-2 mb-3">{{ error }}</div>
+    <div *ngIf="cargando" class="text-muted">Cargando tablero ejecutivo diario...</div>
+
+    <ng-container *ngIf="!cargando && resumen">
+      <div class="row g-2">
+        <div class="col-6 col-md-3">
+          <div class="kpi-card">
+            <p class="kpi-label">Cobrado del dia</p>
+            <p class="kpi-value">{{ formatMoneda(resumen.totalCobrado) }}</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="kpi-card">
+            <p class="kpi-label">Egresos del dia</p>
+            <p class="kpi-value negative">{{ formatMoneda(resumen.totalEgresos) }}</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="kpi-card">
+            <p class="kpi-label">Neto operativo</p>
+            <p class="kpi-value" [class.positive]="resumen.netoOperativo >= 0" [class.negative]="resumen.netoOperativo < 0">
+              {{ formatMoneda(resumen.netoOperativo) }}
+            </p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="kpi-card">
+            <p class="kpi-label">Neto total de caja</p>
+            <p class="kpi-value" [class.positive]="resumen.netoCaja >= 0" [class.negative]="resumen.netoCaja < 0">
+              {{ formatMoneda(resumen.netoCaja) }}
+            </p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="kpi-card">
+            <p class="kpi-label">Pedidos creados hoy</p>
+            <p class="kpi-value">{{ resumen.pedidosCreados }}</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="kpi-card">
+            <p class="kpi-label">Pendientes totales</p>
+            <p class="kpi-value">{{ resumen.pedidosPendientes }}</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="kpi-card">
+            <p class="kpi-label">En produccion</p>
+            <p class="kpi-value">{{ resumen.pedidosEnProduccion }}</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="kpi-card">
+            <p class="kpi-label">Listos para entregar</p>
+            <p class="kpi-value">{{ resumen.pedidosListosParaEntregar }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3 g-3">
+        <div class="col-12 col-lg-7">
+          <p class="section-title">Cobros del dia por forma de pago</p>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Forma de pago</th>
+                  <th class="text-end">Monto</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let forma of resumen.cobrosPorFormaPago">
+                  <td>{{ forma.descripcion }}</td>
+                  <td class="text-end">{{ formatMoneda(forma.monto) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-12 col-lg-5">
+          <p class="section-title">Indicadores de gestion</p>
+          <div class="metric-line">
+            <span>Deuda pendiente total</span>
+            <strong>{{ formatMoneda(resumen.deudaPendiente) }}</strong>
+          </div>
+          <div class="metric-line">
+            <span>Ingresos de caja manuales</span>
+            <strong>{{ formatMoneda(resumen.ingresosCaja) }}</strong>
+          </div>
+          <div class="metric-line">
+            <span>Retiros de caja manuales</span>
+            <strong>{{ formatMoneda(resumen.retirosCaja) }}</strong>
+          </div>
+          <div class="metric-line">
+            <span>Cantidad de cobros</span>
+            <strong>{{ resumen.cantidadCobros }}</strong>
+          </div>
+          <div class="metric-line mb-0">
+            <span>Ticket promedio</span>
+            <strong>{{ formatMoneda(resumen.ticketPromedio) }}</strong>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
