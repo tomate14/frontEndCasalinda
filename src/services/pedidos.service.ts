@@ -45,6 +45,12 @@ export class PedidosService {
     return this.httpClient.post<Pedido>(`${BACKEND_URL}/pedido/crear`,pedidoDto);
   }
 
+  public subirImagenPedido(idPedido: string | number, file: File): Observable<Pedido> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.httpClient.post<Pedido>(`${BACKEND_URL}/pedido/${idPedido}/imagen`, formData);
+  }
+
   public put(idPedido:string, pedido:Pedido): Observable<Pedido> {
     return this.httpClient.put<Pedido>(`${BACKEND_URL}/pedido/${idPedido}`, pedido);
   }

@@ -7,12 +7,32 @@
 
 <div class="modal-body">
     <div class="container">
+        <div class="preview-imagen" *ngIf="imagenPreviewUrl && !imagenNoDisponible">
+            <div class="preview-imagen-titulo">Imagen asociada al pedido</div>
+            <img [src]="imagenPreviewUrl" alt="Imagen del pedido" (error)="onImageError()">
+        </div>
+        <div class="preview-imagen-vacia" *ngIf="!imagenPreviewUrl || imagenNoDisponible">
+            No hay imagen disponible para este pedido.
+        </div>
         <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="container needs-validation">
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="imagenFile">Cambiar imagen</label>
+                    <input id="imagenFile" type="file" class="form-control" accept="image/png,image/jpeg,image/webp" (change)="onImageSelected($event)">
+                    <div class="texto-ayuda" *ngIf="selectedImageFileName">Archivo seleccionado: {{selectedImageFileName}}</div>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="imagenUrl">URL o path de imagen</label>
+                    <input id="imagenUrl" type="text" class="form-control" formControlName="imagenUrl" placeholder="http://... o /imagenes/archivo.jpg" (input)="onImagenUrlChange()">
+                    <button type="button" class="btn btn-outline-secondary btn-sm btn-clear-img" (click)="limpiarRutaImagen()">Quitar imagen</button>
+                </div>
+            </div>
+            <br/>
             <div class="row">
                 <div class="form-group">
                     <div class="form-group">
                         <label for="dni">Descripcion</label>
-                        <textarea type="text" class="form-control" id="descripcion" name="descripcion" formControlName="descripcion" aria-describedby="emailHelp" placeholder="Descripcion" required>></textarea>
+                        <textarea type="text" class="form-control" id="descripcion" name="descripcion" formControlName="descripcion" aria-describedby="emailHelp" placeholder="Descripcion" required></textarea>
                         <div *ngIf="myForm.get('descripcion')?.invalid" 
                             [ngClass]="{'d-block': myForm.get('descripcion')?.invalid, 'd-none': !(myForm.get('descripcion')?.invalid )}" 
                             class="invalid-feedback">Debe ingresar la descripcion

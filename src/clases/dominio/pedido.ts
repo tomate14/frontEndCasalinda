@@ -9,6 +9,7 @@ export interface Pedido {
     descripcion: string;
     estadoEnvio:number;
     conSena?:boolean;
+    imagenUrl?: string;
     nombreCliente?:string; 
     dniCliente?: number;
     telefonoCliente?:string;
