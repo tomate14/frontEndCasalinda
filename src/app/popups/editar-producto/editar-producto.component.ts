@@ -19,6 +19,9 @@ export class EditarProductoComponent implements OnInit{
   myForm: FormGroup;
   @Input() producto:Producto | undefined;
   proveedores:Cliente[] = [];
+  selectedImageFiles: File[] = [];
+  private readonly allowedImageTypes = new Set(['image/jpeg', 'image/jpg', 'image/png']);
+  private readonly maxImages = 4;
 
   constructor(private fb: FormBuilder, private productoService: ProductoService, private activeModal: NgbActiveModal, 
     private clientesServices: ClienteService, private confirmarService:ConfirmarService) {
@@ -43,8 +46,31 @@ export class EditarProductoComponent implements OnInit{
   }
   cerrar() {
     this.myForm.reset();
+    this.selectedImageFiles = [];
     this.activeModal.close(false);
   }
+
+  onImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files || []);
+    if (files.length > this.maxImages) {
+      this.confirmarService.confirm('Imagenes', 'Solo se permiten hasta 4 imagenes.', true, 'Aceptar', '');
+      input.value = '';
+      this.selectedImageFiles = [];
+      return;
+    }
+
+    const invalidFile = files.find((file) => !this.allowedImageTypes.has(file.type.toLowerCase()));
+    if (invalidFile) {
+      this.confirmarService.confirm('Imagenes', 'Formato no valido. Solo JPG/JPEG/PNG.', true, 'Aceptar', '');
+      input.value = '';
+      this.selectedImageFiles = [];
+      return;
+    }
+
+    this.selectedImageFiles = files;
+  }
+
   onSubmit() {
     if (this.myForm.valid) {
       
@@ -57,21 +83,36 @@ export class EditarProductoComponent implements OnInit{
         precioVenta: this.myForm.value.precioVenta,
         idProveedor: +this.myForm.value.idProveedor,
       }
-      this.productoService.updateProducto(producto).subscribe(res => {
-        if (this.producto) {
-          this.producto.id = producto.id;
-          this.producto.codigoBarra = producto.codigoBarra;
-          this.producto.nombre = producto.nombre;
-          this.producto.stock = producto.stock;
-          this.producto.precioCompra = producto.precioCompra;
-          this.producto.precioVenta = producto.precioVenta;
-          this.producto.idProveedor = producto.idProveedor;
+      this.productoService.updateProducto(producto).subscribe((res) => {
+        const idProducto = res.id || this.producto?.id;
+        if (this.selectedImageFiles.length > 0 && idProducto) {
+          this.productoService.uploadProductoImagenes(idProducto, this.selectedImageFiles).subscribe(() => {
+            this.selectedImageFiles = [];
+            this.actualizarProductoLocal(producto, idProducto);
+            this.activeModal.close(this.producto);
+          }, (error) => {
+            this.confirmarService.confirm('Error', error?.error?.message || 'No se pudieron guardar las imagenes', true, 'Aceptar', '');
+          });
+          return;
         }
 
+        this.actualizarProductoLocal(producto, idProducto);
         this.activeModal.close(this.producto);
       }, (error) => {
         this.confirmarService.confirm('Error', error.error.message, true, 'Aceptar', '');
       })
+    }
+  }
+
+  private actualizarProductoLocal(producto: Producto, idProducto: number | undefined): void {
+    if (this.producto) {
+      this.producto.id = idProducto;
+      this.producto.codigoBarra = producto.codigoBarra;
+      this.producto.nombre = producto.nombre;
+      this.producto.stock = producto.stock;
+      this.producto.precioCompra = producto.precioCompra;
+      this.producto.precioVenta = producto.precioVenta;
+      this.producto.idProveedor = producto.idProveedor;
     }
   }
 }

@@ -65,6 +65,20 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12 form-group">
+                <div class="form-group">
+                    <label for="imagenesProducto">Imagenes del producto (maximo 4)</label>
+                    <input
+                        id="imagenesProducto"
+                        type="file"
+                        class="form-control"
+                        accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                        multiple
+                        (change)="onImagesSelected($event)">
+                </div>
+            </div>
+        </div>
         
         <button type="submit" class="btn btn-dark">Agregar</button>
       

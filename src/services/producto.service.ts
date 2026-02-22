@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Producto } from '../clases/dominio/producto';
+import { ProductoImagen } from '../clases/dominio/producto-imagen';
 import { BACKEND_URL } from '../environments';
 
 @Injectable({
@@ -36,6 +37,16 @@ export class ProductoService {
 
   public updateProducto(producto:Producto): Observable<Producto> {
     return this.httpClient.put<Producto>(`${BACKEND_URL}/producto`,producto);    
+  }
+
+  public getProductoImagenes(idProducto:number): Observable<ProductoImagen[]> {
+    return this.httpClient.get<ProductoImagen[]>(`${BACKEND_URL}/producto/${idProducto}/imagenes`);
+  }
+
+  public uploadProductoImagenes(idProducto:number, files: File[]): Observable<ProductoImagen[]> {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('files', file));
+    return this.httpClient.post<ProductoImagen[]>(`${BACKEND_URL}/producto/${idProducto}/imagenes`, formData);
   }
   
   public getCodigoBarraPDF(idProducto:number, cantidad:number = 20): Observable<Blob> {

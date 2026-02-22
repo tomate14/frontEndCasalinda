@@ -52,6 +52,7 @@
               <td>{{ producto.stock }}</td>
               <td>
                 <button class="btn btn-dark btnEditar" (click)="editarProducto(producto)"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-dark btnEditar" (click)="verImagenes(producto)" title="Ver imagenes"><i class="fa fa-image" aria-hidden="true"></i></button>
                 <button class="btn btn-dark" (click)="imprimirComprobante(producto)"><i class="fa fa-print" aria-hidden="true"></i></button>
               </td>
             </tr>

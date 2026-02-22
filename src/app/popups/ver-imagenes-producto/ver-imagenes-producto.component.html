@@ -1,0 +1,40 @@
+<div class="modal-header">
+  <h4 class="modal-title">Imagenes del producto {{ producto?.nombre }}</h4>
+  <button type="button" class="close" aria-label="Close" (click)="cerrar()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="carousel-producto">
+    <div class="carousel-estado" *ngIf="imagenesCargando">Cargando imagenes...</div>
+    <div class="carousel-estado" *ngIf="!imagenesCargando && !tieneImagenes">No hay imagenes guardadas para este producto.</div>
+
+    <div class="carousel-wrapper" *ngIf="!imagenesCargando && tieneImagenes">
+      <button type="button" class="carousel-btn" (click)="anteriorImagen()" aria-label="Imagen anterior">&lsaquo;</button>
+      <div class="carousel-imagen-container">
+        <img
+          *ngIf="!imagenNoDisponible; else imagenNoDisponibleTpl"
+          [src]="imagenActualPath"
+          alt="Imagen del producto"
+          (error)="onImageError()"
+          (load)="onImageLoad()">
+        <ng-template #imagenNoDisponibleTpl>
+          <div class="carousel-estado">No se pudo cargar esta imagen.</div>
+        </ng-template>
+      </div>
+      <button type="button" class="carousel-btn" (click)="siguienteImagen()" aria-label="Siguiente imagen">&rsaquo;</button>
+    </div>
+
+    <div class="carousel-indicadores" *ngIf="!imagenesCargando && tieneImagenes">
+      <button
+        *ngFor="let imagen of imagenesProducto; let i = index"
+        type="button"
+        class="carousel-indicador"
+        [ngClass]="{ 'activo': i === indiceImagenActual }"
+        [attr.aria-label]="'Ir a imagen ' + (i + 1)"
+        (click)="irAImagen(i)">
+      </button>
+    </div>
+  </div>
+</div>

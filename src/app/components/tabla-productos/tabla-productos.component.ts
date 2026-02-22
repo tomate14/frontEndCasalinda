@@ -11,6 +11,7 @@ import { ProductoService } from '../../../services/producto.service';
 import localeEsAr from '@angular/common/locales/es-AR';
 import localeEsArExtra from '@angular/common/locales/extra/es-AR';
 import { CrearProductoService } from '../../../services/popup/crearProducto.service';
+import { VerImagenesProductoService } from '../../../services/popup/verImagenesProducto.service';
 registerLocaleData(localeEsAr, 'es-AR', localeEsArExtra);
 
 @Component({
@@ -33,6 +34,7 @@ export class TablaProductoComponent {
     private fb: FormBuilder,
     private productosService: ProductoService,
     private crearProductoService: CrearProductoService,
+    private verImagenesProductoService: VerImagenesProductoService,
     private confirmarService:ConfirmarService
   ) {
     this.filterForm = this.fb.group({
@@ -75,6 +77,10 @@ export class TablaProductoComponent {
         this.limpiar();
       }
     });
+  }
+
+  verImagenes(producto: Producto) {
+    this.verImagenesProductoService.abrirImagenesProducto(producto);
   }
 
   buscar() {
