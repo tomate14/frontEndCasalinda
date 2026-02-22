@@ -62,6 +62,10 @@ export class PedidosService {
     return this.httpClient.get<Pedido[]>(`${BACKEND_URL}/pedido/pedidos-vencidos/${fechaDesde}/${tipoPedido}`);
   }
 
+  public cerrarPedidosPendientesDesdeDias(dias:number, tipoPedido:number): Observable<Pedido[]> {
+    return this.httpClient.post<Pedido[]>(`${BACKEND_URL}/pedido/cerrar-pendientes/${dias}/${tipoPedido}`, {});
+  }
+
   public getInformeDeudaPedido(idPedido: string): Observable<DeudaPedido> {
     return this.httpClient.get<DeudaPedido>(`${BACKEND_URL}/pedido/informe-deuda?id=${idPedido}`);
   }

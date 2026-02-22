@@ -147,12 +147,36 @@ export class TablaPedidoComponent implements OnInit {
 
   filtrarDeudores() {
     const { dias } = this.filterForm.value;
+    if (dias < 0) {
+      alert("Los dias deben ser 0 o mayores");
+      return;
+    }
     const fechaDesde = getPreviousDays(nowConLuxonATimezoneArgentina(),true,dias);
     this.pedidosService.getPedidosVencidos(fechaDesde, this.tipoPedido).subscribe((res) => {
       this.pedidos = res;
       this.filterForm.reset();
       this.isCollapsed = true;
     })
+  }
+
+  cerrarPedidosPendientesDesdeFiltro() {
+    const dias = Number(this.filterForm.value.dias);
+    if (!Number.isFinite(dias) || dias < 0) {
+      alert("Los dias deben ser 0 o mayores");
+      return;
+    }
+
+    this.pedidosService.cerrarPedidosPendientesDesdeDias(dias, this.tipoPedido).subscribe((res) => {
+      this.pedidos = res;
+      this.isCollapsed = true;
+      if (res.length === 0) {
+        alert("No se encontraron pedidos pendientes para cerrar");
+      } else {
+        alert(`Se cerraron ${res.length} pedidos pendientes`);
+      }
+    }, (error) => {
+      alert(error?.error?.message || "No se pudieron cerrar los pedidos pendientes");
+    });
   }
 
   verPagos(pedido: Pedido): void {
@@ -245,5 +269,9 @@ export class TablaPedidoComponent implements OnInit {
 
   private enviarWP(res:DeudaPedido) {
     notificarDeudaPedido(res);
+  }
+
+  permiteCierrePendientes() {
+    return this.tipoPedido === 1 || this.tipoPedido === 2;
   }
 }
