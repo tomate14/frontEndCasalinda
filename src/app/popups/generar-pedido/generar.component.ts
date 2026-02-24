@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
@@ -28,12 +28,19 @@ import { FormaPagoService } from '../../../services/forma-pago.service';
   styleUrl: './generar.component.css'
 })
 export class GenerarComponent implements OnInit {
+  @Input() tipoComprobante = 'PED';
+  @Input() tipoPedidoInicial: number | null = null;
   myForm: FormGroup;
   cliente: Cliente | undefined;
   imagePath: any = '';
   selectedImageFile: File | undefined;
   formaDePago: FormaDePago[] = [];
   tipoDePedido: TipoPedido[] = [];
+  private tipoPedidoDefault = 1;
+
+  get tituloModal(): string {
+    return this.tipoPedidoDefault === 2 ? 'Crear Cuenta Corriente' : 'Crear Pedido';
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -60,7 +67,27 @@ export class GenerarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.inicializarTipoPedidoDefault();
     this.cargarFormasPago();
+  }
+
+  private inicializarTipoPedidoDefault(): void {
+    this.tipoPedidoDefault = this.obtenerTipoPedidoDefault();
+    this.myForm.get('tipoDePedido')?.setValue(this.tipoPedidoDefault);
+  }
+
+  private obtenerTipoPedidoDefault(): number {
+    const tipoPedido = Number(this.tipoPedidoInicial);
+    if (tipoPedido === 1 || tipoPedido === 2) {
+      return tipoPedido;
+    }
+    if (this.tipoComprobante === 'CC') {
+      return 2;
+    }
+    if (this.tipoComprobante === 'PED') {
+      return 1;
+    }
+    return 1;
   }
 
   private cargarFormasPago(): void {
@@ -140,7 +167,7 @@ export class GenerarComponent implements OnInit {
           }
 
           this.enviarWp(id, numeroPedido);
-          this.myForm.reset({ sena: 0, formaDePago: this.myForm.get('formaDePago')?.value, tipoDePedido: 1 });
+          this.myForm.reset({ sena: 0, formaDePago: this.myForm.get('formaDePago')?.value, tipoDePedido: this.tipoPedidoDefault });
           this.setFormaPagoDefault();
           this.selectedImageFile = undefined;
           this.spinner.hide();
@@ -189,7 +216,7 @@ export class GenerarComponent implements OnInit {
   }
 
   cerrar() {
-    this.myForm.reset({ sena: 0, formaDePago: this.myForm.get('formaDePago')?.value, tipoDePedido: 1 });
+    this.myForm.reset({ sena: 0, formaDePago: this.myForm.get('formaDePago')?.value, tipoDePedido: this.tipoPedidoDefault });
     this.setFormaPagoDefault();
     this.selectedImageFile = undefined;
     this.activeModal.close(false);

@@ -72,13 +72,9 @@
         </div>      
       </div>
       <br>
-      <div class="row">
-        <div class="col-1">
-          <button type="button" class="btn btn-dark" (click)="buscar()">Buscar</button>
-        </div>
-        <div class="col-1">
-          <button type="button" class="btn btn-dark" (click)="limpiar()">Limpiar</button>
-        </div>
+      <div class="acciones-filtros mt-2">
+        <button type="button" class="btn btn-dark" (click)="buscar()">Buscar</button>
+        <button type="button" class="btn btn-dark" (click)="limpiar()">Limpiar</button>
       </div>  
       <hr/>
       <div class="row">
@@ -88,11 +84,11 @@
             <input type="number" id="dias" formControlName="dias" class="form-control" name="dias" aria-describedby="diaseHelp" placeholder="Dias"/>
           </div>
         </div>
-        <div class="col-2 form-group">
-          <button type="button" class="btn btn-danger margin-buscar" (click)="filtrarDeudores()">Buscar</button>
-        </div>
-        <div *ngIf="permiteCierrePendientes()" class="col-3 form-group">
-          <button type="button" class="btn btn-dark margin-buscar" (click)="cerrarPedidosPendientesDesdeFiltro()">Cerrar pendientes</button>
+        <div class="col-8 form-group d-flex align-items-end">
+          <div class="acciones-filtros">
+            <button type="button" class="btn btn-danger" (click)="filtrarDeudores()">Buscar</button>
+            <button *ngIf="permiteCierrePendientes()" type="button" class="btn btn-dark" (click)="cerrarPedidosPendientesDesdeFiltro()">Cerrar pendientes</button>
+          </div>
         </div>
       </div>
           
@@ -127,13 +123,13 @@
             <i *ngIf="pedido.estadoEnvio === 3" class="fa fa-truck enviado" aria-hidden="true" title="Enviado"> </i>
             <i *ngIf="pedido.estadoEnvio === 4" class="fa fa-truck terminado" aria-hidden="true" title="Terminado"> </i>
           </td>
-          <td>
+          <td class="acciones-tabla">
             <button class="btn btn-dark" (click)="verPagos(pedido)"><i class="fas fa-search" title="Ver pagos"></i></button>
-            <button *ngIf="mostrarBotonDetalle(pedido)" class="btn btn-dark btnEditar" (click)="verPedido(pedido)"><i class="fa fa-list" title="Ver detalle"></i></button>
-            <button *ngIf="mostrarEditarYNotificar(pedido)" class="btn btn-dark btnEditar" (click)="editarPedido(pedido)"><i class="fas fa-edit" title="Editar"></i></button>
-            <button *ngIf="pedido.estado === 'PENDIENTE'" class="btn btn-danger btnEditar" (click)="notificarDeuda(pedido)"><i class="fa fa-exclamation-triangle" title="Notificar Deuda"></i></button>
-            <button *ngIf="mostrarEditarYNotificar(pedido)" class="btn btn-warning btnEditar" (click)="enviarConfirmacion(pedido)"><i class="fa fa-paper-plane" title="Enviar Confirmacion"></i></button>
-            <button *ngIf="mostrarBotonImprimir(pedido)" class="btn btn-dark btnEditar" (click)="imprimirComprobante(pedido)"><i class="fa fa-print" title="Imprimir"></i></button>
+            <button *ngIf="mostrarBotonDetalle(pedido)" class="btn btn-dark" (click)="verPedido(pedido)"><i class="fa fa-list" title="Ver detalle"></i></button>
+            <button *ngIf="mostrarEditarYNotificar(pedido)" class="btn btn-dark" (click)="editarPedido(pedido)"><i class="fas fa-edit" title="Editar"></i></button>
+            <button *ngIf="pedido.estado === 'PENDIENTE'" class="btn btn-danger" (click)="notificarDeuda(pedido)"><i class="fa fa-exclamation-triangle" title="Notificar Deuda"></i></button>
+            <button *ngIf="mostrarEditarYNotificar(pedido)" class="btn btn-warning" (click)="enviarConfirmacion(pedido)"><i class="fa fa-paper-plane" title="Enviar Confirmacion"></i></button>
+            <button *ngIf="mostrarBotonImprimir(pedido)" class="btn btn-dark" (click)="imprimirComprobante(pedido)"><i class="fa fa-print" title="Imprimir"></i></button>
           </td>
         </tr>
       </tbody>

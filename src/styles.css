@@ -49,8 +49,25 @@ button.close {
     background: white;
 }
 
-.btnEditar {
-    margin-left: 2px;
+.acciones-tabla {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.acciones-tabla .btn {
+  margin: 0;
+}
+
+.acciones-filtros {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1px;
+}
+
+.acciones-filtros .btn {
+  margin: 0;
 }
 
 .fa-truck {

@@ -5,13 +5,6 @@ input.ng-invalid.ng-touched {
 input.ng-valid.ng-touched {
     border: 1px solid green;
 }
-#limpiar {
-    margin-left: 5px;
-    margin-top: 5px;
-}
-#buscar {
-    margin-top: 5px;
-}
 
 .fa-thumbs-down {
     color: red;

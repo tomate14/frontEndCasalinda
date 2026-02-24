@@ -18,8 +18,10 @@
                 <input type="text" id="nombre" formControlName="nombre" class="form-control" name="nombre" aria-describedby="nombreHelp" placeholder="nombre"/>
               </div>            
             </div>
-            <button id="buscar" class="btn btn-dark" (click)="buscar()">Buscar</button>
-            <button id="limpiar" class="btn btn-dark" (click)="limpiar()">Limpiar</button>
+            <div class="acciones-filtros mt-2">
+              <button id="buscar" class="btn btn-dark" (click)="buscar()">Buscar</button>
+              <button id="limpiar" class="btn btn-dark" (click)="limpiar()">Limpiar</button>
+            </div>
           </form>
         </div>
       </div>
@@ -50,9 +52,9 @@
               <td>{{ producto.precioCompra | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
               <td>{{ producto.precioVenta | currency: 'ARS' : 'symbol-narrow' : '0.0-0' : 'es-AR'}}</td>
               <td>{{ producto.stock }}</td>
-              <td>
-                <button class="btn btn-dark btnEditar" (click)="editarProducto(producto)"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-dark btnEditar" (click)="verImagenes(producto)" title="Ver imagenes"><i class="fa fa-image" aria-hidden="true"></i></button>
+              <td class="acciones-tabla">
+                <button class="btn btn-dark" (click)="editarProducto(producto)"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-dark" (click)="verImagenes(producto)" title="Ver imagenes"><i class="fa fa-image" aria-hidden="true"></i></button>
                 <button class="btn btn-dark" (click)="imprimirComprobante(producto)"><i class="fa fa-print" aria-hidden="true"></i></button>
               </td>
             </tr>

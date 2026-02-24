@@ -30,8 +30,10 @@
                 </div>
               </div>
             </div>
-            <button id="buscar" class="btn btn-dark" (click)="buscar()">Buscar</button>
-            <button id="limpiar" class="btn btn-dark" (click)="limpiar()">Limpiar</button>
+            <div class="acciones-filtros mt-2">
+              <button id="buscar" class="btn btn-dark" (click)="buscar()">Buscar</button>
+              <button id="limpiar" class="btn btn-dark" (click)="limpiar()">Limpiar</button>
+            </div>
           </form>
         </div>
       </div>
@@ -67,14 +69,14 @@
               <td>{{ cliente.telefono }}</td>
               <td>{{ cliente.email }}</td>
               <td>{{ cliente.cuit }}</td>
-              <td>
+              <td class="acciones-tabla">
                 <button class="btn btn-dark" (click)="verPedidos(cliente)">
                   <i class="fas fa-search" title="Ver pedidos"></i>
                 </button>
-                <button *ngIf="esVistaClientes()" class="btn btn-dark btnEditar" (click)="verCuentasCorrientes(cliente)">
+                <button *ngIf="esVistaClientes()" class="btn btn-dark" (click)="verCuentasCorrientes(cliente)">
                   <i class="fa fa-list" title="Ver cuentas corrientes"></i>
                 </button>
-                <button class="btn btn-dark btnEditar" (click)="editarCliente(cliente)">
+                <button class="btn btn-dark" (click)="editarCliente(cliente)">
                   <i class="fas fa-edit"></i>
                 </button>
               </td>
